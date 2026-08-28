@@ -7,8 +7,8 @@ venta, personal, platos y pedidos, con persistencia en MySQL a través de Hibern
 
 | | |
 |---|---|
-| **Grupo** | XX |
-| **Integrantes** | Enzo Dias · Imanol Del Canto · Erika Baez |
+| **Grupo** | 9 |
+| **Integrantes** | Enzo Diaz · Imanol Del Canto · Erika Baez |
 | **Comisión** | Turno noche |
 | **Entrega** | 3 de septiembre de 2026 |
 

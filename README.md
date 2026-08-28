@@ -8,7 +8,7 @@ venta, personal, platos y pedidos, con persistencia en MySQL a través de Hibern
 | | |
 |---|---|
 | **Grupo** | XX |
-| **Integrantes** | Nombre 1 · Nombre 2 · Nombre 3 · Nombre 4 |
+| **Integrantes** | Enzo Dias · Imanol Del Canto · Erika Baez |
 | **Comisión** | Turno noche |
 | **Entrega** | 3 de septiembre de 2026 |
 
@@ -18,16 +18,10 @@ venta, personal, platos y pedidos, con persistencia en MySQL a través de Hibern
 
 | Herramienta | Versión | Para qué |
 |---|---|---|
-| JDK | 21 (probado también en 11 y 17) | compilar y ejecutar |
+| JDK | 21 | compilar y ejecutar |
 | MySQL Server | 8.0.46 | la base de datos |
 | MySQL Workbench | 8.0 CE | ver y consultar la base |
-| Eclipse IDE for Java Developers | 2025-06 | el entorno |
-| Librerías Hibernate | 5.4.11.Final (19 JAR) | ORM y driver, provistas por la cátedra |
-
-> **Autenticación de MySQL.** Al instalar el servidor hay que elegir
-> *Use Legacy Authentication Method* (`mysql_native_password`). El Connector/J 8.0.19
-> que provee la cátedra es de 2020 y con `caching_sha2_password` exige parámetros
-> extra en la URL; sin ellos falla con `Public Key Retrieval is not allowed`.
+| Librerías Hibernate |
 
 ---
 
@@ -51,13 +45,6 @@ archivos de mapeo. Así el esquema no puede quedar desincronizado del modelo.
 3. Seleccionar **`Classpath`** (no *Modulepath*) → `Add External JARs...`
 4. Agregar los **19 archivos `.jar`** de la carpeta `lib`.
 
-> **Importante para quien clone el repo:** el archivo `.classpath` guarda rutas
-> absolutas de la máquina donde se creó el proyecto. Si al importar aparecen errores
-> de compilación, hay que rehacer el paso 3 apuntando a la ruta local de `lib`.
-
-También conviene poner el workspace en UTF-8, en
-`Window → Preferences → General → Workspace → Text file encoding`. Sin eso, los
-comentarios con acentos rompen la compilación con `unmappable character for encoding`.
 
 ### 3. Ajustar la contraseña
 
@@ -159,31 +146,6 @@ test  →  negocio (ABM)  →  dao  →  Hibernate  →  MySQL
 
 Una clase de `test` nunca llama directo a un `Dao`, y un `Dao` nunca llama a un `ABM`.
 El `ABM` decide **si se puede hacer**; el `Dao` sabe **cómo se guarda**.
-
----
-
-## Decisiones de modelado
-
-**Herencia con `<joined-subclass>`** — una tabla por clase. `cocinero` y `cajero`
-guardan solo sus atributos propios más una columna que es a la vez clave primaria y
-foránea hacia `personal`. No repite columnas ni deja `NULL` innecesarios; el costo es
-un `JOIN` por consulta.
-
-**`Costos` no es una clase** — sus cuatro atributos están directamente en `Festival`.
-Mantiene el modelo dentro de las 10 clases que pide el enunciado y evita mapear un
-`<component>`, que no forma parte del material de la cátedra. La tabla resultante es
-idéntica.
-
-**`ItemPedido` guarda `precioUnitario`** — copia del precio al momento del pedido. Sin
-eso, un cambio en `Plato.precioVenta` alteraría el monto de todos los pedidos
-históricos.
-
-**`Pedido` y `ItemPedido` son una composición** — un ítem no existe fuera de su pedido.
-
-**`idResponsable` es nullable** — hay una dependencia circular entre `UnidadDeVenta` y
-`Personal`: la unidad necesita un responsable que es parte de su staff, y el staff
-necesita que la unidad exista. Se resuelve cargando en tres pasos: primero la unidad
-sin responsable, después el personal, y por último un `update` de la unidad.
 
 ---
 

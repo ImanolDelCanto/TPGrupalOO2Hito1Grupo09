@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<!-- La clase padre y su tabla -->
+	<class name="datos.Personal" table="personal">
+
+		<!-- Clave primaria. generator "identity" = AUTO_INCREMENT de MySQL  -->
+		<id name="idPersonal" column="idPersonal">
+			<generator class="identity" />
+		</id>
+
+		<!-- Un <property> por atributo. name = atributo Java, column = columna SQL. -->
+		<property name="nombre"          column="nombre"          type="string"  not-null="true" />
+		<property name="apellido"        column="apellido"        type="string"  not-null="true" />
+		<property name="dni"             column="dni"             type="string"  not-null="true" unique="true" />
+		<property name="fechaNacimiento" column="fechaNacimiento" type="java.time.LocalDate" not-null="true" />
+		<property name="fechaIngreso"    column="fechaIngreso"    type="java.time.LocalDate" not-null="true" />
+		<property name="sueldoBase"      column="sueldoBase"      type="double"  not-null="true" />
+
+		<!-- ============ HERENCIA ============ -->
+
+		<joined-subclass name="datos.Cocinero" table="cocinero">
+			<key column="idPersonal" />
+			<property name="especialidad" column="especialidad" type="string" />
+			<property name="plusFijo"     column="plusFijo"     type="double" />
+		</joined-subclass>
+
+		<joined-subclass name="datos.Cajero" table="cajero">
+			<key column="idPersonal" />
+			<property name="turno" column="turno" type="string" />
+		</joined-subclass>
+
+	</class>
+</hibernate-mapping>

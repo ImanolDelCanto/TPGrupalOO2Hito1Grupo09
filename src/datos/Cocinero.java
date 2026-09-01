@@ -24,8 +24,12 @@ public class Cocinero extends Personal {
 	public void setPlusFijo(double plusFijo) { this.plusFijo = plusFijo; }
 
 	@Override
+	public double getSueldoTotal() {
+		return getSueldoBase() + plusFijo;
+	}
+
+	@Override
 	public String toString() {
-		return "Cocinero [" + super.toString() + " - especialidad " + especialidad
-				+ " - plus " + plusFijo + "]";
+		return "Cocinero " + super.toString() + " - " + especialidad;
 	}
 }

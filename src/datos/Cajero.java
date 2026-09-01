@@ -19,7 +19,12 @@ public class Cajero extends Personal {
 	public void setTurno(String turno) { this.turno = turno; }
 
 	@Override
+	public double getSueldoTotal() {
+		return getSueldoBase();
+	}
+
+	@Override
 	public String toString() {
-		return "Cajero [" + super.toString() + " - turno " + turno + "]";
+		return "Cajero " + super.toString() + " - turno " + turno;
 	}
 }

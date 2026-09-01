@@ -4,15 +4,13 @@
 	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
 
-	<!-- La clase padre y su tabla -->
 	<class name="datos.Personal" table="personal">
 
-		<!-- Clave primaria. generator "identity" = AUTO_INCREMENT de MySQL  -->
+		<!-- identity = AUTO_INCREMENT de MySQL -->
 		<id name="idPersonal" column="idPersonal">
 			<generator class="identity" />
 		</id>
 
-		<!-- Un <property> por atributo. name = atributo Java, column = columna SQL. -->
 		<property name="nombre"          column="nombre"          type="string"  not-null="true" />
 		<property name="apellido"        column="apellido"        type="string"  not-null="true" />
 		<property name="dni"             column="dni"             type="string"  not-null="true" unique="true" />
@@ -20,7 +18,11 @@
 		<property name="fechaIngreso"    column="fechaIngreso"    type="java.time.LocalDate" not-null="true" />
 		<property name="sueldoBase"      column="sueldoBase"      type="double"  not-null="true" />
 
-		<!-- ============ HERENCIA ============ -->
+		<!-- la FK idUnidad vive en esta tabla -->
+		<many-to-one name="unidad" class="datos.UnidadDeVenta"
+		             column="idUnidad" not-null="false" />
+
+		<!-- herencia: una tabla por subclase -->
 
 		<joined-subclass name="datos.Cocinero" table="cocinero">
 			<key column="idPersonal" />

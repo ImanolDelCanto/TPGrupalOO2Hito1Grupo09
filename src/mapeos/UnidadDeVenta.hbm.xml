@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<class name="datos.UnidadDeVenta" table="unidaddeventa">
+
+		<id name="idUnidad" column="idUnidad">
+			<generator class="identity" />
+		</id>
+
+		<property name="nombreComercial" column="nombreComercial" type="string" not-null="true" />
+		<property name="superficie"      column="superficie"      type="double" not-null="true" />
+		<property name="codigoUnico"     column="codigoUnico"     type="string" not-null="true"
+		          unique="true" length="10" />
+
+		<!-- nullable: al crear la unidad todavia no existe ningun empleado -->
+		<many-to-one name="responsable" class="datos.Personal"
+		             column="idResponsable" not-null="false" />
+
+		<!-- inverse: el duenio es Personal, ahi vive la FK idUnidad -->
+		<set name="staff" table="personal" inverse="true" lazy="true"
+		     fetch="select" order-by="apellido asc">
+			<key column="idUnidad" />
+			<one-to-many class="datos.Personal" />
+		</set>
+
+		<!-- herencia: una tabla por subclase -->
+		<joined-subclass name="datos.FoodTruck" table="foodtruck">
+			<key column="idUnidad" />
+			<property name="patente"              column="patente"              type="string" />
+			<property name="requiereElectricidad" column="requiereElectricidad" type="boolean" />
+		</joined-subclass>
+
+		<joined-subclass name="datos.PuestoDesarmable" table="puestodesarmable">
+			<key column="idUnidad" />
+			<property name="cantidadCarpas" column="cantidadCarpas" type="integer" />
+			<property name="tiempoMontaje"  column="tiempoMontaje"  type="integer" />
+		</joined-subclass>
+
+	</class>
+</hibernate-mapping>

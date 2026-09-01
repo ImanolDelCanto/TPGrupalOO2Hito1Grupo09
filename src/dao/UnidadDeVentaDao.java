@@ -2,14 +2,14 @@ package dao;
 
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import datos.Cocinero;
-import datos.Personal;
+import datos.UnidadDeVenta;
 
-public class PersonalDao {
+public class UnidadDeVentaDao {
 
 	private static Session session;
 	private Transaction tx;
@@ -24,7 +24,7 @@ public class PersonalDao {
 		throw new HibernateException("ERROR en la capa de acceso a datos", he);
 	}
 
-	public long agregar(Personal objeto) {
+	public long agregar(UnidadDeVenta objeto) {
 		long id = 0;
 		try {
 			iniciaOperacion();
@@ -39,11 +39,28 @@ public class PersonalDao {
 		return id;
 	}
 
-	public Personal traer(long idPersonal) {
-		Personal objeto = null;
+	public void actualizar(UnidadDeVenta objeto) {
 		try {
 			iniciaOperacion();
-			objeto = session.get(Personal.class, idPersonal);
+			session.update(objeto);
+			tx.commit();
+		} catch (HibernateException he) {
+			manejaExcepcion(he);
+			throw he;
+		} finally {
+			session.close();
+		}
+	}
+
+	// el <set> es lazy: hay que inicializarlo antes de cerrar la sesion
+	public UnidadDeVenta traerUnidadYStaff(long idUnidad) {
+		UnidadDeVenta objeto = null;
+		try {
+			iniciaOperacion();
+			String hql = "from UnidadDeVenta u where u.idUnidad = :idUnidad";
+			objeto = (UnidadDeVenta) session.createQuery(hql)
+					.setParameter("idUnidad", idUnidad).uniqueResult();
+			Hibernate.initialize(objeto.getStaff());
 		} finally {
 			session.close();
 		}
@@ -51,24 +68,14 @@ public class PersonalDao {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Personal> traerTodos() {
-		List<Personal> lista = null;
+	public List<UnidadDeVenta> traerTodasConStaff() {
+		List<UnidadDeVenta> lista = null;
 		try {
 			iniciaOperacion();
-			lista = session.createQuery("from Personal p order by p.apellido").getResultList();
-		} finally {
-			session.close();
-		}
-		return lista;
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<Cocinero> traerCocinerosPorEspecialidad(String especialidad) {
-		List<Cocinero> lista = null;
-		try {
-			iniciaOperacion();
-			String hql = "from Cocinero c where c.especialidad = :esp order by c.apellido";
-			lista = session.createQuery(hql).setParameter("esp", especialidad).getResultList();
+			String hql = "from UnidadDeVenta u order by u.nombreComercial";
+			lista = session.createQuery(hql).getResultList();
+			for (UnidadDeVenta u : lista)
+				Hibernate.initialize(u.getStaff());
 		} finally {
 			session.close();
 		}

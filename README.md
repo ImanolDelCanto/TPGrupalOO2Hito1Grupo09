@@ -94,7 +94,7 @@ En `src/hibernate.cfg.xml`, poner la contraseña del usuario `root` de MySQL:
 | # | Clase | Qué hace | Se corre |
 |---|---|---|---|
 | 1 | `test/TestConexion` | Verifica la conexión y genera el esquema desde los mapeos. | las veces que quieras |
-| 2 | `test/CargarUnidadesYStaff` | Carga 2 unidades de venta y 5 empleados asignados a ellas. | **una sola vez** |
+| 2 | `test/CargarUnidadesYStaff` | Carga 1 festival, 2 unidades de venta y 5 empleados asignados a ellas. | **una sola vez** |
 | 3 | `test/CasoDeUso_CostoSalarialPorUnidad` | El caso de uso. | las veces que quieras |
 
 Para ejecutar: clic derecho sobre la clase → `Run As → Java Application`, o **`Ctrl+F11`**
@@ -115,44 +115,62 @@ con el archivo abierto.
 =========================================
 ```
 
-La primera vez los cuatro dan 0: las tablas se acaban de crear y están vacías.
+La primera vez los cuatro dan 0: las tablas se acaban de crear y están vacías. Se generan
+diez: `festival`, `unidadDeVenta`, `foodTruck`, `puestoDesarmable`, `personal`, `cocinero`,
+`cajero`, `plato`, `pedido` e `itemPedido`.
 
 **2 · CargarUnidadesYStaff**
 
 ```
-Datos cargados: 2 unidades y 5 empleados
+Datos cargados: 1 festival, 2 unidades y 5 empleados
 ```
 
+El orden importa y está forzado por dos restricciones: una unidad no puede existir sin
+festival (`not-null`), y el responsable de una unidad es parte de su propio staff, así que
+no existe todavía cuando la unidad se guarda. Por eso va festival → unidades sin
+responsable → personal → `update` de la unidad con su responsable.
+
 **Correrlo dos veces falla** con `Duplicate entry`. No es un error del programa: las
-restricciones `unique` sobre el DNI y el código único están declaradas en los mapeos y
-MySQL las hace cumplir. Para volver a cargar hay que vaciar las tablas primero:
+restricciones `unique` sobre el DNI, el código único y la patente están declaradas en los
+mapeos y MySQL las hace cumplir. Para volver a cargar, lo más simple es rehacer la base:
+
+```sql
+DROP DATABASE bd_epicentro_gourmet;
+CREATE DATABASE bd_epicentro_gourmet;
+```
+
+Y volver a correr `TestConexion`, que regenera el esquema. Si preferís conservar la base,
+hay que vaciar las tablas en orden — primero romper la referencia circular, después las
+hijas antes que los padres:
 
 ```sql
 USE bd_epicentro_gourmet;
 SET SQL_SAFE_UPDATES = 0;
-UPDATE unidaddeventa SET idResponsable = NULL;
-DELETE FROM cocinero;  DELETE FROM cajero;  DELETE FROM personal;
-DELETE FROM foodtruck; DELETE FROM puestodesarmable; DELETE FROM unidaddeventa;
+UPDATE unidadDeVenta SET idResponsable = NULL;
+DELETE FROM itemPedido;  DELETE FROM pedido;  DELETE FROM plato;
+DELETE FROM cocinero;    DELETE FROM cajero;  DELETE FROM personal;
+DELETE FROM foodTruck;   DELETE FROM puestoDesarmable;
+DELETE FROM unidadDeVenta;
+DELETE FROM festival;
 SET SQL_SAFE_UPDATES = 1;
 ```
-
-El `UPDATE` va primero: rompe la referencia circular entre la unidad y su responsable.
-Después, las hijas antes que los padres, por las claves foráneas.
 
 **3 · CasoDeUso_CostoSalarialPorUnidad**
 
 ```
 === COSTO SALARIAL MENSUAL POR UNIDAD DE VENTA ===
 
-Puesto Empanadas del Norte [PD00000001] - 40.0 m2 - 3 carpas
+PuestoDesarmable [UnidadDeVenta [idUnidad=2, nombreComercial=Empanadas del Norte, ...], cantidadCarpas=3, tiempoMontaje=90]
   responsable: Cocinero Gomez, Lucia - DNI 33444555 - ingreso 2021-07-15 (5 anios) - Pasteleria
   staff: 2 empleados
-    Cocinero Gomez, Lucia ... cobra 900000,00
-    Cajero Sosa, Pedro ... cobra 690000,00
+    Cajero [Sosa, Pedro - DNI 36777888 - ..., turno=mañana, recaudacion=3555.0] cobra 690000,00
+    Cocinero Gomez, Lucia - DNI 33444555 - ... - Pasteleria cobra 900000,00
   COSTO SALARIAL: 1590000,00
 
-FoodTruck La Parrilla Rodante [FT00000001] - 25.5 m2 - patente AB123CD
-  ...
+FoodTruck [UnidadDeVenta [idUnidad=1, nombreComercial=La Parrilla Rodante, ...], patente=AB123CD, requiereElectricidad=true]
+  responsable: Cocinero Perez, Juan - DNI 30111222 - ingreso 2019-03-01 (7 anios) - Parrilla
+  staff: 3 empleados
+    ...
   COSTO SALARIAL: 2490000,00
 
 === RESUMEN ===
@@ -168,7 +186,7 @@ Unidad mas costosa: La Parrilla Rodante (2490000,00)
 EpicentroGourmet/
 └── src/
     ├── hibernate.cfg.xml     conexión a la BD + lista de mapeos
-    ├── datos/                las clases del modelo (POJOs)
+    ├── datos/                las 10 clases del modelo (POJOs)
     ├── mapeos/               un .hbm.xml por jerarquía
     ├── dao/                  acceso a datos + HibernateUtil
     ├── negocio/              clases ABM: reglas de negocio
@@ -188,10 +206,10 @@ El `ABM` decide **si se puede hacer**; el `Dao` sabe **cómo se guarda**.
 
 ## Decisiones de modelado
 
-**Herencia con `<joined-subclass>`** — una tabla por clase. `cocinero` y `cajero`
-guardan solo sus atributos propios más una columna que es a la vez clave primaria y
-foránea hacia `personal`. No repite columnas ni deja `NULL` innecesarios; el costo es
-un `JOIN` por consulta.
+**Herencia con `<joined-subclass>`** — una tabla por clase, en las dos jerarquías
+(`Personal` y `UnidadDeVenta`). Las hijas guardan solo sus atributos propios más una
+columna que es a la vez clave primaria y foránea hacia el padre. No repite columnas ni
+deja `NULL` innecesarios; el costo es un `JOIN` por consulta.
 
 **El costo salarial se calcula en Java, no con `SUM` en la consulta** — `getSueldoTotal()`
 es abstracto en `Personal`: el cocinero suma su plus por categoría y el cajero no. El
@@ -200,15 +218,19 @@ Agregar un rol nuevo no obliga a tocar ese método.
 
 **`Costos` no es una clase** — sus cuatro atributos están directamente en `Festival`.
 Mantiene el modelo dentro de las 10 clases que pide el enunciado y evita mapear un
-`<component>`, que no forma parte del material de la cátedra. La tabla resultante es
-idéntica.
+`<component>`, que no forma parte del material de la cátedra.
 
 **`Pedido` y `ItemPedido` son una composición** — un ítem no existe fuera de su pedido.
+El mapeo lo declara con `cascade="all-delete-orphan"`.
 
 **`idResponsable` es nullable** — hay una dependencia circular entre `UnidadDeVenta` y
 `Personal`: la unidad necesita un responsable que es parte de su staff, y el staff
-necesita que la unidad exista. Se resuelve cargando en tres pasos: primero la unidad
-sin responsable, después el personal, y por último un `update` de la unidad.
+necesita que la unidad exista. Se resuelve con el orden de carga en tres pasos.
+
+**El dueño de cada relación está declarado con `inverse="true"`** — la FK `idUnidad` vive
+en `personal` y en `plato`, la `idFestival` en `unidadDeVenta`. El lado marcado `inverse`
+no escribe la columna, solo la lee. Si los dos lados quedaran sin `inverse`, ambos
+intentarían escribirla.
 
 ---
 
@@ -218,12 +240,10 @@ sin responsable, después el personal, y por último un `update` de la unidad.
 |---|---|
 | Modelo de clases | ✅ 10 clases |
 | Entorno y conexión | ✅ |
-| Herencia `Personal → Cocinero / Cajero` | ✅ mapeada, con datos |
-| Uno a muchos `UnidadDeVenta → Personal` | ✅ mapeada, con datos |
-| Capas DAO y ABM | ✅ para `Personal` y `UnidadDeVenta` |
+| Mapeos de las 10 entidades | ✅ |
+| Herencia `Personal → Cocinero / Cajero` | ✅ con datos |
+| Herencia `UnidadDeVenta → FoodTruck / PuestoDesarmable` | ✅ con datos |
+| Uno a muchos `UnidadDeVenta → Personal` | ✅ con datos |
+| Capas DAO y ABM | ✅ `Personal`, `UnidadDeVenta`, `Festival` |
 | Caso de uso — costo salarial por unidad | ✅ |
-| Clases `Festival`, `Plato`, `Pedido`, `ItemPedido` | ⬜ pendientes |
 | Casos de uso 2, 3 y 4 | ⬜ pendientes |
-
-Las clases `UnidadDeVenta`, `FoodTruck` y `PuestoDesarmable` están en una versión
-provisoria, para poder desarrollar el caso de uso en paralelo.

@@ -3,9 +3,8 @@ package datos;
 import java.time.LocalDate;
 import java.time.Period;
 
-/**
- * Clase base de la jerarquia de empleados.
- */
+//Clase base de la jerarquia de empleados.
+
 public abstract class Personal {
 
 	private long idPersonal;

@@ -23,10 +23,10 @@ public class CargarPersonal {
 				LocalDate.of(1991, 1, 20), LocalDate.of(2023, 2, 1), 750000, "Parrilla", 90000));
 
 		abm.agregar(new Cajero("Ana", "Lopez", "32444555",
-				LocalDate.of(1990, 8, 22), LocalDate.of(2022, 6, 15), 700000, "noche"));
+				LocalDate.of(1990, 8, 22), LocalDate.of(2022, 6, 15), 700000, "noche", 2000));
 
 		abm.agregar(new Cajero("Pedro", "Sosa", "36777888",
-				LocalDate.of(1995, 5, 5), LocalDate.of(2024, 1, 10), 690000, "mañana"));
+				LocalDate.of(1995, 5, 5), LocalDate.of(2024, 1, 10), 690000, "mañana", 3555));
 
 		System.out.println("\n>>> 5 empleados cargados (3 cocineros, 2 cajeros)");
 		System.exit(0);

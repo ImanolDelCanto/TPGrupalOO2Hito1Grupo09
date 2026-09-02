@@ -1,5 +1,6 @@
 package datos;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public abstract class UnidadDeVenta {
@@ -10,11 +11,18 @@ public abstract class UnidadDeVenta {
 	protected String codigoUnico;
 	protected Festival festival;
 	protected Personal responsable;
-	protected Set<Plato> platos;
-	protected Set<Personal> staff;
-	protected Set<Pedido> pedidos;
+	protected Set<Plato> platos = new HashSet<Plato>();
+	protected Set<Personal> staff = new HashSet<Personal>();
+	protected Set<Pedido> pedidos = new HashSet<Pedido>();
 	
 	public UnidadDeVenta() {
+	}
+
+	public UnidadDeVenta(String nombreComercial, double superficie, String codigoUnico, Festival festival) {
+		this.nombreComercial = nombreComercial;
+		this.superficie = superficie;
+		this.codigoUnico = codigoUnico;
+		this.festival = festival;
 	}
 
 	public UnidadDeVenta(String nombreComercial, double superficie, String codigoUnico, Festival festival,
@@ -31,11 +39,9 @@ public abstract class UnidadDeVenta {
 		return idUnidad;
 	}
 
-	/*
-	public void setIdUnidad(long idUnidad) {
+	protected void setIdUnidad(long idUnidad) {
 		this.idUnidad = idUnidad;
 	}
-*/
 	
 	public String getNombreComercial() {
 		return nombreComercial;
@@ -101,6 +107,24 @@ public abstract class UnidadDeVenta {
 		this.pedidos = pedidos;
 	}
 
+	// deja los dos lados apuntandose: sin el setUnidad la FK idUnidad queda nula
+	public void agregarAlStaff(Personal p) {
+		staff.add(p);
+		p.setUnidad(this);
+	}
+
+	// cada empleado sabe calcular su propio sueldo
+	public double getCostoSalarial() {
+		double total = 0;
+		for (Personal p : staff)
+			total += p.getSueldoTotal();
+		return total;
+	}
+
+	public int getCantidadDeStaff() {
+		return staff.size();
+	}
+
     public boolean validarCodigo() {
     	//Valida si el codigo es distinto de nulo y que tenga 10 caracteres
     	return this.codigoUnico != null && this.codigoUnico.length() == 10;
@@ -109,7 +133,7 @@ public abstract class UnidadDeVenta {
 	@Override
 	public String toString() {
 		return "UnidadDeVenta [idUnidad=" + idUnidad + ", nombreComercial=" + nombreComercial + ", superficie="
-				+ superficie + ", codigoUnico=" + codigoUnico + ", responsable=" + responsable + "]";
+				+ superficie + ", codigoUnico=" + codigoUnico + "]";
 	}
 	
 	

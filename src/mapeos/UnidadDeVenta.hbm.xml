@@ -5,7 +5,7 @@
 <hibernate-mapping>
 
 	<!-- Clase padre abstracta. abstract="true" evita que Hibernate intente
-		 instanciarla directamente (no tiene fila propia, solo sus subclases). -->
+ instanciarla directamente (no tiene fila propia, solo sus subclases). -->
 	<class name="datos.UnidadDeVenta" table="unidadDeVenta" abstract="true">
 
 		<id name="idUnidad" column="idUnidad">
@@ -16,21 +16,21 @@
 		<property name="superficie"      column="superficie"      type="double" not-null="true" />
 		<property name="codigoUnico"     column="codigoUnico"     type="string" not-null="true" unique="true" />
 
-		<!-- * (UnidadDeVenta) --- 1 (Festival) -->
+		<!-- * (UnidadDeVenta) a 1 (Festival) -->
 		<many-to-one name="festival" class="datos.Festival" column="idFestival" not-null="true" />
 
-		<!-- * (UnidadDeVenta) --- 1 (Personal), el encargado de la unidad -->
+		<!-- * (UnidadDeVenta) a 1 (Personal), el encargado de la unidad -->
 		<many-to-one name="responsable" class="datos.Personal" column="idResponsable" not-null="false" />
 
-		<!-- 1 (UnidadDeVenta) --- * (Personal). Lado inverso: la FK "idUnidad"
-			 vive en la tabla personal (propiedad "unidad" de Personal). -->
+		<!-- 1 (UnidadDeVenta) a * (Personal). Lado inverso: la FK "idUnidad"
+ vive en la tabla personal (propiedad "unidad" de Personal). -->
 		<set name="staff" inverse="true" cascade="save-update" lazy="true">
 			<key column="idUnidad" />
 			<one-to-many class="datos.Personal" />
 		</set>
 
-		<!-- 1 (UnidadDeVenta) --- * (Plato). Lado inverso: la FK "idUnidad"
-			 vive en la tabla plato (propiedad "unidad" de Plato). -->
+		<!-- 1 (UnidadDeVenta) a * (Plato). Lado inverso: la FK "idUnidad"
+ vive en la tabla plato (propiedad "unidad" de Plato). -->
 		<set name="platos" inverse="true" cascade="save-update" lazy="true">
 			<key column="idUnidad" not-null="true" />
 			<one-to-many class="datos.Plato" />

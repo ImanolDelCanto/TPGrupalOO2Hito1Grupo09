@@ -6,10 +6,9 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import datos.Cocinero;
-import datos.Personal;
+import datos.Festival;
 
-public class PersonalDao {
+public class FestivalDao {
 
 	private static Session session;
 	private Transaction tx;
@@ -24,7 +23,7 @@ public class PersonalDao {
 		throw new HibernateException("ERROR en la capa de acceso a datos", he);
 	}
 
-	public long agregar(Personal objeto) {
+	public long agregar(Festival objeto) {
 		long id = 0;
 		try {
 			iniciaOperacion();
@@ -39,11 +38,11 @@ public class PersonalDao {
 		return id;
 	}
 
-	public Personal traer(long idPersonal) {
-		Personal objeto = null;
+	public Festival traer(long idFestival) {
+		Festival objeto = null;
 		try {
 			iniciaOperacion();
-			objeto = session.get(Personal.class, idPersonal);
+			objeto = session.get(Festival.class, idFestival);
 		} finally {
 			session.close();
 		}
@@ -51,24 +50,25 @@ public class PersonalDao {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Personal> traerTodos() {
-		List<Personal> lista = null;
+	public List<Festival> traerTodos() {
+		List<Festival> lista = null;
 		try {
 			iniciaOperacion();
-			lista = session.createQuery("from Personal p order by p.apellido").getResultList();
+			lista = session.createQuery("from Festival f order by f.fechaInicio").getResultList();
 		} finally {
 			session.close();
 		}
 		return lista;
 	}
 
+	// consulta con parametros: los festivales de un rango de fechas
 	@SuppressWarnings("unchecked")
-	public List<Cocinero> traerCocinerosPorEspecialidad(String especialidad) {
-		List<Cocinero> lista = null;
+	public List<Festival> traerPorRango(java.time.LocalDate desde, java.time.LocalDate hasta) {
+		List<Festival> lista = null;
 		try {
 			iniciaOperacion();
-			String hql = "from Cocinero c where c.especialidad = :esp order by c.apellido";
-			lista = session.createQuery(hql).setParameter("esp", especialidad).getResultList();
+			String hql = "from Festival f where f.fechaInicio >= :desde and f.fechaFin <= :hasta order by f.fechaInicio";
+			lista = session.createQuery(hql).setParameter("desde", desde).setParameter("hasta", hasta).getResultList();
 		} finally {
 			session.close();
 		}

@@ -17,10 +17,10 @@
 		<property name="costoPorSuperficie" column="costoPorSuperficie" type="double" not-null="true" />
 		<property name="costoPorMontaje"    column="costoPorMontaje"    type="double" not-null="true" />
 		<property name="plusElectricidad"   column="plusElectricidad"   type="double" not-null="true" />
-		<property name="sueldoBase"         column="sueldoBase"         type="double" not-null="true" />
+		<property name="costoSueldoBase"    column="sueldoBase"         type="double" not-null="true" />
 
-		<!-- Relacion 1 (Festival) --- * (UnidadDeVenta). Lado inverso: la FK
-			 vive en la tabla unidadDeVenta (propiedad "festival" de UnidadDeVenta). -->
+		<!-- Relacion 1 (Festival) a * (UnidadDeVenta). Lado inverso: la FK
+ vive en la tabla unidadDeVenta (propiedad "festival" de UnidadDeVenta). -->
 		<set name="unidades" inverse="true" cascade="save-update" lazy="true">
 			<key column="idFestival" not-null="true" />
 			<one-to-many class="datos.UnidadDeVenta" />

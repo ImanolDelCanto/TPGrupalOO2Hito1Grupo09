@@ -17,11 +17,13 @@ public class Cajero extends Personal {
 		this.recaudacion = recaudacion;
 	}
 
-	public String getTurno() { return turno; }
-	
-	public void setTurno(String turno) { this.turno = turno; }
-	
-	
+	public String getTurno() {
+		return turno;
+	}
+
+	public void setTurno(String turno) {
+		this.turno = turno;
+	}
 
 	public double getRecaudacion() {
 		return recaudacion;
@@ -32,9 +34,12 @@ public class Cajero extends Personal {
 	}
 
 	@Override
-	public String toString() {
-		return "Cajero [turno=" + turno + ", recaudacion=" + recaudacion + "]";
+	public double getSueldoTotal() {
+		return getSueldoBase();
 	}
 
-
+	@Override
+	public String toString() {
+		return "Cajero [" + super.toString() + ", turno=" + turno + ", recaudacion=" + recaudacion + "]";
+	}
 }

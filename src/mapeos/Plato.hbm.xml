@@ -14,8 +14,8 @@
 		<property name="precioVenta"      column="precioVenta"      type="double" not-null="true" />
 		<property name="costoProduccion"  column="costoProduccion"  type="double" not-null="true" />
 
-		<!-- * (Plato) --- 1 (UnidadDeVenta). Lado dueño de la relacion,
-			 columna FK idUnidad en la tabla plato. -->
+		<!-- * (Plato) a 1 (UnidadDeVenta). Lado dueño de la relacion,
+ columna FK idUnidad en la tabla plato. -->
 		<many-to-one name="unidad" class="datos.UnidadDeVenta" column="idUnidad" not-null="true" />
 
 	</class>

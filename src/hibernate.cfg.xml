@@ -5,11 +5,11 @@
 <hibernate-configuration>
 	<session-factory>
 
-		<!-- ============ CONEXION CON LA BASE DE DATOS ============ -->
+		<!-- conexion -->
 
 		<property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
 
-		<property name="connection.url">jdbc:mysql://localhost:3306/bd_epicentro_gourmet?serverTimezone=America/Argentina/Buenos_Aires</property>
+		<property name="connection.url">jdbc:mysql://127.0.0.1:3306/bd_epicentro_gourmet?serverTimezone=America/Argentina/Buenos_Aires</property>
 
 		<property name="connection.username">root</property>
 		<property name="connection.password">root</property>
@@ -18,15 +18,18 @@
 
 		<property name="dialect">org.hibernate.dialect.MySQL8Dialect</property>
 
-		<!-- ============ COMPORTAMIENTO ============ -->
-
 		<property name="hbm2ddl.auto">update</property>
 
 		<property name="show_sql">true</property>
 		<property name="format_sql">true</property>
 
-		<!-- ============ ENTIDADES MAPEADAS ============ -->
+		<!-- mapeos -->
+		<mapping resource="mapeos/Festival.hbm.xml" />
+		<mapping resource="mapeos/UnidadDeVenta.hbm.xml" />
 		<mapping resource="mapeos/Personal.hbm.xml" />
+		<mapping resource="mapeos/Plato.hbm.xml" />
+		<mapping resource="mapeos/Pedido.hbm.xml" />
+		<mapping resource="mapeos/ItemPedido.hbm.xml" />
 
 	</session-factory>
 </hibernate-configuration>

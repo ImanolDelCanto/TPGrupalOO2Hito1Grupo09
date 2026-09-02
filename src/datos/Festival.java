@@ -1,34 +1,37 @@
 package datos;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Festival {
 	private long idFestival;
 	private String nombre;
 	private String temporada;
+	private LocalDate fechaInicio;
 	private LocalDate fechaFin;
 	private double costoPorSuperficie;
 	private double costoPorMontaje;
 	private double plusElectricidad;
 	private double costoSueldoBase;
-	private UnidadDeVenta unidades;
+	private Set<UnidadDeVenta> unidades = new HashSet<UnidadDeVenta>();
 	
 	public Festival() {
 
 	}
 
-	public Festival(long idFestival, String nombre, String temporada, LocalDate fechaFin, double costoPorSuperficie,
-			double costoPorMontaje, double plusElectricidad, double costoSueldoBase, UnidadDeVenta unidades) {
+	public Festival(long idFestival, String nombre, String temporada, LocalDate fechaInicio, LocalDate fechaFin, double costoPorSuperficie,
+			double costoPorMontaje, double plusElectricidad, double costoSueldoBase) {
 		super();
 		this.idFestival = idFestival;
 		this.nombre = nombre;
 		this.temporada = temporada;
+		this.fechaInicio = fechaInicio;
 		this.fechaFin = fechaFin;
 		this.costoPorSuperficie = costoPorSuperficie;
 		this.costoPorMontaje = costoPorMontaje;
 		this.plusElectricidad = plusElectricidad;
 		this.costoSueldoBase = costoSueldoBase;
-		this.unidades = unidades;
 	}
 
 	public long getIdFestival() {
@@ -95,11 +98,19 @@ public class Festival {
 		this.costoSueldoBase = costoSueldoBase;
 	}
 
-	public UnidadDeVenta getUnidades() {
+	public LocalDate getFechaInicio() {
+		return fechaInicio;
+	}
+
+	public void setFechaInicio(LocalDate fechaInicio) {
+		this.fechaInicio = fechaInicio;
+	}
+
+	public Set<UnidadDeVenta> getUnidades() {
 		return unidades;
 	}
 
-	public void setUnidades(UnidadDeVenta unidades) {
+	public void setUnidades(Set<UnidadDeVenta> unidades) {
 		this.unidades = unidades;
 	}
 
@@ -107,8 +118,7 @@ public class Festival {
 	public String toString() {
 		return "Festival [idFestival=" + idFestival + ", nombre=" + nombre + ", temporada=" + temporada + ", fechaFin="
 				+ fechaFin + ", costoPorSuperficie=" + costoPorSuperficie + ", costoPorMontaje=" + costoPorMontaje
-				+ ", plusElectricidad=" + plusElectricidad + ", costoSueldoBase=" + costoSueldoBase + ", unidades="
-				+ unidades + "]";
+				+ ", plusElectricidad=" + plusElectricidad + ", costoSueldoBase=" + costoSueldoBase + "]";
 	}
 	
 	

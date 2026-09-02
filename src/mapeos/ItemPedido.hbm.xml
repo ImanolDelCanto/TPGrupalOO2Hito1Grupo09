@@ -12,11 +12,11 @@
 
 		<property name="cantidad" column="cantidad" type="integer" not-null="true" />
 
-		<!-- * (ItemPedido) --- 1 (Pedido). Lado dueño de la relacion,
-			 columna FK idPedido en la tabla itemPedido. -->
+		<!-- * (ItemPedido) a 1 (Pedido). Lado dueño de la relacion,
+ columna FK idPedido en la tabla itemPedido. -->
 		<many-to-one name="pedido" class="datos.Pedido" column="idPedido" not-null="true" />
 
-		<!-- * (ItemPedido) --- 1 (Plato) -->
+		<!-- * (ItemPedido) a 1 (Plato) -->
 		<many-to-one name="plato" class="datos.Plato" column="idPlato" not-null="true" />
 
 	</class>

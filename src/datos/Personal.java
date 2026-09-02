@@ -3,8 +3,6 @@ package datos;
 import java.time.LocalDate;
 import java.time.Period;
 
-//Clase base de la jerarquia de empleados.
-
 public abstract class Personal {
 
 	private long idPersonal;
@@ -14,6 +12,9 @@ public abstract class Personal {
 	private LocalDate fechaNacimiento;
 	private LocalDate fechaIngreso;
 	private double sueldoBase;
+
+	// cada empleado pertenece a una unidad de venta
+	private UnidadDeVenta unidad;
 
 	public Personal() {
 	}
@@ -54,9 +55,15 @@ public abstract class Personal {
 	public double getSueldoBase() { return sueldoBase; }
 	public void setSueldoBase(double sueldoBase) { this.sueldoBase = sueldoBase; }
 
+	public UnidadDeVenta getUnidad() { return unidad; }
+	public void setUnidad(UnidadDeVenta unidad) { this.unidad = unidad; }
+
 	public int getAntiguedad() {
 		return Period.between(fechaIngreso, LocalDate.now()).getYears();
 	}
+
+	// cada subclase lo calcula a su manera
+	public abstract double getSueldoTotal();
 
 	public boolean esMayorDeEdad() {
 		return Period.between(fechaNacimiento, LocalDate.now()).getYears() >= 18;

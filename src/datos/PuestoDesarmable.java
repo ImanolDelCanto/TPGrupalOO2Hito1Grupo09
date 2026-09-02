@@ -32,7 +32,7 @@ public class PuestoDesarmable extends UnidadDeVenta{
 
 	@Override
 	public String toString() {
-		return "PuestoDesarmable [cantidadCarpas=" + cantidadCarpas + ", tiempoMontaje=" + tiempoMontaje + "]";
+		return "PuestoDesarmable [" + super.toString() + ", cantidadCarpas=" + cantidadCarpas + ", tiempoMontaje=" + tiempoMontaje + "]";
 	}
 	
 	

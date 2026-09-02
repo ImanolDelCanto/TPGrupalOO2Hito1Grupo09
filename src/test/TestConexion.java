@@ -1,37 +1,42 @@
 package test;
 
-import org.hibernate.Session;
-import dao.HibernateUtil;
+import java.util.List;
 
-/**
- * Prueba que Java pueda conectarse a MySQL a traves de Hibernate.
- * No toca ninguna tabla: solo le pregunta al servidor quien es.
- */
+import org.hibernate.Session;
+
+import dao.HibernateUtil;
+import datos.Cajero;
+import datos.Cocinero;
+import datos.Personal;
+import datos.UnidadDeVenta;
+
+// Verifica la conexion con MySQL y los mapeos. Al levantar la SessionFactory,
+// hbm2ddl.auto=update genera el esquema a partir de los .hbm.xml; despues
+// consulta cada entidad: si alguna tabla no se creo bien, la consulta falla.
 public class TestConexion {
 
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 
-		System.out.println("Abriendo conexion...");
+		System.out.println("Abriendo conexion y generando el esquema...\n");
 
 		Session session = HibernateUtil.getSessionFactory().openSession();
 
-		String version = session.createNativeQuery("SELECT VERSION()")
-				.getSingleResult().toString();
-		String base = session.createNativeQuery("SELECT DATABASE()")
-				.getSingleResult().toString();
-		String usuario = session.createNativeQuery("SELECT USER()")
-				.getSingleResult().toString();
+		List<UnidadDeVenta> unidades = session.createQuery("from UnidadDeVenta").getResultList();
+		List<Personal> personal = session.createQuery("from Personal").getResultList();
+		List<Cocinero> cocineros = session.createQuery("from Cocinero").getResultList();
+		List<Cajero> cajeros = session.createQuery("from Cajero").getResultList();
 
 		session.close();
 		HibernateUtil.getSessionFactory().close();
 
-		System.out.println();
 		System.out.println("=========================================");
 		System.out.println("            CONEXION OK");
 		System.out.println("=========================================");
-		System.out.println("  Servidor MySQL : " + version);
-		System.out.println("  Base de datos  : " + base);
-		System.out.println("  Usuario        : " + usuario);
+		System.out.println("  UnidadDeVenta : " + unidades.size());
+		System.out.println("  Personal      : " + personal.size());
+		System.out.println("  Cocinero      : " + cocineros.size());
+		System.out.println("  Cajero        : " + cajeros.size());
 		System.out.println("=========================================");
 
 		System.exit(0);

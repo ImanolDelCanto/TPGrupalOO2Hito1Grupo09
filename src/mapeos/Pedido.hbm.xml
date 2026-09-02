@@ -12,16 +12,16 @@
 
 		<property name="fecha" column="fecha" type="java.time.LocalDate" not-null="true" />
 
-		<!-- * (Pedido) --- 1 (Festival) -->
+		<!-- * (Pedido) a 1 (Festival) -->
 		<many-to-one name="festival" class="datos.Festival" column="idFestival" not-null="true" />
 
-		<!-- * (Pedido) --- 1 (UnidadDeVenta) -->
+		<!-- * (Pedido) a 1 (UnidadDeVenta) -->
 		<many-to-one name="unidad" class="datos.UnidadDeVenta" column="idUnidad" not-null="true" />
 
-		<!-- 1 (Pedido) *-- (ItemPedido), relacion de composicion (diamante en el
-			 diagrama): si se borra el pedido, se borran sus items.
-			 Lado inverso: la FK "idPedido" vive en la tabla itemPedido
-			 (propiedad "pedido" de ItemPedido). -->
+		<!-- 1 (Pedido) a (ItemPedido), relacion de composicion (diamante en el
+ diagrama): si se borra el pedido, se borran sus items.
+ Lado inverso: la FK "idPedido" vive en la tabla itemPedido
+ (propiedad "pedido" de ItemPedido). -->
 		<set name="items" inverse="true" cascade="all-delete-orphan" lazy="true">
 			<key column="idPedido" not-null="true" />
 			<one-to-many class="datos.ItemPedido" />

@@ -3,7 +3,6 @@ package test;
 import java.time.LocalDate;
 import java.util.List;
 
-import datos.Festival;
 import datos.ItemPedido;
 import datos.Pedido;
 import datos.Plato;
@@ -12,7 +11,7 @@ import negocio.PedidoABM;
 import negocio.PlatoABM;
 import negocio.UnidadDeVentaABM;
 
-// requiere haber corrido antes CargarUnidadesYStaff (festival + unidades ya existentes)
+// requiere haber corrido antes CargarUnidadesYStaff (unidades y su festival ya existentes)
 public class CargarPedidos {
 
 	public static void main(String[] args) {
@@ -36,7 +35,6 @@ public class CargarPedidos {
 			System.out.println("No se encontraron todas las unidades. Corre primero CargarUnidadesYStaff.");
 			return;
 		}
-		Festival verano = truck.getFestival();
 
 		// 1) platos, uno por unidad
 		Plato milanesa = new Plato(0, "Milanesa con papas", 6500, 3200, truck);
@@ -52,19 +50,19 @@ public class CargarPedidos {
 		platoABM.agregar(alfajor);
 
 		// 2) pedidos del FoodTruck
-		Pedido pedidoTruck1 = new Pedido(0, LocalDate.of(2026, 1, 15), verano, truck, 0);
+		Pedido pedidoTruck1 = new Pedido(0, LocalDate.of(2026, 1, 15), truck, 0);
 		pedidoTruck1.agregarItem(new ItemPedido(0, 3, milanesa.getPrecioVenta() * 3, pedidoTruck1, milanesa));
 		pedidoTruck1.agregarItem(new ItemPedido(0, 5, choripan.getPrecioVenta() * 5, pedidoTruck1, choripan));
 		truck.agregarPedido(pedidoTruck1);
 		pedidoABM.agregar(pedidoTruck1);
 
-		Pedido pedidoTruck2 = new Pedido(0, LocalDate.of(2026, 1, 20), verano, truck, 0);
+		Pedido pedidoTruck2 = new Pedido(0, LocalDate.of(2026, 1, 20), truck, 0);
 		pedidoTruck2.agregarItem(new ItemPedido(0, 2, milanesa.getPrecioVenta() * 2, pedidoTruck2, milanesa));
 		truck.agregarPedido(pedidoTruck2);
 		pedidoABM.agregar(pedidoTruck2);
 
 		// 3) pedidos del PuestoDesarmable
-		Pedido pedidoPuesto1 = new Pedido(0, LocalDate.of(2026, 1, 16), verano, puesto, 0);
+		Pedido pedidoPuesto1 = new Pedido(0, LocalDate.of(2026, 1, 16), puesto, 0);
 		pedidoPuesto1.agregarItem(new ItemPedido(0, 10, empanadas.getPrecioVenta() * 10, pedidoPuesto1, empanadas));
 		pedidoPuesto1.agregarItem(new ItemPedido(0, 15, alfajor.getPrecioVenta() * 15, pedidoPuesto1, alfajor));
 		puesto.agregarPedido(pedidoPuesto1);
@@ -84,14 +82,14 @@ public class CargarPedidos {
 		platoABM.agregar(tabla);
 
 		// 5) pedidos del segundo FoodTruck
-		Pedido pedidoTruck2a = new Pedido(0, LocalDate.of(2026, 1, 17), verano, truck2, 0);
+		Pedido pedidoTruck2a = new Pedido(0, LocalDate.of(2026, 1, 17), truck2, 0);
 		pedidoTruck2a.agregarItem(new ItemPedido(0, 4, sushi.getPrecioVenta() * 4, pedidoTruck2a, sushi));
 		pedidoTruck2a.agregarItem(new ItemPedido(0, 6, gyoza.getPrecioVenta() * 6, pedidoTruck2a, gyoza));
 		truck2.agregarPedido(pedidoTruck2a);
 		pedidoABM.agregar(pedidoTruck2a);
 
 		// 6) pedidos del segundo PuestoDesarmable
-		Pedido pedidoPuesto2a = new Pedido(0, LocalDate.of(2026, 1, 18), verano, puesto2, 0);
+		Pedido pedidoPuesto2a = new Pedido(0, LocalDate.of(2026, 1, 18), puesto2, 0);
 		pedidoPuesto2a.agregarItem(new ItemPedido(0, 20, cervezaIPA.getPrecioVenta() * 20, pedidoPuesto2a, cervezaIPA));
 		pedidoPuesto2a.agregarItem(new ItemPedido(0, 5, tabla.getPrecioVenta() * 5, pedidoPuesto2a, tabla));
 		puesto2.agregarPedido(pedidoPuesto2a);

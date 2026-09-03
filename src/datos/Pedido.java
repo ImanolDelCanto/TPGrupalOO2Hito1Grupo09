@@ -7,7 +7,6 @@ import java.util.Set;
 public class Pedido {
 	private long idPedido;
 	private LocalDate fecha;
-	private Festival festival;
 	private UnidadDeVenta unidad;
 	private Set<ItemPedido> items = new HashSet<ItemPedido>();
 	private double total;
@@ -15,11 +14,10 @@ public class Pedido {
 	public Pedido() {
 	}
 
-	public Pedido(long idPedido, LocalDate fecha, Festival festival, UnidadDeVenta unidad, double total) {
+	public Pedido(long idPedido, LocalDate fecha, UnidadDeVenta unidad, double total) {
 		super();
 		this.idPedido = idPedido;
 		this.fecha = fecha;
-		this.festival = festival;
 		this.unidad = unidad;
 		this.total = total;
 	}
@@ -46,14 +44,6 @@ public class Pedido {
 
 	public void setUnidad(UnidadDeVenta unidad) {
 		this.unidad = unidad;
-	}
-
-	public Festival getFestival() {
-		return festival;
-	}
-
-	public void setFestival(Festival festival) {
-		this.festival = festival;
 	}
 
 	public Set<ItemPedido> getItems() {

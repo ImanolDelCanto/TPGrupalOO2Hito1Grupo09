@@ -5,16 +5,16 @@ import java.time.Period;
 
 public abstract class Personal {
 
-	private long idPersonal;
-	private String nombre;
-	private String apellido;
-	private String dni;
-	private LocalDate fechaNacimiento;
-	private LocalDate fechaIngreso;
-	private double sueldoBase;
+	protected long idPersonal;
+	protected String nombre;
+	protected String apellido;
+	protected String dni;
+	protected LocalDate fechaNacimiento;
+	protected LocalDate fechaIngreso;
+	protected double sueldoBase;
 
 	// cada empleado pertenece a una unidad de venta
-	private UnidadDeVenta unidad;
+	protected UnidadDeVenta unidad;
 
 	public Personal() {
 	}

@@ -121,6 +121,10 @@ public abstract class UnidadDeVenta {
 		return total;
 	}
 
+	// Lo que le cuesta al festival tener esta unidad en el predio. Cada tipo
+	// paga distinto, por eso es abstracto.
+	public abstract double getCostoOperativo();
+
 	public int getCantidadDeStaff() {
 		return staff.size();
 	}

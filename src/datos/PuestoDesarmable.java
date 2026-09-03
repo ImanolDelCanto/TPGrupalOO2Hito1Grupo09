@@ -30,6 +30,13 @@ public class PuestoDesarmable extends UnidadDeVenta{
 		this.tiempoMontaje = tiempoMontaje;
 	}
 
+	// Ocupa superficie y ademas hay que montarlo: se cobra por minuto de montaje.
+	@Override
+	public double getCostoOperativo() {
+		return getSuperficie() * getFestival().getCostoPorSuperficie()
+				+ tiempoMontaje * getFestival().getCostoPorMontaje();
+	}
+
 	@Override
 	public String toString() {
 		return "PuestoDesarmable [" + super.toString() + ", cantidadCarpas=" + cantidadCarpas + ", tiempoMontaje=" + tiempoMontaje + "]";

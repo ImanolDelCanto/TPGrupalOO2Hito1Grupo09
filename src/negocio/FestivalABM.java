@@ -24,6 +24,10 @@ public class FestivalABM {
 		return dao.traerTodos();
 	}
 
+	public List<Festival> traerTodosConUnidades() {
+		return dao.traerTodosConUnidades();
+	}
+
 	public List<Festival> traerPorRango(LocalDate desde, LocalDate hasta) {
 		return dao.traerPorRango(desde, hasta);
 	}

@@ -1,6 +1,8 @@
 package dao;
 
 import java.util.List;
+import org.hibernate.Hibernate;   // ya puede estar
+import datos.Cajero;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -69,6 +71,19 @@ public class PersonalDao {
 			iniciaOperacion();
 			String hql = "from Cocinero c where c.especialidad = :esp order by c.apellido";
 			lista = session.createQuery(hql).setParameter("esp", especialidad).getResultList();
+		} finally {
+			session.close();
+		}
+		return lista;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Cajero> traerCajerosPorTurnoConUnidad(String turno) {
+		List<Cajero> lista = null;
+		try {
+			iniciaOperacion();
+			String hql = "from Cajero c inner join fetch c.unidad where c.turno = :turno order by c.apellido";
+			lista = session.createQuery(hql).setParameter("turno", turno).getResultList();
 		} finally {
 			session.close();
 		}

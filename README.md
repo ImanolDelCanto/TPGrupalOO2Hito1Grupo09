@@ -8,26 +8,24 @@ venta, personal, platos y pedidos, con persistencia en MySQL a través de Hibern
 | | |
 |---|---|
 | **Grupo** | 09 |
+| **Integrantes** | Enzo Diaz · Imanol Del Canto · Erika Baez |
 | **Comisión** | Turno noche |
 | **Entrega** | 3 de septiembre de 2026 |
 
-## Integrantes
-
 | Apellido y Nombre | Usuario GitHub |
 |---|---|
+| Diaz, Enzo | 
 | Del Canto, Imanol | ImanolDelCanto |
-| *completar* | *completar* |
-| *completar* | *completar* |
-| *completar* | *completar* |
+| Baez, Erika | 
 
 ## Casos de uso
 
 | Caso de uso | Clase | Responsable |
 |---|---|---|
-| Costo salarial mensual por unidad de venta | `test/CasoDeUso_CostoSalarialPorUnidad` | Del Canto, Imanol |
-| *pendiente* | | |
-| *pendiente* | | |
-| *pendiente* | | |
+| Costo salarial mensual por unidad de venta | Del Canto, Imanol |
+| Cajeros de turno noche con antigüedad, en Food Trucks | Diaz, Enzo |
+|  | Baez, Erika |
+|  | Del Canto, Imanol |
 
 ---
 
@@ -91,16 +89,19 @@ En `src/hibernate.cfg.xml`, poner la contraseña del usuario `root` de MySQL:
 
 ## Orden de ejecución
 
+Los tests **se corren en este orden**. Cada uno asume que los anteriores ya pasaron.
+
 | # | Clase | Qué hace | Se corre |
 |---|---|---|---|
 | 1 | `test/TestConexion` | Verifica la conexión y genera el esquema desde los mapeos. | las veces que quieras |
 | 2 | `test/CargarUnidadesYStaff` | Carga 1 festival, 2 unidades de venta y 5 empleados asignados a ellas. | **una sola vez** |
-| 3 | `test/CasoDeUso_CostoSalarialPorUnidad` | El caso de uso. | las veces que quieras |
+| 3 | `test/CasoDeUso_CostoSalarialPorUnidad` | Caso de uso. | las veces que quieras |
+| 4 | `test/CasoDeUso_CajerosAntiguosFoodTruck` | Caso de uso. | las veces que quieras |
 
 Para ejecutar: clic derecho sobre la clase → `Run As → Java Application`, o **`Ctrl+F11`**
 con el archivo abierto.
 
-### Qué esperar
+### Qué esperar en cada paso
 
 **1 · TestConexion** — al final de las líneas `INFO`:
 
@@ -127,7 +128,7 @@ Datos cargados: 1 festival, 2 unidades y 5 empleados
 
 El orden importa y está forzado por dos restricciones: una unidad no puede existir sin
 festival (`not-null`), y el responsable de una unidad es parte de su propio staff, así que
-no existe todavía cuando la unidad se guarda. Por eso va festival → unidades sin
+todavía no existe cuando la unidad se guarda. Por eso va festival → unidades sin
 responsable → personal → `update` de la unidad con su responsable.
 
 **Correrlo dos veces falla** con `Duplicate entry`. No es un error del programa: las
@@ -178,6 +179,17 @@ Costo salarial total del predio: 4080000,00
 Unidad mas costosa: La Parrilla Rodante (2490000,00)
 ```
 
+**4 · CasoDeUso_CajerosAntiguosFoodTruck**
+
+```
+=== CAJEROS DE TURNO NOCHE CON MAS DE 2 ANIOS, EN FOOD TRUCKS ===
+
+Cajero [Lopez, Ana - DNI 32444555 - ingreso 2022-06-15 (4 anios), turno=noche, recaudacion=2000.0]
+   unidad: FoodTruck [UnidadDeVenta [idUnidad=1, nombreComercial=La Parrilla Rodante, ...], patente=AB123CD, requiereElectricidad=true]
+
+Total: 1 cajeros
+```
+
 ---
 
 ## Estructura del proyecto
@@ -218,32 +230,20 @@ Agregar un rol nuevo no obliga a tocar ese método.
 
 **`Costos` no es una clase** — sus cuatro atributos están directamente en `Festival`.
 Mantiene el modelo dentro de las 10 clases que pide el enunciado y evita mapear un
-`<component>`, que no forma parte del material de la cátedra.
+`<component>`, que no forma parte del material de la cátedra. La tabla resultante es
+idéntica.
 
 **`Pedido` y `ItemPedido` son una composición** — un ítem no existe fuera de su pedido.
 El mapeo lo declara con `cascade="all-delete-orphan"`.
 
 **`idResponsable` es nullable** — hay una dependencia circular entre `UnidadDeVenta` y
 `Personal`: la unidad necesita un responsable que es parte de su staff, y el staff
-necesita que la unidad exista. Se resuelve con el orden de carga en tres pasos.
+necesita que la unidad exista. Se resuelve cargando en tres pasos: primero la unidad sin
+responsable, después el personal, y por último un `update` de la unidad.
 
 **El dueño de cada relación está declarado con `inverse="true"`** — la FK `idUnidad` vive
 en `personal` y en `plato`, la `idFestival` en `unidadDeVenta`. El lado marcado `inverse`
 no escribe la columna, solo la lee. Si los dos lados quedaran sin `inverse`, ambos
-intentarían escribirla.
+intentarían escribirla y sobrarían `UPDATE`s.
 
 ---
-
-## Estado
-
-| | |
-|---|---|
-| Modelo de clases | ✅ 10 clases |
-| Entorno y conexión | ✅ |
-| Mapeos de las 10 entidades | ✅ |
-| Herencia `Personal → Cocinero / Cajero` | ✅ con datos |
-| Herencia `UnidadDeVenta → FoodTruck / PuestoDesarmable` | ✅ con datos |
-| Uno a muchos `UnidadDeVenta → Personal` | ✅ con datos |
-| Capas DAO y ABM | ✅ `Personal`, `UnidadDeVenta`, `Festival` |
-| Caso de uso — costo salarial por unidad | ✅ |
-| Casos de uso 2, 3 y 4 | ⬜ pendientes |

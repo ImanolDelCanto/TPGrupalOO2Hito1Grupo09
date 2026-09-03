@@ -11,6 +11,7 @@
 		</id>
 
 		<property name="cantidad" column="cantidad" type="integer" not-null="true" />
+		<property name="subtotal" column="subtotal" type="double" not-null="true" />
 
 		<!-- * (ItemPedido) a 1 (Pedido). Lado dueño de la relacion,
  columna FK idPedido en la tabla itemPedido. -->

@@ -20,6 +20,7 @@ public class Plato {
 		this.unidad = unidad;
 	}
 
+
 	public long getIdPlato() {
 		return idPlato;
 	}

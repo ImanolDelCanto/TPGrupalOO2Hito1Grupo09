@@ -14,15 +14,8 @@ public abstract class UnidadDeVenta {
 	protected Set<Plato> platos = new HashSet<Plato>();
 	protected Set<Personal> staff = new HashSet<Personal>();
 	protected Set<Pedido> pedidos = new HashSet<Pedido>();
-	
-	public UnidadDeVenta() {
-	}
 
-	public UnidadDeVenta(String nombreComercial, double superficie, String codigoUnico, Festival festival) {
-		this.nombreComercial = nombreComercial;
-		this.superficie = superficie;
-		this.codigoUnico = codigoUnico;
-		this.festival = festival;
+	public UnidadDeVenta() {
 	}
 
 	public UnidadDeVenta(String nombreComercial, double superficie, String codigoUnico, Festival festival,
@@ -112,6 +105,12 @@ public abstract class UnidadDeVenta {
 		staff.add(p);
 		p.setUnidad(this);
 	}
+	
+	// idem para pedidos: sin el setUnidad la FK idUnidad del pedido queda nula
+	public void agregarPedido(Pedido p) {
+	    pedidos.add(p);
+	    p.setUnidad(this);
+	}
 
 	// cada empleado sabe calcular su propio sueldo
 	public double getCostoSalarial() {
@@ -134,6 +133,29 @@ public abstract class UnidadDeVenta {
     	return this.codigoUnico != null && this.codigoUnico.length() == 10;
     }
 	
+    public abstract String getDetalleEspecifico();
+
+    public double getFacturacionTotal() {
+        double total = 0;
+        for (Pedido p : pedidos)
+            for (ItemPedido i : p.getItems())
+                total += i.getSubtotal();
+        return total;
+    }
+
+    public double getMargenTotal() {
+        double margen = 0;
+        for (Pedido p : pedidos)
+            for (ItemPedido i : p.getItems())
+                margen += (i.getPlato().getPrecioVenta() - i.getPlato().getCostoProduccion()) * i.getCantidad();
+        return margen;
+    }
+
+    public int getCantidadDePedidos() {
+        return pedidos.size();
+    }
+	
+    
 	@Override
 	public String toString() {
 		return "UnidadDeVenta [idUnidad=" + idUnidad + ", nombreComercial=" + nombreComercial + ", superficie="

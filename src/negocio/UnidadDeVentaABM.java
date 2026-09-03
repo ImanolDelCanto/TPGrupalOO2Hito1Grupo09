@@ -27,4 +27,8 @@ public class UnidadDeVentaABM {
 	public List<UnidadDeVenta> traerTodasConStaff() {
 		return dao.traerTodasConStaff();
 	}
+	
+	public List<UnidadDeVenta> traerTodasConPedidos() {
+	    return dao.traerTodasConPedidos();
+	}
 }

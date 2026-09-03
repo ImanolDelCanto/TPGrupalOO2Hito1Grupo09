@@ -35,6 +35,14 @@
 			<key column="idUnidad" not-null="true" />
 			<one-to-many class="datos.Plato" />
 		</set>
+		
+		<!-- 1 (UnidadDeVenta) a * (Pedido). Lado inverso: la FK "idUnidad"
+		 vive en la tabla pedido (propiedad "unidad" de Pedido, ya mapeada
+		 como many-to-one en Pedido.hbm.xml). -->
+		<set name="pedidos" inverse="true" cascade="save-update" lazy="true">
+		    <key column="idUnidad" not-null="true" />
+		    <one-to-many class="datos.Pedido" />
+		</set>
 
 		<!-- validarCodigo() es logica de negocio, no se mapea -->
 

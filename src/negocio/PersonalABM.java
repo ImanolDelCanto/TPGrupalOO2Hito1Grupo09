@@ -1,6 +1,9 @@
 package negocio;
 
 import java.util.List;
+import java.util.ArrayList;
+import datos.Cajero;
+import datos.FoodTruck;
 
 import dao.PersonalDao;
 import datos.Cocinero;
@@ -29,5 +32,13 @@ public class PersonalABM {
 
 	public List<Cocinero> traerCocinerosPorEspecialidad(String especialidad) {
 		return dao.traerCocinerosPorEspecialidad(especialidad);
+	}
+	
+	public List<Cajero> traerCajerosDeFoodTruck(String turno, int antiguedadMinima) {
+		List<Cajero> resultado = new ArrayList<Cajero>();
+		for (Cajero c : dao.traerCajerosPorTurnoConUnidad(turno))
+			if (c.getUnidad() instanceof FoodTruck && c.getAntiguedad() > antiguedadMinima)
+				resultado.add(c);
+		return resultado;
 	}
 }

@@ -11,6 +11,7 @@
 		</id>
 
 		<property name="fecha" column="fecha" type="java.time.LocalDate" not-null="true" />
+		<property name="total" column="total" type="double" not-null="true" />
 
 		<!-- * (Pedido) a 1 (Festival) -->
 		<many-to-one name="festival" class="datos.Festival" column="idFestival" not-null="true" />

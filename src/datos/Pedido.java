@@ -71,6 +71,13 @@ public class Pedido {
 	public void setTotal(double total) {
 		this.total = total;
 	}
+	
+	// deja los dos lados apuntandose y actualiza el total del pedido
+	public void agregarItem(ItemPedido item) {
+	    items.add(item);
+	    item.setPedido(this);
+	    this.total += item.getSubtotal();
+	}
 
 	@Override
 	public String toString() {

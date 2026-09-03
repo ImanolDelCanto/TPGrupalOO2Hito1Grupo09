@@ -7,6 +7,8 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import datos.ItemPedido;
+import datos.Pedido;
 import datos.UnidadDeVenta;
 
 public class UnidadDeVentaDao {
@@ -66,6 +68,7 @@ public class UnidadDeVentaDao {
 		}
 		return objeto;
 	}
+	
 
 	@SuppressWarnings("unchecked")
 	public List<UnidadDeVenta> traerTodasConStaff() {
@@ -78,7 +81,30 @@ public class UnidadDeVentaDao {
 				Hibernate.initialize(u.getStaff());
 		} finally {
 			session.close();
+		
 		}
 		return lista;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<UnidadDeVenta> traerTodasConPedidos() {
+	    List<UnidadDeVenta> lista = null;
+	    try {
+	        iniciaOperacion();
+	        String hql = "from UnidadDeVenta u order by u.nombreComercial";
+	        lista = session.createQuery(hql).getResultList();
+	        for (UnidadDeVenta u : lista) {
+	            Hibernate.initialize(u.getPedidos());
+	            for (Pedido p : u.getPedidos()) {
+	                Hibernate.initialize(p.getItems());
+	                for (ItemPedido i : p.getItems())
+	                    Hibernate.initialize(i.getPlato());
+	            }
+	        }
+	    } finally {
+	        session.close();
+	    }
+	    return lista;
+	}
+	
 }

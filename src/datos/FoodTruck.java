@@ -29,6 +29,11 @@ public class FoodTruck extends UnidadDeVenta{
 	public void setRequiereElectricidad(boolean requiereElectricidad) {
 		this.requiereElectricidad = requiereElectricidad;
 	}
+	
+	@Override
+	public String getDetalleEspecifico() {
+	    return "patente: " + patente + ", requiere electricidad: " + (requiereElectricidad ? "si" : "no");
+	}
 
 	@Override
 	public String toString() {

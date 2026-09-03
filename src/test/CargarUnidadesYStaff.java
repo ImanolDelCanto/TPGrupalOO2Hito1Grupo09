@@ -67,7 +67,39 @@ public class CargarUnidadesYStaff {
 		puesto.setResponsable(lucia);
 		unidadABM.actualizar(puesto);
 
-		System.out.printf("%nDatos cargados: 1 festival, 2 unidades y 5 empleados%n");
-		System.exit(0);
+		// 5) segunda tanda de unidades
+				FoodTruck truck2 = new FoodTruck("Sushi al Paso", 18.0, "FT00000002", verano,
+						null, "CD456EF", true);
+				unidadABM.agregar(truck2);
+
+				PuestoDesarmable puesto2 = new PuestoDesarmable("Cerveza Artesanal", 20.0, "PD00000002", verano,
+						null, 1, 30);
+				unidadABM.agregar(puesto2);
+
+				// 6) staff de la segunda tanda
+				Cocinero martina = new Cocinero("Martina", "Vera", "31555666",
+						LocalDate.of(1993, 6, 12), LocalDate.of(2024, 9, 1), 820000, "Sushi", 130000);
+				truck2.agregarAlStaff(martina);
+				personalABM.agregar(martina);
+
+				Cajero facundo = new Cajero("Facundo", "Ibarra", "34777123",
+						LocalDate.of(1997, 11, 2), LocalDate.of(2025, 3, 1), 690000, "manana", 1800);
+				truck2.agregarAlStaff(facundo);
+				personalABM.agregar(facundo);
+
+				Cajero rocio = new Cajero("Rocio", "Molina", "35888234",
+						LocalDate.of(1996, 2, 18), LocalDate.of(2024, 11, 1), 700000, "noche", 2500);
+				puesto2.agregarAlStaff(rocio);
+				personalABM.agregar(rocio);
+
+				// 7) responsables de la segunda tanda
+				truck2.setResponsable(martina);
+				unidadABM.actualizar(truck2);
+
+				puesto2.setResponsable(rocio);
+				unidadABM.actualizar(puesto2);
+
+				System.out.printf("%nDatos cargados: 1 festival, 4 unidades y 8 empleados%n");
+				System.exit(0);
 	}
 }

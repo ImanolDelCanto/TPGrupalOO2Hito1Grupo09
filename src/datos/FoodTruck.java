@@ -30,6 +30,15 @@ public class FoodTruck extends UnidadDeVenta{
 		this.requiereElectricidad = requiereElectricidad;
 	}
 
+	// Ocupa superficie y, si necesita electricidad, paga el plus del festival.
+	@Override
+	public double getCostoOperativo() {
+		double costo = getSuperficie() * getFestival().getCostoPorSuperficie();
+		if (requiereElectricidad)
+			costo += getFestival().getPlusElectricidad();
+		return costo;
+	}
+
 	@Override
 	public String toString() {
 		return "FoodTruck [" + super.toString() + ", patente=" + patente + ", requiereElectricidad=" + requiereElectricidad + "]";

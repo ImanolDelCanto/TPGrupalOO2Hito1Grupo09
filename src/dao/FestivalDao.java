@@ -2,6 +2,7 @@ package dao;
 
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -55,6 +56,22 @@ public class FestivalDao {
 		try {
 			iniciaOperacion();
 			lista = session.createQuery("from Festival f order by f.fechaInicio").getResultList();
+		} finally {
+			session.close();
+		}
+		return lista;
+	}
+
+	// el <set> de unidades es lazy: hay que inicializarlo antes de cerrar la sesion
+	@SuppressWarnings("unchecked")
+	public List<Festival> traerTodosConUnidades() {
+		List<Festival> lista = null;
+		try {
+			iniciaOperacion();
+			String hql = "from Festival f order by f.fechaInicio";
+			lista = session.createQuery(hql).getResultList();
+			for (Festival f : lista)
+				Hibernate.initialize(f.getUnidades());
 		} finally {
 			session.close();
 		}

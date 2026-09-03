@@ -24,8 +24,8 @@ venta, personal, platos y pedidos, con persistencia en MySQL a través de Hibern
 |---|---|---|
 | Costo salarial mensual por unidad de venta | Del Canto, Imanol |
 | Cajeros de turno noche con antigüedad, en Food Trucks | Diaz, Enzo |
-|  | Baez, Erika |
-|  | Del Canto, Imanol |
+| Rendimiento económico por unidad de venta | Baez, Erika |
+| Costo operativo por unidad de venta | Del Canto, Imanol |
 
 ---
 
@@ -64,18 +64,10 @@ leyendo los archivos de mapeo. Así el esquema no puede quedar desincronizado de
 
 ### 2. Configurar el proyecto en Eclipse
 
-1. `File → Import → General → Existing Projects into Workspace` y elegir esta carpeta.
-2. Clic derecho en el proyecto → `Properties → Java Build Path → Libraries`.
-3. Seleccionar **`Classpath`** (no *Modulepath*) → `Add External JARs...`
-4. Agregar los **19 archivos `.jar`** de la cátedra.
-
 > **Importante para quien clone el repo:** el archivo `.classpath` guarda rutas
 > absolutas de la máquina donde se creó el proyecto. Al importar van a aparecer errores
 > de compilación: hay que rehacer el paso 3 apuntando a la ruta local de los JAR.
 
-También conviene poner el workspace en UTF-8, en
-`Window → Preferences → General → Workspace → Text file encoding`. Sin eso, los
-comentarios con acentos rompen la compilación con `unmappable character for encoding`.
 
 ### 3. Ajustar la contraseña
 
@@ -94,12 +86,13 @@ Los tests **se corren en este orden**. Cada uno asume que los anteriores ya pasa
 | # | Clase | Qué hace | Se corre |
 |---|---|---|---|
 | 1 | `test/TestConexion` | Verifica la conexión y genera el esquema desde los mapeos. | las veces que quieras |
-| 2 | `test/CargarUnidadesYStaff` | Carga 1 festival, 2 unidades de venta y 5 empleados asignados a ellas. | **una sola vez** |
-| 3 | `test/CasoDeUso_CostoSalarialPorUnidad` | Caso de uso. | las veces que quieras |
-| 4 | `test/CasoDeUso_CajerosAntiguosFoodTruck` | Caso de uso. | las veces que quieras |
+| 2 | `test/CargarUnidadesYStaff` | Carga 1 festival, 4 unidades de venta y 8 empleados asignados a ellas. | **una sola vez** |
+| 3 | `test/CargarPedidos` | Carga 8 platos y 5 pedidos con sus ítems. Necesita el paso 2. | **una sola vez** |
+| 4 | `test/CasoDeUso_CostoSalarialPorUnidad` | Caso de uso. | las veces que quieras |
+| 5 | `test/CasoDeUso_CostoOperativoPorUnidad` | Caso de uso. | las veces que quieras |
+| 6 | `test/CasoDeUso_CajerosAntiguosFoodTruck` | Caso de uso. | las veces que quieras |
+| 7 | `test/CasoDeUso_RendimientoPorUnidad` | Caso de uso. | las veces que quieras |
 
-Para ejecutar: clic derecho sobre la clase → `Run As → Java Application`, o **`Ctrl+F11`**
-con el archivo abierto.
 
 ### Qué esperar en cada paso
 
@@ -109,21 +102,25 @@ con el archivo abierto.
 =========================================
             CONEXION OK
 =========================================
-  UnidadDeVenta : 2
-  Personal      : 5
-  Cocinero      : 3
-  Cajero        : 2
+  UnidadDeVenta : 4
+  Personal      : 8
+  Cocinero      : 4
+  Cajero        : 4
+  Festival      : 1
+  Plato         : 8
+  Pedido        : 5
+  ItemPedido    : 9
 =========================================
 ```
 
-La primera vez los cuatro dan 0: las tablas se acaban de crear y están vacías. Se generan
+La primera vez dan todos 0: las tablas se acaban de crear y están vacías. Se generan
 diez: `festival`, `unidadDeVenta`, `foodTruck`, `puestoDesarmable`, `personal`, `cocinero`,
 `cajero`, `plato`, `pedido` e `itemPedido`.
 
 **2 · CargarUnidadesYStaff**
 
 ```
-Datos cargados: 1 festival, 2 unidades y 5 empleados
+Datos cargados: 1 festival, 4 unidades y 8 empleados
 ```
 
 El orden importa y está forzado por dos restricciones: una unidad no puede existir sin
@@ -141,8 +138,7 @@ CREATE DATABASE bd_epicentro_gourmet;
 ```
 
 Y volver a correr `TestConexion`, que regenera el esquema. Si preferís conservar la base,
-hay que vaciar las tablas en orden — primero romper la referencia circular, después las
-hijas antes que los padres:
+hay que vaciar las tablas en orden.
 
 ```sql
 USE bd_epicentro_gourmet;
@@ -156,41 +152,79 @@ DELETE FROM festival;
 SET SQL_SAFE_UPDATES = 1;
 ```
 
-**3 · CasoDeUso_CostoSalarialPorUnidad**
+**3 · CargarPedidos**
+
+```
+Datos cargados: 8 platos y 5 pedidos
+```
+
+**4 · CasoDeUso_CostoSalarialPorUnidad**
 
 ```
 === COSTO SALARIAL MENSUAL POR UNIDAD DE VENTA ===
 
-PuestoDesarmable [UnidadDeVenta [idUnidad=2, nombreComercial=Empanadas del Norte, ...], cantidadCarpas=3, tiempoMontaje=90]
-  responsable: Cocinero Gomez, Lucia - DNI 33444555 - ingreso 2021-07-15 (5 anios) - Pasteleria
-  staff: 2 empleados
-    Cajero [Sosa, Pedro - DNI 36777888 - ..., turno=mañana, recaudacion=3555.0] cobra 690000,00
-    Cocinero Gomez, Lucia - DNI 33444555 - ... - Pasteleria cobra 900000,00
-  COSTO SALARIAL: 1590000,00
-
 FoodTruck [UnidadDeVenta [idUnidad=1, nombreComercial=La Parrilla Rodante, ...], patente=AB123CD, requiereElectricidad=true]
   responsable: Cocinero Perez, Juan - DNI 30111222 - ingreso 2019-03-01 (7 anios) - Parrilla
   staff: 3 empleados
-    ...
+    Cajero [Lopez, Ana - ... , turno=noche, recaudacion=2000.0] cobra 700000,00
+    Cocinero Diaz, Marcos - ... - Parrilla cobra 840000,00
+    Cocinero Perez, Juan - ... - Parrilla cobra 950000,00
   COSTO SALARIAL: 2490000,00
+...
 
 === RESUMEN ===
-Costo salarial total del predio: 4080000,00
+Costo salarial total del predio: 6420000,00
 Unidad mas costosa: La Parrilla Rodante (2490000,00)
 ```
 
-**4 · CasoDeUso_CajerosAntiguosFoodTruck**
+**5 · CasoDeUso_CostoOperativoPorUnidad**
+
+```
+=== COSTO OPERATIVO POR UNIDAD DE VENTA ===
+
+Sabores de Verano
+  superficie: 1500,00 por m2   montaje: 800,00 por minuto   electricidad: 12000,00
+    Cerveza Artesanal             20,00 m2       54000,00
+    La Parrilla Rodante           25,50 m2       50250,00
+    Sushi al Paso                 18,00 m2       39000,00
+    Empanadas del Norte           40,00 m2      132000,00
+  COSTO OPERATIVO DEL FESTIVAL: 275250,00
+  La mas cara de operar: Empanadas del Norte (132000,00)
+```
+
+**6 · CasoDeUso_CajerosAntiguosFoodTruck**
 
 ```
 === CAJEROS DE TURNO NOCHE CON MAS DE 2 ANIOS, EN FOOD TRUCKS ===
 
 Cajero [Lopez, Ana - DNI 32444555 - ingreso 2022-06-15 (4 anios), turno=noche, recaudacion=2000.0]
-   unidad: FoodTruck [UnidadDeVenta [idUnidad=1, nombreComercial=La Parrilla Rodante, ...], patente=AB123CD, requiereElectricidad=true]
+   unidad: FoodTruck [UnidadDeVenta [idUnidad=1, nombreComercial=La Parrilla Rodante, ...], patente=AB123CD, ...]
 
 Total: 1 cajeros
 ```
 
+**7 · CasoDeUso_RendimientoPorUnidad**
+
+```
+=== RENDIMIENTO ECONOMICO POR UNIDAD DE VENTA ===
+
+PuestoDesarmable [UnidadDeVenta [idUnidad=4, nombreComercial=Cerveza Artesanal, ...], cantidadCarpas=1, tiempoMontaje=30]
+  tipo: PuestoDesarmable (carpas: 1, tiempo de montaje: 30 min)
+  cantidad de pedidos: 1
+  FACTURACION: 104000,00
+  MARGEN: 65000,00
+...
+
+=== RESUMEN DEL PREDIO ===
+Facturacion total: 289200,00
+Margen total: 170600,00
+Unidad mas rentable: Cerveza Artesanal (PuestoDesarmable) con margen 65000,00
+```
+
 ---
+
+## Estructura del proyecto
+
 
 ## Estructura del proyecto
 
@@ -198,23 +232,12 @@ Total: 1 cajeros
 EpicentroGourmet/
 └── src/
     ├── hibernate.cfg.xml     conexión a la BD + lista de mapeos
-    ├── datos/                las 10 clases del modelo (POJOs)
+    ├── datos/                las 10 clases del modelo 
     ├── mapeos/               un .hbm.xml por jerarquía
     ├── dao/                  acceso a datos + HibernateUtil
     ├── negocio/              clases ABM: reglas de negocio
     └── test/                 un main por caso de uso
 ```
-
-El flujo va siempre en un sentido:
-
-```
-test  →  negocio (ABM)  →  dao  →  Hibernate  →  MySQL
-```
-
-Una clase de `test` nunca llama directo a un `Dao`, y un `Dao` nunca llama a un `ABM`.
-El `ABM` decide **si se puede hacer**; el `Dao` sabe **cómo se guarda**.
-
----
 
 ## Decisiones de modelado
 
@@ -229,12 +252,7 @@ método `getCostoSalarial()` recorre el staff sin preguntar de qué tipo es cada
 Agregar un rol nuevo no obliga a tocar ese método.
 
 **`Costos` no es una clase** — sus cuatro atributos están directamente en `Festival`.
-Mantiene el modelo dentro de las 10 clases que pide el enunciado y evita mapear un
-`<component>`, que no forma parte del material de la cátedra. La tabla resultante es
-idéntica.
-
-**`Pedido` y `ItemPedido` son una composición** — un ítem no existe fuera de su pedido.
-El mapeo lo declara con `cascade="all-delete-orphan"`.
+Mantiene el modelo dentro de las 10 clases que pide el enunciado.
 
 **`idResponsable` es nullable** — hay una dependencia circular entre `UnidadDeVenta` y
 `Personal`: la unidad necesita un responsable que es parte de su staff, y el staff

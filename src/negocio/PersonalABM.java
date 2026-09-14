@@ -36,8 +36,10 @@ public class PersonalABM {
 	
 	public List<Cajero> traerCajerosDeFoodTruck(String turno, int antiguedadMinima) {
 		List<Cajero> resultado = new ArrayList<Cajero>();
-		for (Cajero c : dao.traerCajerosPorTurnoConUnidad(turno))
-			if (c.getUnidad() instanceof FoodTruck && c.getAntiguedad() > antiguedadMinima)
+		// el turno y la antiguedad ya vienen filtrados por el Dao; aca solo
+		// queda el tipo de unidad, que no se puede preguntar con el HQL de la catedra
+		for (Cajero c : dao.traerCajerosPorTurnoConUnidad(turno, antiguedadMinima))
+			if (c.getUnidad() instanceof FoodTruck)
 				resultado.add(c);
 		return resultado;
 	}

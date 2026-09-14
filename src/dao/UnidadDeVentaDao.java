@@ -9,6 +9,7 @@ import org.hibernate.Transaction;
 
 import datos.ItemPedido;
 import datos.Pedido;
+import datos.PuestoDesarmable;
 import datos.UnidadDeVenta;
 
 public class UnidadDeVentaDao {
@@ -70,15 +71,41 @@ public class UnidadDeVentaDao {
 	}
 	
 
+	// Cruza puestoDesarmable + unidadDeVenta + festival + personal en un solo HQL.
+	// El filtro por festival y por tiempo de montaje lo resuelve la base no Java.
+	@SuppressWarnings("unchecked")
+	public List<PuestoDesarmable> traerPuestosPorTiempoDeMontaje(String festival, int minutos) {
+		List<PuestoDesarmable> lista = null;
+		try {
+			iniciaOperacion();
+			String hql = "select distinct p from PuestoDesarmable p "
+					+ "inner join fetch p.festival f "
+					+ "left join fetch p.staff "
+					+ "where f.nombre = :festival "
+					+ "and p.tiempoMontaje <= :minutos "
+					+ "order by p.tiempoMontaje";
+			lista = session.createQuery(hql)
+					.setParameter("festival", festival)
+					.setParameter("minutos", minutos)
+					.getResultList();
+		} finally {
+			session.close();
+		}
+		return lista;
+	}
+
 	@SuppressWarnings("unchecked")
 	public List<UnidadDeVenta> traerTodasConStaff() {
 		List<UnidadDeVenta> lista = null;
 		try {
 			iniciaOperacion();
-			String hql = "from UnidadDeVenta u order by u.nombreComercial";
+			// left join fetch: trae unidades y staff en UNA consulta. Sin esto
+			// Hibernate hace una consulta extra por cada unidad (problema N+1).
+			// Es left y no inner para no perder las unidades sin staff.
+			String hql = "select distinct u from UnidadDeVenta u "
+					+ "left join fetch u.staff "
+					+ "order by u.nombreComercial";
 			lista = session.createQuery(hql).getResultList();
-			for (UnidadDeVenta u : lista)
-				Hibernate.initialize(u.getStaff());
 		} finally {
 			session.close();
 		

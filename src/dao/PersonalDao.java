@@ -1,7 +1,8 @@
 package dao;
 
+import java.time.LocalDate;
 import java.util.List;
-import org.hibernate.Hibernate;   // ya puede estar
+import org.hibernate.Hibernate;
 import datos.Cajero;
 
 import org.hibernate.HibernateException;
@@ -78,12 +79,22 @@ public class PersonalDao {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<Cajero> traerCajerosPorTurnoConUnidad(String turno) {
+	public List<Cajero> traerCajerosPorTurnoConUnidad(String turno, int antiguedadMinima) {
 		List<Cajero> lista = null;
 		try {
 			iniciaOperacion();
-			String hql = "from Cajero c inner join fetch c.unidad where c.turno = :turno order by c.apellido";
-			lista = session.createQuery(hql).setParameter("turno", turno).getResultList();
+			// la antiguedad no es una columna, pero si es una resta de fechas:
+			// calculamos el limite y lo pasamos como parametro, asi filtra la base
+			LocalDate limite = LocalDate.now().minusYears(antiguedadMinima);
+			String hql = "select c from Cajero c "
+					+ "inner join fetch c.unidad "
+					+ "where c.turno = :turno "
+					+ "and c.fechaIngreso <= :limite "
+					+ "order by c.apellido";
+			lista = session.createQuery(hql)
+					.setParameter("turno", turno)
+					.setParameter("limite", limite)
+					.getResultList();
 		} finally {
 			session.close();
 		}

@@ -68,10 +68,12 @@ public class FestivalDao {
 		List<Festival> lista = null;
 		try {
 			iniciaOperacion();
-			String hql = "from Festival f order by f.fechaInicio";
+			// una sola consulta para festivales y sus unidades, en vez de una
+			// consulta extra por cada festival
+			String hql = "select distinct f from Festival f "
+					+ "left join fetch f.unidades "
+					+ "order by f.fechaInicio";
 			lista = session.createQuery(hql).getResultList();
-			for (Festival f : lista)
-				Hibernate.initialize(f.getUnidades());
 		} finally {
 			session.close();
 		}

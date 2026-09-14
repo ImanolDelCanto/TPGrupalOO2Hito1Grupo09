@@ -3,6 +3,7 @@ package negocio;
 import java.util.List;
 
 import dao.UnidadDeVentaDao;
+import datos.PuestoDesarmable;
 import datos.UnidadDeVenta;
 
 public class UnidadDeVentaABM {
@@ -22,6 +23,13 @@ public class UnidadDeVentaABM {
 
 	public UnidadDeVenta traerUnidadYStaff(long idUnidad) {
 		return dao.traerUnidadYStaff(idUnidad);
+	}
+
+	// El Dao ya trae solo lo que corresponde; el ABM solo valida la entrada.
+	public List<PuestoDesarmable> traerPuestosPorTiempoDeMontaje(String festival, int minutos) {
+		if (minutos <= 0)
+			throw new IllegalArgumentException("El tiempo de montaje tiene que ser mayor a cero");
+		return dao.traerPuestosPorTiempoDeMontaje(festival, minutos);
 	}
 
 	public List<UnidadDeVenta> traerTodasConStaff() {

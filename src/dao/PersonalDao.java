@@ -78,12 +78,21 @@ public class PersonalDao {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<Cajero> traerCajerosPorTurnoConUnidad(String turno) {
+	public List<Cajero> traerCajerosPorTurnoUnidadYFestival(String turno, String temporadaFestival) {
 		List<Cajero> lista = null;
 		try {
 			iniciaOperacion();
-			String hql = "from Cajero c inner join fetch c.unidad where c.turno = :turno order by c.apellido";
-			lista = session.createQuery(hql).setParameter("turno", turno).getResultList();
+			String hql = "from Cajero c "
+					+ "inner join fetch c.unidad u "
+					+ "inner join fetch u.festival f "
+					+ "where c.turno = :turno "
+					+ "and type(u) = FoodTruck "
+					+ "and f.temporada = :temporada "
+					+ "order by c.apellido";
+			lista = session.createQuery(hql)
+					.setParameter("turno", turno)
+					.setParameter("temporada", temporadaFestival)
+					.getResultList();
 		} finally {
 			session.close();
 		}

@@ -34,10 +34,10 @@ public class PersonalABM {
 		return dao.traerCocinerosPorEspecialidad(especialidad);
 	}
 	
-	public List<Cajero> traerCajerosDeFoodTruck(String turno, int antiguedadMinima) {
+	public List<Cajero> traerCajerosDeFoodTruckEnFestival(String turno, int antiguedadMinima, String temporadaFestival) {
 		List<Cajero> resultado = new ArrayList<Cajero>();
-		for (Cajero c : dao.traerCajerosPorTurnoConUnidad(turno))
-			if (c.getUnidad() instanceof FoodTruck && c.getAntiguedad() > antiguedadMinima)
+		for (Cajero c : dao.traerCajerosPorTurnoUnidadYFestival(turno, temporadaFestival))
+			if (c.getAntiguedad() > antiguedadMinima)
 				resultado.add(c);
 		return resultado;
 	}

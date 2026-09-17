@@ -9,7 +9,7 @@ import negocio.UnidadDeVentaABM;
 // Herencia: el detalle mostrado depende del tipo real de la unidad (FoodTruck o PuestoDesarmable).
 // Uno a muchos: UnidadDeVenta -> Pedido -> ItemPedido.
 public class CasoDeUso_RendimientoPorUnidad {
-
+	// ERIKA BAEZ
     public static void main(String[] args) {
 
         UnidadDeVentaABM abm = new UnidadDeVentaABM();
@@ -23,7 +23,7 @@ public class CasoDeUso_RendimientoPorUnidad {
 
         for (UnidadDeVenta u : unidades) {
 
-            System.out.printf("%n%s%n", u);
+            System.out.printf("%n%s%n", u.getNombreComercial());
             System.out.printf("  tipo: %s (%s)%n", u.getClass().getSimpleName(), u.getDetalleEspecifico());
             System.out.printf("  cantidad de pedidos: %d%n", u.getCantidadDePedidos());
             System.out.printf("  FACTURACION: %.2f%n", u.getFacturacionTotal());

@@ -10,7 +10,9 @@ import negocio.FestivalABM;
 // El monto depende del tipo real de la unidad: el food truck paga el plus de
 // electricidad y el puesto paga por su tiempo de montaje.
 public class CasoDeUso_CostoOperativoPorUnidad {
-
+	//IMANOL DEL CANTO
+	
+	
 	public static void main(String[] args) {
 
 		FestivalABM abm = new FestivalABM();

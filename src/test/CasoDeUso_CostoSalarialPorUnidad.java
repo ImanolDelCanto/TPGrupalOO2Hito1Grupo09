@@ -9,7 +9,7 @@ import negocio.UnidadDeVentaABM;
 // Caso de uso: cuanto cuesta en sueldos operar cada unidad de venta.
 // El total depende del tipo real de cada empleado: el cocinero suma su plus.
 public class CasoDeUso_CostoSalarialPorUnidad {
-
+	//IMANOL DEL CANTO
 	public static void main(String[] args) {
 
 		UnidadDeVentaABM abm = new UnidadDeVentaABM();

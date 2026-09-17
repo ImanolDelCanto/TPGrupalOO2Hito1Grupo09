@@ -1,10 +1,6 @@
 package test;
 
 import java.time.LocalDate;
-import java.util.List;
-
-import datos.Cajero;
-import negocio.PersonalABM;
 
 import datos.Cajero;
 import datos.Cocinero;
@@ -28,17 +24,17 @@ public class CargarUnidadesYStaff {
 		Festival verano = new Festival("Sabores de Verano", "Verano", LocalDate.of(2026, 1, 10), LocalDate.of(2026, 2, 28), 1500, 800, 12000, 650000);
 		festivalABM.agregar(verano);
 
-		// 2) las unidades, sin responsable
-		FoodTruck truck = new FoodTruck("La Parrilla Rodante", 25.5, "FT00000001", verano, null, "AB123CD", true);
+		// 2) las unidades. El responsable se asigna al final: todavia no hay staff
+		FoodTruck truck = new FoodTruck("La Parrilla Rodante", 25.5, "FT00000001", verano, "AB123CD", true);
 		unidadABM.agregar(truck);
 
-		PuestoDesarmable puesto = new PuestoDesarmable("Empanadas del Norte", 40.0, "PD00000001", verano, null, 3, 90);
+		PuestoDesarmable puesto = new PuestoDesarmable("Empanadas del Norte", 40.0, "PD00000001", verano, 3, 90);
 		unidadABM.agregar(puesto);
 
-		FoodTruck truck2 = new FoodTruck("Sushi al Paso", 18.0, "FT00000002", verano, null, "CD456EF", true);
+		FoodTruck truck2 = new FoodTruck("Sushi al Paso", 18.0, "FT00000002", verano, "CD456EF", true);
 		unidadABM.agregar(truck2);
 
-		PuestoDesarmable puesto2 = new PuestoDesarmable("Cerveza Artesanal", 20.0, "PD00000002", verano, null, 1, 30);
+		PuestoDesarmable puesto2 = new PuestoDesarmable("Cerveza Artesanal", 20.0, "PD00000002", verano, 1, 30);
 		unidadABM.agregar(puesto2);
 
 		// 3) el staff, ya asignado a su unidad

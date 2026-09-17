@@ -18,14 +18,15 @@ public abstract class UnidadDeVenta {
 	public UnidadDeVenta() {
 	}
 
-	public UnidadDeVenta(String nombreComercial, double superficie, String codigoUnico, Festival festival,
-	        Personal responsable) {
+	// sin responsable: al construir la unidad el staff todavia esta vacio, asi que
+	// ningun empleado podria pasar la validacion de asignarResponsable. Se asigna
+	// despues, cuando el staff ya esta cargado.
+	public UnidadDeVenta(String nombreComercial, double superficie, String codigoUnico, Festival festival) {
 	    super();
 	    this.nombreComercial = nombreComercial;
 	    this.superficie = superficie;
 	    this.codigoUnico = codigoUnico;
 	    this.festival = festival;
-	    asignarResponsable(responsable);
 	}
 
 	public long getIdUnidad() {

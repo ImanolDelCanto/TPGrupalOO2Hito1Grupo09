@@ -95,7 +95,8 @@ Los tests **se corren en este orden**. Cada uno asume que los anteriores ya pasa
 | 4 | `test/CasoDeUso_CostoSalarialPorUnidad` | Caso de uso. | las veces que quieras |
 | 5 | `test/CasoDeUso_CostoOperativoPorUnidad` | Caso de uso. | las veces que quieras |
 | 6 | `test/CasoDeUso_CajerosAntiguosFoodTruck` | Caso de uso. | las veces que quieras |
-| 7 | `test/CasoDeUso_RendimientoPorUnidad` | Caso de uso. | las veces que quieras |
+| 7 | `test/CasoDeUso_MontajePorFestival` | Caso de uso. | las veces que quieras |
+| 8 | `test/CasoDeUso_RendimientoEconomicoPorUnidadHQL` | Caso de uso. | las veces que quieras |
 
 
 ### Qué esperar en cada paso
@@ -199,30 +200,46 @@ Sabores de Verano
 **6 · CasoDeUso_CajerosAntiguosFoodTruck**
 
 ```
-=== CAJEROS DE TURNO NOCHE CON MAS DE 2 ANIOS, EN FOOD TRUCKS ===
+=== CAJEROS DE TURNO NOCHE, CON 2 ANIOS O MAS, EN FOOD TRUCKS DEL FESTIVAL Verano ===
 
 Cajero [Lopez, Ana - DNI 32444555 - ingreso 2022-06-15 (4 anios), turno=noche, recaudacion=2000.0]
    unidad: FoodTruck [UnidadDeVenta [idUnidad=1, nombreComercial=La Parrilla Rodante, ...], patente=AB123CD, ...]
+   festival: Sabores de Verano
 
 Total: 1 cajeros
 ```
 
-**7 · CasoDeUso_RendimientoPorUnidad**
+**7 · CasoDeUso_MontajePorFestival**
 
 ```
-=== RENDIMIENTO ECONOMICO POR UNIDAD DE VENTA ===
+=== PUESTOS DE 'Sabores de Verano' QUE SE MONTAN EN 60 MINUTOS O MENOS ===
 
 PuestoDesarmable [UnidadDeVenta [idUnidad=4, nombreComercial=Cerveza Artesanal, ...], cantidadCarpas=1, tiempoMontaje=30]
-  tipo: PuestoDesarmable (carpas: 1, tiempo de montaje: 30 min)
-  cantidad de pedidos: 1
+      Cajero [Molina, Rocio - DNI 35888234 - ingreso 2024-11-01 (1 anios), turno=noche, recaudacion=2500.0]
+
+Puestos que entran: 1   -   Tiempo total de montaje: 30 min
+```
+
+**8 · CasoDeUso_RendimientoEconomicoPorUnidadHQL**
+
+```
+====== RENDIMIENTO ECONOMICO POR UNIDAD DE VENTA ======
+
+========== FESTIVAL: Sabores de Verano ==========
+
+Cerveza Artesanal
+  Tipo: PuestoDesarmable
+  Cantidad de pedidos: 1
   FACTURACION: 104000,00
-  MARGEN: 65000,00
+  MARGEN DE GANANCIA: 65000,00
+
+---------------------------------
 ...
 
-=== RESUMEN DEL PREDIO ===
+========= SINTESIS DEL FESTIVAL Sabores de Verano =========
 Facturacion total: 289200,00
-Margen total: 170600,00
-Unidad mas rentable: Cerveza Artesanal (PuestoDesarmable) con margen 65000,00
+Margen total de ganancia: 170600,00
+Unidad mas rentable: Cerveza Artesanal (PuestoDesarmable) con margen de 65000,00
 ```
 
 ---

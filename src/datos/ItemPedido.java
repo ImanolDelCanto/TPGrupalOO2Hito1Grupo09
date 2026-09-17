@@ -10,20 +10,19 @@ public class ItemPedido {
 	public ItemPedido() {
 	}
 
-	public ItemPedido(long idItemPedido, int cantidad, double subtotal, Pedido pedido, Plato plato) {
-		super();
-		this.idItemPedido = idItemPedido;
-		this.cantidad = cantidad;
-		this.subtotal = subtotal;
-		this.pedido = pedido;
-		this.plato = plato;
+	public ItemPedido(int cantidad, Pedido pedido, Plato plato) {
+	    super();
+	    this.cantidad = cantidad;
+	    this.pedido = pedido;
+	    this.plato = plato;
+	    this.subtotal = cantidad * plato.getPrecioVenta();
 	}
 
 	public long getIdItemPedido() {
 		return idItemPedido;
 	}
 
-	public void setIdItemPedido(long idItemPedido) {
+	protected void setIdItemPedido(long idItemPedido) {
 		this.idItemPedido = idItemPedido;
 	}
 

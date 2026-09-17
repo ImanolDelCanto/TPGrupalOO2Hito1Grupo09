@@ -4,10 +4,10 @@
 	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
 
-	<class name="datos.Personal" table="personal">
+	<class name="datos.Personal" table="personal" abstract="true">
 
 		<!-- identity = AUTO_INCREMENT de MySQL -->
-		<id name="idPersonal" column="idPersonal">
+		<id name="idPersonal" column="idPersonal" >
 			<generator class="identity" />
 		</id>
 

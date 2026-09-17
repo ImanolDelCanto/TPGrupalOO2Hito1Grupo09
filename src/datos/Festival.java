@@ -20,26 +20,25 @@ public class Festival {
 
 	}
 
-	public Festival(long idFestival, String nombre, String temporada, LocalDate fechaInicio, LocalDate fechaFin, double costoPorSuperficie,
-			double costoPorMontaje, double plusElectricidad, double costoSueldoBase) {
-		super();
-		this.idFestival = idFestival;
-		this.nombre = nombre;
-		this.temporada = temporada;
-		this.fechaInicio = fechaInicio;
-		this.fechaFin = fechaFin;
-		this.costoPorSuperficie = costoPorSuperficie;
-		this.costoPorMontaje = costoPorMontaje;
-		this.plusElectricidad = plusElectricidad;
-		this.costoSueldoBase = costoSueldoBase;
+	public Festival(String nombre, String temporada, LocalDate fechaInicio, LocalDate fechaFin,
+	        double costoPorSuperficie, double costoPorMontaje, double plusElectricidad, double costoSueldoBase) {
+	    super();
+	    this.nombre = nombre;
+	    this.temporada = temporada;
+	    this.fechaInicio = fechaInicio;
+	    this.fechaFin = fechaFin;
+	    this.costoPorSuperficie = costoPorSuperficie;
+	    this.costoPorMontaje = costoPorMontaje;
+	    this.plusElectricidad = plusElectricidad;
+	    this.costoSueldoBase = costoSueldoBase;
 	}
 
+	protected void setIdFestival(long idFestival) {
+	    this.idFestival = idFestival;
+	}
+	
 	public long getIdFestival() {
 		return idFestival;
-	}
-
-	public void setIdFestival(long idFestival) {
-		this.idFestival = idFestival;
 	}
 
 	public String getNombre() {

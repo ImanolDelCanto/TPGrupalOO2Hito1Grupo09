@@ -19,13 +19,13 @@ public abstract class UnidadDeVenta {
 	}
 
 	public UnidadDeVenta(String nombreComercial, double superficie, String codigoUnico, Festival festival,
-			Personal responsable) {
-		super();
-		this.nombreComercial = nombreComercial;
-		this.superficie = superficie;
-		this.codigoUnico = codigoUnico;
-		this.festival = festival;
-		this.responsable = responsable;
+	        Personal responsable) {
+	    super();
+	    this.nombreComercial = nombreComercial;
+	    this.superficie = superficie;
+	    this.codigoUnico = codigoUnico;
+	    this.festival = festival;
+	    asignarResponsable(responsable);
 	}
 
 	public long getIdUnidad() {
@@ -71,9 +71,10 @@ public abstract class UnidadDeVenta {
 	public Personal getResponsable() {
 		return responsable;
 	}
-
+	// lo usa Hibernate para reconstruir el objeto al leerlo de la base,
+	// el staff puede no estar cargado todavia, por eso no puede exigir pertenencia al staff
 	public void setResponsable(Personal responsable) {
-		this.responsable = responsable;
+	    this.responsable = responsable;
 	}
 
 	public Set<Plato> getPlatos() {
@@ -99,8 +100,38 @@ public abstract class UnidadDeVenta {
 	public void setPedidos(Set<Pedido> pedidos) {
 		this.pedidos = pedidos;
 	}
-
-	// deja los dos lados apuntandose: sin el setUnidad la FK idUnidad queda nula
+	
+	// Lo que le cuesta al festival tener esta unidad en el predio.
+	// Cada tipo paga distinto, por eso es abstracto.
+	public abstract double getCostoOperativo();
+	
+    public abstract String getDetalleEspecifico();
+    
+    public boolean validarCodigo() {
+    	//Valida si el codigo es distinto de nulo y que tenga 10 caracteres
+    	return this.codigoUnico != null && this.codigoUnico.length() == 10;
+    }
+	
+    // asigna el responsable validando que sea parte del staff de esta unidad.
+    // Es el metodo que hay que usar desde el codigo de aplicacion (no el setter)
+	public void asignarResponsable(Personal responsable) {
+	    if (responsable != null && !perteneceAlStaff(responsable)) {
+	        throw new IllegalArgumentException("El responsable debe ser parte del staff de la unidad: " + responsable.getNombre());
+	    }
+	    this.responsable = responsable;
+	}
+	
+	// se compara por id para que ande incluso si el staff y el responsable
+	// vienen de consultas distintas (mismo empleado, objetos distintos)
+	private boolean perteneceAlStaff(Personal p) {
+	    for (Personal miembro : staff)
+	        if (miembro.getIdPersonal() == p.getIdPersonal())
+	            return true;
+	    return false;
+	}
+	
+	// agrega el empleado al staff y deja los dos lados apuntandose:
+	// sin el setUnidad, la FK idUnidad de ese empleado queda nula
 	public void agregarAlStaff(Personal p) {
 		staff.add(p);
 		p.setUnidad(this);
@@ -120,41 +151,9 @@ public abstract class UnidadDeVenta {
 		return total;
 	}
 
-	// Lo que le cuesta al festival tener esta unidad en el predio. Cada tipo
-	// paga distinto, por eso es abstracto.
-	public abstract double getCostoOperativo();
-
 	public int getCantidadDeStaff() {
 		return staff.size();
 	}
-
-    public boolean validarCodigo() {
-    	//Valida si el codigo es distinto de nulo y que tenga 10 caracteres
-    	return this.codigoUnico != null && this.codigoUnico.length() == 10;
-    }
-	
-    public abstract String getDetalleEspecifico();
-
-    public double getFacturacionTotal() {
-        double total = 0;
-        for (Pedido p : pedidos)
-            for (ItemPedido i : p.getItems())
-                total += i.getSubtotal();
-        return total;
-    }
-
-    public double getMargenTotal() {
-        double margen = 0;
-        for (Pedido p : pedidos)
-            for (ItemPedido i : p.getItems())
-                margen += (i.getPlato().getPrecioVenta() - i.getPlato().getCostoProduccion()) * i.getCantidad();
-        return margen;
-    }
-
-    public int getCantidadDePedidos() {
-        return pedidos.size();
-    }
-	
     
 	@Override
 	public String toString() {

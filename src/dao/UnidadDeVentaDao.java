@@ -134,4 +134,36 @@ public class UnidadDeVentaDao {
 	    return lista;
 	}
 	
+	
+	//Trae, para un festival dado, una fila por cada unidad de venta con: nombre, festival, tipo (FoodTruck o PuestoDesarmable),
+	//cantidad de pedidos, facturación total y margen total — todo calculado en la base de datos con SUM/COUNT.
+	@SuppressWarnings("unchecked")
+	public List<Object[]> obtenerRendimientoEconomicoPorUnidad(String nombreFestival) {
+		List<Object[]> lista = null;
+		//No se selecciona una entidad completa sino columnas sueltas, y HQL devuelve un List<Object[]>,
+		//donde cada Object[] es una fila y cada posición es una columna, en el mismo orden en el que estan escritas en el select
+		try {
+			iniciaOperacion();
+	        String hql = "select u.nombreComercial, f.nombre, "                          		// nombre de la unidad y del festival
+	                + "case when type(u) = FoodTruck then 'FoodTruck' else 'PuestoDesarmable' end, " // tipo real de la unidad (herencia) por joined-subclass
+	                + "count(distinct p.idPedido), "                                     		// cantidad de pedidos, sin duplicar por los items
+	                + "coalesce(sum(i.subtotal), 0.0), "                                 		// facturacion total (0 si no tiene pedidos)
+	                + "coalesce(sum((pl.precioVenta - pl.costoProduccion) * i.cantidad), 0.0) " // margen total (0 si no tiene pedidos)
+	                + "from UnidadDeVenta u "                                            		// arranca desde la clase base
+	                + "inner join u.festival f "                                         		// toda unidad tiene festival (not-null)
+	                + "left join u.pedidos p "                                           		// left: puede no tener pedidos todavia
+	                + "left join p.items i "                                            		// left: si no hay pedido, tampoco hay items
+	                + "left join i.plato pl "                                            		// para sacar precio y costo de cada item
+	                + "where f.nombre = :nombreFestival "                                		// filtra por el festival pedido
+	                + "group by u.idUnidad, u.nombreComercial, f.nombre, type(u) "       		// agrupa una fila por unidad
+	                + "order by u.nombreComercial";                                      		// orden alfabetico para el reporte
+	        lista = session.createQuery(hql)
+	                .setParameter("nombreFestival", nombreFestival)
+	                .getResultList();
+		} finally {
+			session.close();
+		}
+		return lista;
+	}
+	
 }

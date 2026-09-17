@@ -11,13 +11,12 @@ public class Plato {
 	public Plato() {
 	}
 
-	public Plato(long idPlato, String nombre, double precioVenta, double costoProduccion, UnidadDeVenta unidad) {
-		super();
-		this.idPlato = idPlato;
-		this.nombre = nombre;
-		this.precioVenta = precioVenta;
-		this.costoProduccion = costoProduccion;
-		this.unidad = unidad;
+	public Plato(String nombre, double precioVenta, double costoProduccion, UnidadDeVenta unidad) {
+	    super();
+	    this.nombre = nombre;
+	    this.precioVenta = precioVenta;
+	    this.costoProduccion = costoProduccion;
+	    this.unidad = unidad;
 	}
 
 
@@ -25,8 +24,8 @@ public class Plato {
 		return idPlato;
 	}
 
-	public void setIdPlato(long idPlato) {
-		this.idPlato = idPlato;
+	protected void setIdPlato(long idPlato) {
+	    this.idPlato = idPlato;
 	}
 
 	public String getNombre() {

@@ -39,4 +39,9 @@ public class UnidadDeVentaABM {
 	public List<UnidadDeVenta> traerTodasConPedidos() {
 	    return dao.traerTodasConPedidos();
 	}
+	
+	// El Dao devuelve el dato agregado (nombre, tipo, cantidad de pedidos,facturacion y margen) por unidad por festival; 
+	public List<Object[]> obtenerRendimientoEconomicoPorUnidad(String nombreFestival) {
+		return dao.obtenerRendimientoEconomicoPorUnidad(nombreFestival);
+	}
 }

@@ -14,20 +14,19 @@ public class Pedido {
 	public Pedido() {
 	}
 
-	public Pedido(long idPedido, LocalDate fecha, UnidadDeVenta unidad, double total) {
-		super();
-		this.idPedido = idPedido;
-		this.fecha = fecha;
-		this.unidad = unidad;
-		this.total = total;
+	public Pedido(LocalDate fecha, UnidadDeVenta unidad) {
+	    super();
+	    this.fecha = fecha;
+	    this.unidad = unidad;
+	    this.total = 0;
 	}
 
 	public long getIdPedido() {
 		return idPedido;
 	}
 
-	public void setIdPedido(long idPedido) {
-		this.idPedido = idPedido;
+	protected void setIdPedido(long idPedido) {
+	    this.idPedido = idPedido;
 	}
 
 	public LocalDate getFecha() {

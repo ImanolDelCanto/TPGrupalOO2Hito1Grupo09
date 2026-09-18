@@ -11,7 +11,7 @@ import org.hibernate.Transaction;
 
 import datos.Cocinero;
 import datos.Personal;
-
+import datos.Festival;
 public class PersonalDao {
 
 	private static Session session;
@@ -78,29 +78,23 @@ public class PersonalDao {
 		return lista;
 	}
 	
+	
+	
 	@SuppressWarnings("unchecked")
-	public List<Cajero> traerCajerosPorTurnoUnidadYFestival(String turno, int antiguedadMinima, String temporada) {
+	public List<Cajero> traerCajerosPorTurnoUnidadYFestival(String turno, Festival festival) {
 		List<Cajero> lista = null;
 		try {
 			iniciaOperacion();
-			// la antiguedad no es una columna, pero si es una resta de fechas:
-			// calculamos el limite y lo pasamos como parametro, asi filtra la base
-			LocalDate limite = LocalDate.now().minusYears(antiguedadMinima);
-			// cruza cajero + unidadDeVenta + foodTruck + festival en una sola consulta.
-			// type(u) pregunta por la subclase real, que es lo que antes se hacia
-			// con un instanceof despues de traer todo
-			String hql = "select c from Cajero c "
+			String hql = "from Cajero c "
 					+ "inner join fetch c.unidad u "
 					+ "inner join fetch u.festival f "
 					+ "where c.turno = :turno "
 					+ "and type(u) = FoodTruck "
-					+ "and c.fechaIngreso <= :limite "
-					+ "and f.temporada = :temporada "
+					+ "and f = :festival "
 					+ "order by c.apellido";
 			lista = session.createQuery(hql)
 					.setParameter("turno", turno)
-					.setParameter("limite", limite)
-					.setParameter("temporada", temporada)
+					.setParameter("festival", festival)
 					.getResultList();
 		} finally {
 			session.close();

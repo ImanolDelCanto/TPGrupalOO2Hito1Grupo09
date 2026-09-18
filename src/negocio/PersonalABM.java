@@ -1,9 +1,13 @@
 package negocio;
 
 import java.util.List;
+import java.util.ArrayList;
+import datos.Cajero;
+import datos.Festival;
+
 
 import dao.PersonalDao;
-import datos.Cajero;
+
 import datos.Cocinero;
 import datos.Personal;
 
@@ -32,11 +36,11 @@ public class PersonalABM {
 		return dao.traerCocinerosPorEspecialidad(especialidad);
 	}
 	
-	public List<Cajero> traerCajerosDeFoodTruckEnFestival(String turno, int antiguedadMinima, String temporada) {
-		// el turno, el tipo de unidad, la antiguedad y el festival los filtra
-		// el Dao en un solo HQL; aca solo validamos lo que entra
-		if (antiguedadMinima < 0)
-			throw new IllegalArgumentException("La antiguedad minima no puede ser negativa");
-		return dao.traerCajerosPorTurnoUnidadYFestival(turno, antiguedadMinima, temporada);
+	public List<Cajero> traerCajerosDeFoodTruckEnFestival(String turno, int antiguedadMinima, Festival festival) {
+		List<Cajero> resultado = new ArrayList<Cajero>();
+		for (Cajero c : dao.traerCajerosPorTurnoUnidadYFestival(turno, festival))
+			if (c.getAntiguedad() > antiguedadMinima)
+				resultado.add(c);
+		return resultado;
 	}
 }

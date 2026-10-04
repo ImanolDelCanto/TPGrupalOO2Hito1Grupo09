@@ -62,6 +62,7 @@ public class FestivalDao {
 		return lista;
 	}
 
+	//costo operativo 
 	// el <set> de unidades es lazy: hay que inicializarlo antes de cerrar la sesion
 	@SuppressWarnings("unchecked")
 	public List<Festival> traerTodosConUnidades() {

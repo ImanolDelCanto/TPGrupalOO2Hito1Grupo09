@@ -19,7 +19,7 @@ public class CasoDeUso_MontajePorFestival {
 		UnidadDeVentaABM abm = new UnidadDeVentaABM();
 
 		String festival = "Sabores de Verano";
-		int minutos = 60;
+		int minutos = 90;
 
 		List<PuestoDesarmable> puestos = abm.traerPuestosPorTiempoDeMontaje(festival, minutos);
 

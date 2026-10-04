@@ -70,13 +70,15 @@ public class UnidadDeVentaDao {
 		return objeto;
 	}
 	
-
+	//Montaje festival 
 	// Cruza puestoDesarmable + unidadDeVenta + festival + personal en un solo HQL.
 	// El filtro por festival y por tiempo de montaje lo resuelve la base no Java.
 	@SuppressWarnings("unchecked")
 	public List<PuestoDesarmable> traerPuestosPorTiempoDeMontaje(String festival, int minutos) {
 		List<PuestoDesarmable> lista = null;
 		try {
+			// distinct: el join multiplica las filas, una por cada empleado. Sin esto la
+			// misma unidad viene repetida (4 unidades -> 8 filas) y el total se suma de mas.
 			iniciaOperacion();
 			String hql = "select distinct p from PuestoDesarmable p "
 					+ "inner join fetch p.festival f "
@@ -93,7 +95,7 @@ public class UnidadDeVentaDao {
 		}
 		return lista;
 	}
-
+	//Costo salarial
 	@SuppressWarnings("unchecked")
 	public List<UnidadDeVenta> traerTodasConStaff() {
 		List<UnidadDeVenta> lista = null;

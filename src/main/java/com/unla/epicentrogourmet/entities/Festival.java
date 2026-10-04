@@ -4,16 +4,39 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+
+@Entity
+@Table(name = "festival")
 public class Festival {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long idFestival;
+	@Column(nullable = false)
 	private String nombre;
+	@Column(nullable = false)
 	private String temporada;
+	@Column(nullable = false)
 	private LocalDate fechaInicio;
+	@Column(nullable = false)
 	private LocalDate fechaFin;
+	@Column(nullable = false)
 	private double costoPorSuperficie;
+	@Column(nullable = false)
 	private double costoPorMontaje;
+	@Column(nullable = false)
 	private double plusElectricidad;
+	@Column(name = "sueldoBase", nullable = false)
 	private double costoSueldoBase;
+	// todavia no se puede mapear: UnidadDeVenta no es @Entity.
+	// En el paso 5 esto pasa a ser @OneToMany(mappedBy = "festival")
+	@Transient
 	private Set<UnidadDeVenta> unidades = new HashSet<UnidadDeVenta>();
 	
 	public Festival() {

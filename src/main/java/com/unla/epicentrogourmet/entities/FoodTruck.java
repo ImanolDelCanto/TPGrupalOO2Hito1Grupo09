@@ -1,7 +1,15 @@
 package com.unla.epicentrogourmet.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "foodTruck")
 public class FoodTruck extends UnidadDeVenta{
+	@Column(nullable = false, unique = true)
 	private String patente;
+	@Column(nullable = false)
 	private boolean requiereElectricidad;
 	
 	public FoodTruck() {

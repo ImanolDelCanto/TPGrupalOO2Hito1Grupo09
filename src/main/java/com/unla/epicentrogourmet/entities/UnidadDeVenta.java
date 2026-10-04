@@ -3,16 +3,52 @@ package com.unla.epicentrogourmet.entities;
 import java.util.HashSet;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "unidadDeVenta")
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class UnidadDeVenta {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	protected long idUnidad;
+	@Column(nullable = false)
 	protected String nombreComercial;
+	@Column(nullable = false)
 	protected double superficie;
+	@Column(nullable = false, unique = true)
 	protected String codigoUnico;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "idFestival", nullable = false)
 	protected Festival festival;
+	// todavia no: Personal no es @Entity. En la tanda 3 pasa a ser
+	// @ManyToOne + @JoinColumn(name = "idResponsable")
+	@jakarta.persistence.Transient
 	protected Personal responsable;
+	// todavia no: Plato no es @Entity. En la tanda siguiente pasa a ser
+	// @OneToMany(mappedBy = "unidad", cascade = CascadeType.MERGE)
+	@jakarta.persistence.Transient
 	protected Set<Plato> platos = new HashSet<Plato>();
+	// todavia no: Personal no es @Entity. En la tanda siguiente pasa a ser
+	// @OneToMany(mappedBy = "unidad", cascade = CascadeType.MERGE)
+	@jakarta.persistence.Transient
 	protected Set<Personal> staff = new HashSet<Personal>();
+	// todavia no: Pedido no es @Entity. En la tanda siguiente pasa a ser
+	// @OneToMany(mappedBy = "unidad", cascade = CascadeType.MERGE)
+	@jakarta.persistence.Transient
 	protected Set<Pedido> pedidos = new HashSet<Pedido>();
 
 	public UnidadDeVenta() {

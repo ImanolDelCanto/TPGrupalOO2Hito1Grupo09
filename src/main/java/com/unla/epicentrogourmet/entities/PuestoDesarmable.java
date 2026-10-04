@@ -1,7 +1,15 @@
 package com.unla.epicentrogourmet.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "puestoDesarmable")
 public class PuestoDesarmable extends UnidadDeVenta{
+	@Column(nullable = false)
 	private int cantidadCarpas;
+	@Column(nullable = false)
 	private int tiempoMontaje;
 	
 	public PuestoDesarmable() {

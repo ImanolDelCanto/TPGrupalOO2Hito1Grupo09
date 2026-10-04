@@ -1,4 +1,4 @@
-package datos;
+package com.unla.epicentrogourmet.entities;
 
 import java.time.LocalDate;
 import java.util.HashSet;

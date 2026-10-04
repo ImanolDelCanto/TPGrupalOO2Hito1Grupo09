@@ -1,4 +1,4 @@
-package datos;
+package com.unla.epicentrogourmet.entities;
 
 import java.util.HashSet;
 import java.util.Set;

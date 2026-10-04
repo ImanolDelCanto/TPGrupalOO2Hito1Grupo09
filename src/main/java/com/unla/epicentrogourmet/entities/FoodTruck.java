@@ -1,4 +1,4 @@
-package datos;
+package com.unla.epicentrogourmet.entities;
 
 public class FoodTruck extends UnidadDeVenta{
 	private String patente;

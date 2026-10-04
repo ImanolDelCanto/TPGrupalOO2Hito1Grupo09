@@ -1,4 +1,4 @@
-package datos;
+package com.unla.epicentrogourmet.entities;
 
 public class ItemPedido {
 	private long idItemPedido;

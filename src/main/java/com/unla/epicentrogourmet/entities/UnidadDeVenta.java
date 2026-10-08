@@ -40,18 +40,20 @@ public abstract class UnidadDeVenta {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "idResponsable")
 	protected Personal responsable;
-	// todavia no: Plato no es @Entity. En la tanda siguiente pasa a ser
-	// @OneToMany(mappedBy = "unidad", cascade = CascadeType.MERGE)
-	@jakarta.persistence.Transient
+	// 1 (UnidadDeVenta) a * (Plato). mappedBy es el inverse="true" del Hito 1:
+	// la FK idUnidad la escribe Plato.unidad, esta punta solo la lee
+	@OneToMany(mappedBy = "unidad", fetch = FetchType.LAZY,
+			cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	protected Set<Plato> platos = new HashSet<Plato>();
 	// 1 (UnidadDeVenta) a * (Personal). mappedBy es el inverse="true" del Hito 1:
 	// la FK idUnidad la escribe Personal.unidad, esta punta solo la lee
 	@OneToMany(mappedBy = "unidad", fetch = FetchType.LAZY,
 			cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	protected Set<Personal> staff = new HashSet<Personal>();
-	// todavia no: Pedido no es @Entity. En la tanda siguiente pasa a ser
-	// @OneToMany(mappedBy = "unidad", cascade = CascadeType.MERGE)
-	@jakarta.persistence.Transient
+	// 1 (UnidadDeVenta) a * (Pedido). mappedBy es el inverse="true" del Hito 1:
+	// la FK idUnidad la escribe Pedido.unidad, esta punta solo la lee
+	@OneToMany(mappedBy = "unidad", fetch = FetchType.LAZY,
+			cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	protected Set<Pedido> pedidos = new HashSet<Pedido>();
 
 	public UnidadDeVenta() {

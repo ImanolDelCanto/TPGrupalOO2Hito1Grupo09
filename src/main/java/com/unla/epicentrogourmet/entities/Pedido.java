@@ -4,11 +4,38 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+// <class name="datos.Pedido" table="pedido"> del Hito 1
+@Entity
+@Table(name = "pedido")
 public class Pedido {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long idPedido;
+	@Column(nullable = false)
 	private LocalDate fecha;
+	// * (Pedido) a 1 (UnidadDeVenta)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "idUnidad", nullable = false)
 	private UnidadDeVenta unidad;
+	// 1 (Pedido) a * (ItemPedido): composicion. cascade="all-delete-orphan" del
+	// Hito 1 se escribe en JPA como cascade=ALL + orphanRemoval=true: si se borra
+	// el pedido se borran sus items, y sacar un item de la coleccion lo borra
+	@OneToMany(mappedBy = "pedido", fetch = FetchType.LAZY,
+			cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<ItemPedido> items = new HashSet<ItemPedido>();
+	@Column(nullable = false)
 	private double total;
 	
 	public Pedido() {

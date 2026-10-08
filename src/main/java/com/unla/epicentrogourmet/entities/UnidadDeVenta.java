@@ -34,17 +34,20 @@ public abstract class UnidadDeVenta {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "idFestival", nullable = false)
 	protected Festival festival;
-	// todavia no: Personal no es @Entity. En la tanda 3 pasa a ser
-	// @ManyToOne + @JoinColumn(name = "idResponsable")
-	@jakarta.persistence.Transient
+	// * (UnidadDeVenta) a 1 (Personal): el encargado de la unidad.
+	// La FK idResponsable vive en esta tabla. El Hito 1 tenia not-null="false",
+	// por eso el JoinColumn va sin nullable
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "idResponsable")
 	protected Personal responsable;
 	// todavia no: Plato no es @Entity. En la tanda siguiente pasa a ser
 	// @OneToMany(mappedBy = "unidad", cascade = CascadeType.MERGE)
 	@jakarta.persistence.Transient
 	protected Set<Plato> platos = new HashSet<Plato>();
-	// todavia no: Personal no es @Entity. En la tanda siguiente pasa a ser
-	// @OneToMany(mappedBy = "unidad", cascade = CascadeType.MERGE)
-	@jakarta.persistence.Transient
+	// 1 (UnidadDeVenta) a * (Personal). mappedBy es el inverse="true" del Hito 1:
+	// la FK idUnidad la escribe Personal.unidad, esta punta solo la lee
+	@OneToMany(mappedBy = "unidad", fetch = FetchType.LAZY,
+			cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	protected Set<Personal> staff = new HashSet<Personal>();
 	// todavia no: Pedido no es @Entity. En la tanda siguiente pasa a ser
 	// @OneToMany(mappedBy = "unidad", cascade = CascadeType.MERGE)

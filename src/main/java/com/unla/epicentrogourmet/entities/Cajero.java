@@ -2,6 +2,12 @@ package com.unla.epicentrogourmet.entities;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+// <joined-subclass name="datos.Cajero" table="cajero"> del Hito 1
+@Entity
+@Table(name = "cajero")
 public class Cajero extends Personal {
 
 	private String turno;

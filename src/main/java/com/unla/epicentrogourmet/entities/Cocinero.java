@@ -2,6 +2,12 @@ package com.unla.epicentrogourmet.entities;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+// <joined-subclass name="datos.Cocinero" table="cocinero"> del Hito 1
+@Entity
+@Table(name = "cocinero")
 public class Cocinero extends Personal {
 
 	private String especialidad;

@@ -3,17 +3,45 @@ package com.unla.epicentrogourmet.entities;
 import java.time.LocalDate;
 import java.time.Period;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+// <class table="personal" abstract="true"> + <joined-subclass> del Hito 1
+@Entity
+@Table(name = "personal")
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Personal {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	protected long idPersonal;
+	@Column(nullable = false)
 	protected String nombre;
+	@Column(nullable = false)
 	protected String apellido;
+	@Column(nullable = false, unique = true)
 	protected String dni;
+	@Column(nullable = false)
 	protected LocalDate fechaNacimiento;
+	@Column(nullable = false)
 	protected LocalDate fechaIngreso;
+	@Column(nullable = false)
 	protected double sueldoBase;
 
 	// cada empleado pertenece a una unidad de venta
+	// la FK idUnidad vive en esta tabla. Sin nullable=false: el Hito 1 tenia
+	// not-null="false", un empleado puede existir sin unidad asignada
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "idUnidad")
 	protected UnidadDeVenta unidad;
 
 	public Personal() {

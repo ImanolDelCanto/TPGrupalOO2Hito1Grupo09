@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<!-- Como el layout.html de la catedra: cada pagina toma de aca el head,
+     la barra de navegacion, el pie y los scripts con th:replace -->
+<head th:fragment="head">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Epicentro Gourmet</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" th:fragment="navbar">
+        <div class="container">
+            <a class="navbar-brand fw-bold" th:href="@{/index}">Epicentro Gourmet</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/index}">Inicio</a></li>
+                    <!-- sec:authorize muestra el link solo si el usuario tiene ese rol -->
+                    <li class="nav-item" sec:authorize="hasRole('ROLE_ADMINISTRADOR')">
+                        <a class="nav-link" th:href="@{/admin}">Administración</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ROLE_RESPONSABLE')">
+                        <a class="nav-link" th:href="@{/responsable}">Mi unidad</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ROLE_EMPLEADO')">
+                        <a class="nav-link" th:href="@{/empleado}">Mi recibo</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-2">
+                    <div sec:authorize="isAnonymous()" class="d-flex gap-2">
+                        <a class="btn btn-outline-light btn-sm" th:href="@{/registro/unidad}">Registrar unidad de venta</a>
+                        <a class="btn btn-light btn-sm" th:href="@{/login}">Iniciar sesión</a>
+                    </div>
+                    <div sec:authorize="isAuthenticated()" class="d-flex align-items-center gap-2">
+                        <span class="text-white-50 small" sec:authentication="name">usuario</span>
+                        <form th:action="@{/logout}" method="post" class="m-0">
+                            <button type="submit" class="btn btn-outline-light btn-sm">Cerrar sesión</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <footer class="bg-dark text-white-50 py-3 mt-5" th:fragment="footer">
+        <div class="container small">Orientación a Objetos II &middot; Grupo 09 &middot; UNLa</div>
+    </footer>
+
+    <div th:fragment="scripts">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    </div>
+
+</body>
+</html>

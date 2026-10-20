@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body class="bg-light">
+
+    <div class="container" style="max-width:420px">
+        <div class="card shadow-sm mt-5">
+            <div class="card-body p-4">
+                <h3 class="mb-1">Epicentro Gourmet</h3>
+                <p class="text-muted mb-4">Iniciá sesión para continuar</p>
+
+                <div th:if="${error != null}" class="alert alert-danger py-2">
+                    Email o contraseña inválidos, o el usuario está dado de baja.
+                </div>
+                <div th:if="${logout != null}" class="alert alert-success py-2">
+                    Sesión finalizada correctamente.
+                </div>
+
+                <!-- action y nombres de los campos coinciden con SecurityConfiguration:
+                     loginProcessingUrl("/loginprocess"), usernameParameter("username") -->
+                <form th:action="@{/loginprocess}" method="post">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="username" name="username"
+                               required autofocus placeholder="nombre@epicentro.com"/>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="password" name="password" required/>
+                    </div>
+                    <button type="submit" class="btn btn-dark w-100">Ingresar</button>
+                </form>
+                <a class="d-block text-center mt-3 small" th:href="@{/index}">Volver al inicio</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

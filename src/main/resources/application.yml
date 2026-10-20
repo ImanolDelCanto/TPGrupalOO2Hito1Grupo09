@@ -1,12 +1,10 @@
 spring:
   application:
     name: epicentrogourmet
-
   datasource:
     url: ${DB_URL}
     username: ${DB_USER}
     password: ${DB_PASS}
-
   jpa:
     hibernate:
       ddl-auto: update
@@ -14,10 +12,16 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
+    # Hibernate crea las tablas PRIMERO y recien despues corre data.sql.
+    # Sin esta linea el script se ejecuta antes y falla: las tablas no existen.
+    defer-datasource-initialization: true
+  sql:
+    init:
+      # 'always' = corre data.sql en cada arranque.
+      # Poner 'never' cuando no quieras que te pise los datos que cargaste a mano.
+      mode: always
   thymeleaf:
     cache: false
-
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}

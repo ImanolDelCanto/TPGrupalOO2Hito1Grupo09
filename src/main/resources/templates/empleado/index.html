@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body class="bg-light">
+    <nav th:replace="~{layout :: navbar}"></nav>
+
+    <main class="container py-5">
+        <h1 class="h3 mb-4">Mi recibo de sueldo</h1>
+
+        <div class="alert alert-warning" th:if="${error}" th:text="${error}">error</div>
+
+        <div class="card shadow-sm" style="max-width:640px" th:if="${liquidacion}">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between border-bottom pb-3 mb-3">
+                    <div>
+                        <div class="fw-semibold fs-5" th:text="${liquidacion.personal}">Apellido, Nombre</div>
+                        <div class="text-muted small" th:text="${liquidacion.rol}">Rol</div>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-semibold" th:text="${liquidacion.festival}">Festival</div>
+                        <div class="text-muted small" th:text="${liquidacion.diasFestival} + ' días de evento'">días</div>
+                    </div>
+                </div>
+
+                <table class="table table-sm mb-0">
+                    <tbody>
+                        <tr>
+                            <td>Sueldo base</td>
+                            <td class="text-end" th:text="'$ ' + ${#numbers.formatDecimal(liquidacion.sueldoBase,1,'POINT',2,'COMMA')}">0</td>
+                        </tr>
+                        <tr th:if="${liquidacion.plus.signum() > 0}">
+                            <td>Plus por categoría</td>
+                            <td class="text-end" th:text="'$ ' + ${#numbers.formatDecimal(liquidacion.plus,1,'POINT',2,'COMMA')}">0</td>
+                        </tr>
+                        <tr th:if="${liquidacion.antiguedad.signum() > 0}">
+                            <td>Antigüedad</td>
+                            <td class="text-end" th:text="'$ ' + ${#numbers.formatDecimal(liquidacion.antiguedad,1,'POINT',2,'COMMA')}">0</td>
+                        </tr>
+                        <tr>
+                            <th class="fs-5 pt-3">Total a cobrar</th>
+                            <th class="text-end fs-5 pt-3"
+                                th:text="'$ ' + ${#numbers.formatDecimal(liquidacion.totalACobrar,1,'POINT',2,'COMMA')}">0</th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <p class="text-muted small mt-3" style="max-width:640px">
+            Fórmula del enunciado: <code>(int(días / 15) + 1) × 50% × (sueldo base + adicional)</code>.
+            Los montos salen de los costos cargados en el festival.
+        </p>
+    </main>
+
+    <footer th:replace="~{layout :: footer}"></footer>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

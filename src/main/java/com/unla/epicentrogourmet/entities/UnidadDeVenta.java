@@ -1,5 +1,6 @@
 package com.unla.epicentrogourmet.entities;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,12 +35,12 @@ public abstract class UnidadDeVenta {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "idFestival", nullable = false)
 	protected Festival festival;
-	// * (UnidadDeVenta) a 1 (Personal): el encargado de la unidad.
-	// La FK idResponsable vive en esta tabla. El Hito 1 tenia not-null="false",
-	// por eso el JoinColumn va sin nullable
+	// El encargado de la unidad. Ahora apunta a Usuario y no a Personal:
+	// en el Hito 2 el responsable se registra junto con la unidad, antes de
+	// que exista ningun empleado, asi que todavia no es parte del staff.
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "idResponsable")
-	protected Personal responsable;
+	protected Usuario responsable;
 	// 1 (UnidadDeVenta) a * (Plato). mappedBy es el inverse="true" del Hito 1:
 	// la FK idUnidad la escribe Plato.unidad, esta punta solo la lee
 	@OneToMany(mappedBy = "unidad", fetch = FetchType.LAZY,
@@ -59,9 +60,8 @@ public abstract class UnidadDeVenta {
 	public UnidadDeVenta() {
 	}
 
-	// sin responsable: al construir la unidad el staff todavia esta vacio, asi que
-	// ningun empleado podria pasar la validacion de asignarResponsable. Se asigna
-	// despues, cuando el staff ya esta cargado.
+	// sin responsable: en el registro se crea primero la unidad y despues
+	// el Usuario del responsable, asi que se asigna con el setter.
 	public UnidadDeVenta(String nombreComercial, double superficie, String codigoUnico, Festival festival) {
 	    super();
 	    this.nombreComercial = nombreComercial;
@@ -110,12 +110,11 @@ public abstract class UnidadDeVenta {
 		this.festival = festival;
 	}
 
-	public Personal getResponsable() {
+	public Usuario getResponsable() {
 		return responsable;
 	}
-	// lo usa Hibernate para reconstruir el objeto al leerlo de la base,
-	// el staff puede no estar cargado todavia, por eso no puede exigir pertenencia al staff
-	public void setResponsable(Personal responsable) {
+
+	public void setResponsable(Usuario responsable) {
 	    this.responsable = responsable;
 	}
 
@@ -143,9 +142,10 @@ public abstract class UnidadDeVenta {
 		this.pedidos = pedidos;
 	}
 	
-	// Lo que le cuesta al festival tener esta unidad en el predio.
-	// Cada tipo paga distinto, por eso es abstracto.
-	public abstract double getCostoOperativo();
+	// El canon: lo que la unidad paga por estar en el predio.
+	// Cada tipo lo calcula distinto, por eso es abstracto. Los valores
+	// ($ por m2, plus de electricidad) salen de los Costo del festival.
+	public abstract BigDecimal getCostoOperativo();
 	
     public abstract String getDetalleEspecifico();
     
@@ -153,24 +153,6 @@ public abstract class UnidadDeVenta {
     	//Valida si el codigo es distinto de nulo y que tenga 10 caracteres
     	return this.codigoUnico != null && this.codigoUnico.length() == 10;
     }
-	
-    // asigna el responsable validando que sea parte del staff de esta unidad.
-    // Es el metodo que hay que usar desde el codigo de aplicacion (no el setter)
-	public void asignarResponsable(Personal responsable) {
-	    if (responsable != null && !perteneceAlStaff(responsable)) {
-	        throw new IllegalArgumentException("El responsable debe ser parte del staff de la unidad: " + responsable.getNombre());
-	    }
-	    this.responsable = responsable;
-	}
-	
-	// se compara por id para que ande incluso si el staff y el responsable
-	// vienen de consultas distintas (mismo empleado, objetos distintos)
-	private boolean perteneceAlStaff(Personal p) {
-	    for (Personal miembro : staff)
-	        if (miembro.getIdPersonal() == p.getIdPersonal())
-	            return true;
-	    return false;
-	}
 	
 	// agrega el empleado al staff y deja los dos lados apuntandose:
 	// sin el setUnidad, la FK idUnidad de ese empleado queda nula
@@ -183,14 +165,6 @@ public abstract class UnidadDeVenta {
 	public void agregarPedido(Pedido p) {
 	    pedidos.add(p);
 	    p.setUnidad(this);
-	}
-
-	// cada empleado sabe calcular su propio sueldo
-	public double getCostoSalarial() {
-		double total = 0;
-		for (Personal p : staff)
-			total += p.getSueldoTotal();
-		return total;
 	}
 
 	public int getCantidadDeStaff() {

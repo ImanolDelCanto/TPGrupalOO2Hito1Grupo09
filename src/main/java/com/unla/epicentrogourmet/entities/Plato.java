@@ -1,5 +1,7 @@
 package com.unla.epicentrogourmet.entities;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,10 +21,10 @@ public class Plato {
 	private long idPlato;
 	@Column(nullable = false)
 	private String nombre;
-	@Column(nullable = false)
-	private double precioVenta;
-	@Column(nullable = false)
-	private double costoProduccion;
+	@Column(nullable = false, precision = 12, scale = 2)
+	private BigDecimal precioVenta;
+	@Column(nullable = false, precision = 12, scale = 2)
+	private BigDecimal costoProduccion;
 	// * (Plato) a 1 (UnidadDeVenta). Lado dueño: la FK idUnidad vive en esta tabla
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "idUnidad", nullable = false)
@@ -32,7 +34,7 @@ public class Plato {
 	public Plato() {
 	}
 
-	public Plato(String nombre, double precioVenta, double costoProduccion, UnidadDeVenta unidad) {
+	public Plato(String nombre, BigDecimal precioVenta, BigDecimal costoProduccion, UnidadDeVenta unidad) {
 	    super();
 	    this.nombre = nombre;
 	    this.precioVenta = precioVenta;
@@ -57,19 +59,19 @@ public class Plato {
 		this.nombre = nombre;
 	}
 
-	public double getPrecioVenta() {
+	public BigDecimal getPrecioVenta() {
 		return precioVenta;
 	}
 
-	public void setPrecioVenta(double precioVenta) {
+	public void setPrecioVenta(BigDecimal precioVenta) {
 		this.precioVenta = precioVenta;
 	}
 
-	public double getCostoProduccion() {
+	public BigDecimal getCostoProduccion() {
 		return costoProduccion;
 	}
 
-	public void setCostoProduccion(double costoProduccion) {
+	public void setCostoProduccion(BigDecimal costoProduccion) {
 		this.costoProduccion = costoProduccion;
 	}
 

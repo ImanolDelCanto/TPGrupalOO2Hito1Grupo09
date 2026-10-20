@@ -1,5 +1,7 @@
 package com.unla.epicentrogourmet.entities;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,8 +21,8 @@ public class ItemPedido {
 	private long idItemPedido;
 	@Column(nullable = false)
 	private int cantidad;
-	@Column(nullable = false)
-	private double subtotal;
+	@Column(nullable = false, precision = 12, scale = 2)
+	private BigDecimal subtotal;
 	// * (ItemPedido) a 1 (Pedido). Lado dueño: la FK idPedido vive en esta tabla
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "idPedido", nullable = false)
@@ -38,7 +40,7 @@ public class ItemPedido {
 	    this.cantidad = cantidad;
 	    this.pedido = pedido;
 	    this.plato = plato;
-	    this.subtotal = cantidad * plato.getPrecioVenta();
+	    this.subtotal = plato.getPrecioVenta().multiply(BigDecimal.valueOf(cantidad));
 	}
 
 	public long getIdItemPedido() {
@@ -57,11 +59,11 @@ public class ItemPedido {
 		this.cantidad = cantidad;
 	}
 
-	public double getSubtotal() {
+	public BigDecimal getSubtotal() {
 		return subtotal;
 	}
 
-	public void setSubtotal(double subtotal) {
+	public void setSubtotal(BigDecimal subtotal) {
 		this.subtotal = subtotal;
 	}
 

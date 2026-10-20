@@ -1,5 +1,7 @@
 package com.unla.epicentrogourmet.entities;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -38,11 +40,16 @@ public class PuestoDesarmable extends UnidadDeVenta{
 		this.tiempoMontaje = tiempoMontaje;
 	}
 
-	// Ocupa superficie y ademas hay que montarlo: se cobra por minuto de montaje.
+	// Canon = superficie x $/m2 MENOS el tiempo de montaje x su valor.
+	// OJO: el enunciado del Hito 2 RESTA el montaje; el Hito 1 lo sumaba.
+	// Si la catedra dice que suma, cambiar subtract por add.
 	@Override
-	public double getCostoOperativo() {
-		return getSuperficie() * getFestival().getCostoPorSuperficie()
-				+ tiempoMontaje * getFestival().getCostoPorMontaje();
+	public BigDecimal getCostoOperativo() {
+		BigDecimal porSuperficie = BigDecimal.valueOf(getSuperficie())
+				.multiply(getFestival().getValorCosto(TipoCosto.POR_SUPERFICIE));
+		BigDecimal porMontaje = BigDecimal.valueOf(tiempoMontaje)
+				.multiply(getFestival().getValorCosto(TipoCosto.POR_MONTAJE));
+		return porSuperficie.subtract(porMontaje);
 	}
 
 	@Override

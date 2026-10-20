@@ -1,41 +1,49 @@
 package com.unla.epicentrogourmet.entities;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 
-// <joined-subclass name="datos.Cocinero" table="cocinero"> del Hito 1
 @Entity
 @Table(name = "cocinero")
 public class Cocinero extends Personal {
 
-	private String especialidad;
-	private double plusFijo;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private RolCocina rolCocina;
 
 	public Cocinero() {
 	}
 
 	public Cocinero(String nombre, String apellido, String dni, LocalDate fechaNacimiento,
-			LocalDate fechaIngreso, double sueldoBase, String especialidad, double plusFijo) {
-		super(nombre, apellido, dni, fechaNacimiento, fechaIngreso, sueldoBase);
-		this.especialidad = especialidad;
-		this.plusFijo = plusFijo;
+			LocalDate fechaIngreso, RolCocina rolCocina) {
+		super(nombre, apellido, dni, fechaNacimiento, fechaIngreso);
+		this.rolCocina = rolCocina;
 	}
 
-	public String getEspecialidad() { return especialidad; }
-	public void setEspecialidad(String especialidad) { this.especialidad = especialidad; }
+	public RolCocina getRolCocina() { return rolCocina; }
+	public void setRolCocina(RolCocina rolCocina) { this.rolCocina = rolCocina; }
 
-	public double getPlusFijo() { return plusFijo; }
-	public void setPlusFijo(double plusFijo) { this.plusFijo = plusFijo; }
-
+	// El cocinero cobra un plus segun su categoria. El monto no esta escrito
+	// aca: se busca en los Costo del festival.
 	@Override
-	public double getSueldoTotal() {
-		return getSueldoBase() + plusFijo;
+	public BigDecimal getPlus(Festival festival) {
+		if (rolCocina == RolCocina.COCINERO)
+			return festival.getValorCosto(TipoCosto.PLUS_COCINERO);
+		if (rolCocina == RolCocina.AYUDANTE)
+			return festival.getValorCosto(TipoCosto.PLUS_COCINERO_AYUDANTE);
+		if (rolCocina == RolCocina.LAVAPLATOS)
+			return festival.getValorCosto(TipoCosto.PLUS_LAVAPLATOS);
+		return BigDecimal.ZERO;
 	}
 
 	@Override
 	public String toString() {
-		return "Cocinero " + super.toString() + " - " + especialidad;
+		return "Cocinero " + super.toString() + " - " + rolCocina;
 	}
 }

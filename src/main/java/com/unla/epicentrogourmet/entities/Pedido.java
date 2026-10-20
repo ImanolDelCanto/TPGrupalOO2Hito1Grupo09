@@ -1,5 +1,6 @@
 package com.unla.epicentrogourmet.entities;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,8 +36,8 @@ public class Pedido {
 	@OneToMany(mappedBy = "pedido", fetch = FetchType.LAZY,
 			cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<ItemPedido> items = new HashSet<ItemPedido>();
-	@Column(nullable = false)
-	private double total;
+	@Column(nullable = false, precision = 12, scale = 2)
+	private BigDecimal total;
 	
 	public Pedido() {
 	}
@@ -45,7 +46,7 @@ public class Pedido {
 	    super();
 	    this.fecha = fecha;
 	    this.unidad = unidad;
-	    this.total = 0;
+	    this.total = BigDecimal.ZERO;
 	}
 
 	public long getIdPedido() {
@@ -80,11 +81,11 @@ public class Pedido {
 		this.items = items;
 	}
 
-	public double getTotal() {
+	public BigDecimal getTotal() {
 		return total;
 	}
 
-	public void setTotal(double total) {
+	public void setTotal(BigDecimal total) {
 		this.total = total;
 	}
 	
@@ -92,7 +93,7 @@ public class Pedido {
 	public void agregarItem(ItemPedido item) {
 	    items.add(item);
 	    item.setPedido(this);
-	    this.total += item.getSubtotal();
+	    this.total = this.total.add(item.getSubtotal());
 	}
 
 	@Override

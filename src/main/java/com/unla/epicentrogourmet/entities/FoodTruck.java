@@ -1,5 +1,7 @@
 package com.unla.epicentrogourmet.entities;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -43,13 +45,15 @@ public class FoodTruck extends UnidadDeVenta{
 	    return "patente: " + patente + ", requiere electricidad: " + (requiereElectricidad ? "si" : "no");
 	}
 
-	// Ocupa superficie y, si necesita electricidad, paga el plus del festival.
+	// Canon = superficie x $/m2, y si necesita electricidad suma el plus.
+	// Los dos valores salen de los Costo del festival, no estan escritos aca.
 	@Override
-	public double getCostoOperativo() {
-		double costo = getSuperficie() * getFestival().getCostoPorSuperficie();
+	public BigDecimal getCostoOperativo() {
+		BigDecimal canon = BigDecimal.valueOf(getSuperficie())
+				.multiply(getFestival().getValorCosto(TipoCosto.POR_SUPERFICIE));
 		if (requiereElectricidad)
-			costo += getFestival().getPlusElectricidad();
-		return costo;
+			canon = canon.add(getFestival().getValorCosto(TipoCosto.PLUS_ELECTRICIDAD));
+		return canon;
 	}
 
 	@Override

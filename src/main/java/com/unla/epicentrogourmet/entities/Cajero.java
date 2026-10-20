@@ -1,51 +1,44 @@
 package com.unla.epicentrogourmet.entities;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 
-// <joined-subclass name="datos.Cajero" table="cajero"> del Hito 1
 @Entity
 @Table(name = "cajero")
 public class Cajero extends Personal {
 
-	private String turno;
-	private double recaudacion;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private Turno turno;
 
 	public Cajero() {
 	}
 
-	public Cajero(String nombre, String apellido, String dni, LocalDate fechaNacimiento, LocalDate fechaIngreso,
-			double sueldoBase, String turno, double recaudacion) {
-		super(nombre, apellido, dni, fechaNacimiento, fechaIngreso, sueldoBase);
-		this.turno = turno;
-		this.recaudacion = recaudacion;
-	}
-
-	public String getTurno() {
-		return turno;
-	}
-
-	public void setTurno(String turno) {
+	public Cajero(String nombre, String apellido, String dni, LocalDate fechaNacimiento,
+			LocalDate fechaIngreso, Turno turno) {
+		super(nombre, apellido, dni, fechaNacimiento, fechaIngreso);
 		this.turno = turno;
 	}
 
-	public double getRecaudacion() {
-		return recaudacion;
-	}
+	public Turno getTurno() { return turno; }
+	public void setTurno(Turno turno) { this.turno = turno; }
 
-	public void setRecaudacion(double recaudacion) {
-		this.recaudacion = recaudacion;
-	}
-
+	// El cajero no cobra plus por categoria: cobra antiguedad.
+	// Un monto por cada anio trabajado, definido por el festival.
 	@Override
-	public double getSueldoTotal() {
-		return getSueldoBase();
+	public BigDecimal getPlus(Festival festival) {
+		return festival.getValorCosto(TipoCosto.ANIO_ANTIGUEDAD)
+				.multiply(BigDecimal.valueOf(getAntiguedad()));
 	}
 
 	@Override
 	public String toString() {
-		return "Cajero [" + super.toString() + ", turno=" + turno + ", recaudacion=" + recaudacion + "]";
+		return "Cajero " + super.toString() + " - turno " + turno;
 	}
 }

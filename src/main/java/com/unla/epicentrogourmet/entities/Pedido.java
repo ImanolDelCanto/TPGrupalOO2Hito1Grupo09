@@ -17,6 +17,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+import java.util.Collections;
+
 // <class name="datos.Pedido" table="pedido"> del Hito 1
 @Entity
 @Table(name = "pedido")
@@ -39,14 +41,16 @@ public class Pedido {
 	@Column(nullable = false, precision = 12, scale = 2)
 	private BigDecimal total;
 	
-	public Pedido() {
+	// JPA necesita un constructor vacio para leer pedidos de la base
+	// protected: Hibernate lo puede usar, pero desde el codigo no
+	protected Pedido() {
 	}
 
-	public Pedido(LocalDate fecha, UnidadDeVenta unidad) {
-	    super();
-	    this.fecha = fecha;
-	    this.unidad = unidad;
-	    this.total = BigDecimal.ZERO;
+	// La fecha la pone el pedido: siempre del dia en que se carga
+	public Pedido(UnidadDeVenta unidad) {
+		this.fecha = LocalDate.now();
+		this.unidad = unidad;
+		this.total = BigDecimal.ZERO;
 	}
 
 	public long getIdPedido() {
@@ -61,10 +65,6 @@ public class Pedido {
 		return fecha;
 	}
 
-	public void setFecha(LocalDate fecha) {
-		this.fecha = fecha;
-	}
-
 	public UnidadDeVenta getUnidad() {
 		return unidad;
 	}
@@ -73,27 +73,31 @@ public class Pedido {
 		this.unidad = unidad;
 	}
 
+	// se devuelve una vista de solo lectura: desde afuera se puede recorrer,
+	// pero no agregar ni sacar items sin pasar por agregarItem()
 	public Set<ItemPedido> getItems() {
-		return items;
-	}
-
-	public void setItems(Set<ItemPedido> items) {
-		this.items = items;
+		return Collections.unmodifiableSet(items);
 	}
 
 	public BigDecimal getTotal() {
 		return total;
 	}
-
-	public void setTotal(BigDecimal total) {
-		this.total = total;
-	}
 	
-	// deja los dos lados apuntandose y actualiza el total del pedido
-	public void agregarItem(ItemPedido item) {
-	    items.add(item);
-	    item.setPedido(this);
-	    this.total = this.total.add(item.getSubtotal());
+	// El pedido crea sus propios items, porque los contiene
+	// Valida, crea el item y actualiza el total: el pedido nunca queda inconsistente
+	public void agregarItem(Plato plato, int cantidad) {
+		if (cantidad <= 0)
+			throw new IllegalArgumentException("La cantidad de " + plato.getNombre() + " debe ser mayor a 0");
+		if (plato.getUnidad().getIdUnidad() != unidad.getIdUnidad())
+			throw new IllegalArgumentException("El plato " + plato.getNombre() + " no es de esta unidad de venta");
+
+		ItemPedido item = new ItemPedido(cantidad, this, plato);
+		items.add(item);
+		total = total.add(item.getSubtotal());
+	}
+
+	public boolean tieneItems() {
+		return !items.isEmpty();
 	}
 
 	@Override

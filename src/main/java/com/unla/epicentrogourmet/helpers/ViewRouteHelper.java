@@ -18,6 +18,8 @@ public class ViewRouteHelper {
 
 	// RESPONSABLE
 	public final static String RESPONSABLE_INDEX = "responsable/index";
+	public final static String RESPONSABLE_PEDIDO = "responsable/pedido";  //formulario para cargar un pedido
+	public final static String RESPONSABLE_PEDIDOS = "responsable/pedidos";  //listado de los pedidos cargados
 
 	// EMPLEADO
 	public final static String EMPLEADO_INDEX = "empleado/index";

@@ -14,4 +14,7 @@ public interface IPedidoRepository extends JpaRepository<Pedido, Long> {
 	public abstract List<Pedido> findByUnidadIdUnidad(Long idUnidad);
 
 	public abstract List<Pedido> findByUnidadIdUnidadAndFechaBetween(Long idUnidad, LocalDate desde, LocalDate hasta);
+
+	// los pedidos de una unidad, del mas nuevo al mas viejo (para el listado)
+	public abstract List<Pedido> findByUnidadIdUnidadOrderByFechaDescIdPedidoDesc(Long idUnidad);
 }

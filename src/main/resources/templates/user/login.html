@@ -18,10 +18,6 @@
                   <div th:if="${registrado != null}" class="alert alert-success py-2">
                       ¡Unidad registrada! Ya podés iniciar sesión con tu email y contraseña.
                   </div>
-
-                    <div th:if="${registrado != null}" class="alert alert-success py-2">
-                    ¡Unidad registrada! Ya podés iniciar sesión con tu email y contraseña.
-                </div>
                 <!-- action y nombres de los campos coinciden con SecurityConfiguration:
                      loginProcessingUrl("/loginprocess"), usernameParameter("username") -->
                 <form th:action="@{/loginprocess}" method="post">

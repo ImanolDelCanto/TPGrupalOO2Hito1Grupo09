@@ -122,6 +122,11 @@ public class Festival {
 		return !hoy.isBefore(fechaInicio) && !hoy.isAfter(fechaFin);
 	}
 
+	// ya termino: su fecha de fin quedo en el pasado
+	public boolean estaFinalizado() {
+    return fechaFin.isBefore(LocalDate.now());
+	}
+
 	@Override
 	public String toString() {
 		return nombre + " (" + temporada + ", " + fechaInicio + " a " + fechaFin + ")";

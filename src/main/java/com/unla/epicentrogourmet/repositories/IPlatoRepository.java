@@ -11,4 +11,7 @@ import com.unla.epicentrogourmet.entities.Plato;
 public interface IPlatoRepository extends JpaRepository<Plato, Long> {
 
 	public abstract List<Plato> findByUnidadIdUnidad(Long idUnidad);
+
+	// el menu de una unidad, ordenado alfabeticamente (para el formulario)
+	public abstract List<Plato> findByUnidadIdUnidadOrderByNombreAsc(Long idUnidad);
 }

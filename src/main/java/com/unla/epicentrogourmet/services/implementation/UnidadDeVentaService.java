@@ -3,6 +3,12 @@ package com.unla.epicentrogourmet.services.implementation;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.mail.MailException;
+
+import com.unla.epicentrogourmet.services.IEmailService;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,22 +27,27 @@ import com.unla.epicentrogourmet.services.IUnidadDeVentaService;
 @Service("unidadDeVentaService")
 public class UnidadDeVentaService implements IUnidadDeVentaService {
 
+	private static final Logger log = LoggerFactory.getLogger(UnidadDeVentaService.class);
+
 	private final IUnidadDeVentaRepository unidadDeVentaRepository;
 	private final IUsuarioRepository usuarioRepository;
 	private final IFestivalRepository festivalRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final UnidadDeVentaFactory unidadFactory;
+	private final IEmailService emailService;
 
 	public UnidadDeVentaService(IUnidadDeVentaRepository unidadDeVentaRepository,
 			IUsuarioRepository usuarioRepository,
 			IFestivalRepository festivalRepository,
 			PasswordEncoder passwordEncoder,
-			UnidadDeVentaFactory unidadFactory) {
+			UnidadDeVentaFactory unidadFactory,
+			IEmailService emailService) {
 		this.unidadDeVentaRepository = unidadDeVentaRepository;
 		this.usuarioRepository = usuarioRepository;
 		this.festivalRepository = festivalRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.unidadFactory = unidadFactory;
+		this.emailService = emailService;
 	}
 
 	@Override
@@ -81,6 +92,14 @@ public class UnidadDeVentaService implements IUnidadDeVentaService {
 
 		// 4. se vinculan y se guarda la unidad
 		unidad.setResponsable(responsable);
-		return unidadDeVentaRepository.save(unidad);
+		UnidadDeVenta guardada = unidadDeVentaRepository.save(unidad);
+
+		// 5. aviso por mail: si falla, el registro sigue siendo valido
+		try {
+			emailService.enviarBienvenidaResponsable(responsable.getEmail(), guardada.getNombreComercial());
+		} catch (MailException e) {
+			log.warn("No se pudo enviar el mail de bienvenida a {}: {}", responsable.getEmail(), e.getMessage());
+		}
+		return guardada;
 	}
 }

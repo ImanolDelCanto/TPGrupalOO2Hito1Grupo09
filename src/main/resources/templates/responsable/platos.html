@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body class="bg-light">
+    <nav th:replace="~{layout :: navbar}"></nav>
+
+    <main class="container py-5">
+        <h1 class="h3 mb-4">Menú de mi unidad</h1>
+
+        <div class="alert alert-success" th:if="${exito}" th:text="${exito}">exito</div>
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}">error</div>
+
+        <div class="row g-4">
+            <!-- MENU -->
+            <div class="col-lg-7">
+                <div class="card shadow-sm" th:if="${menu != null and !#lists.isEmpty(menu)}">
+                    <table class="table mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Plato</th>
+                                <th class="text-end">Precio</th>
+                                <th class="text-end">Costo</th>
+                                <th class="text-end">Ganancia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="p : ${menu}">
+                                <td th:text="${p.nombre}">plato</td>
+                                <td class="text-end" th:text="'$ ' + ${#numbers.formatDecimal(p.precioVenta,1,'POINT',2,'COMMA')}">0</td>
+                                <td class="text-end" th:text="'$ ' + ${#numbers.formatDecimal(p.costoProduccion,1,'POINT',2,'COMMA')}">0</td>
+                                <td class="text-end text-success"
+                                    th:text="'$ ' + ${#numbers.formatDecimal(p.precioVenta.subtract(p.costoProduccion),1,'POINT',2,'COMMA')}">0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-muted" th:if="${menu != null and #lists.isEmpty(menu)}">
+                    Todavía no cargaste platos. Agregá el primero con el formulario.
+                </p>
+            </div>
+
+            <!-- FORMULARIO -->
+            <div class="col-lg-5">
+                <form th:action="@{/responsable/platos}" th:object="${plato}" method="post" class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <h2 class="h5 mb-3">Agregar plato</h2>
+
+                        <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+                            <p class="mb-0" th:each="e : ${#fields.globalErrors()}" th:text="${e}">error</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre</label>
+                            <input type="text" th:field="*{nombre}" maxlength="100" class="form-control" th:errorclass="is-invalid"/>
+                            <div class="invalid-feedback" th:errors="*{nombre}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="precioVenta" class="form-label">Precio de venta ($)</label>
+                            <input type="number" step="0.01" min="0.01" th:field="*{precioVenta}" class="form-control" th:errorclass="is-invalid"/>
+                            <div class="invalid-feedback" th:errors="*{precioVenta}"></div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="costoProduccion" class="form-label">Costo de producción ($)</label>
+                            <input type="number" step="0.01" min="0.01" th:field="*{costoProduccion}" class="form-control" th:errorclass="is-invalid"/>
+                            <div class="invalid-feedback" th:errors="*{costoProduccion}"></div>
+                        </div>
+
+                        <button type="submit" class="btn btn-dark w-100">Agregar al menú</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{layout :: footer}"></footer>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

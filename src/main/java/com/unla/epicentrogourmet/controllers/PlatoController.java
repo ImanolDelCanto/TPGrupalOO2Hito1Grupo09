@@ -18,8 +18,7 @@ import com.unla.epicentrogourmet.services.IPlatoService;
 
 import jakarta.validation.Valid;
 
-// Controller propio para los platos (y no metodos nuevos en ResponsableController),
-// asi no choca con el ABM de empleados que hace Imanol en ese archivo.
+// Un controller por recurso
 @Controller
 @PreAuthorize("hasRole('ROLE_RESPONSABLE')")
 @RequestMapping("/responsable/platos")

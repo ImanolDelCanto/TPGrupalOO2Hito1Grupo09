@@ -50,6 +50,9 @@
             Fórmula del enunciado: <code>(int(días / 15) + 1) × 50% × (sueldo base + adicional)</code>.
             Los montos salen de los costos cargados en el festival.
         </p>
+        <a class="btn btn-dark mt-3" th:if="${liquidacion}" th:href="@{/empleado/recibo}">
+            Descargar recibo en PDF
+        </a>
     </main>
 
     <footer th:replace="~{layout :: footer}"></footer>

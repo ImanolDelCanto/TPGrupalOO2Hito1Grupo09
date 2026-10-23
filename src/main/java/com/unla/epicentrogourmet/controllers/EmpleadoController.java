@@ -1,5 +1,7 @@
 package com.unla.epicentrogourmet.controllers;
 
+import java.util.List;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.unla.epicentrogourmet.dtos.LiquidacionHaberesDTO;
+import com.unla.epicentrogourmet.dtos.TrabajoEnFestivalDTO;
 import com.unla.epicentrogourmet.helpers.ViewRouteHelper;
+import com.unla.epicentrogourmet.services.IEmpleadoService;
 import com.unla.epicentrogourmet.services.ILiquidacionService;
 import com.unla.epicentrogourmet.services.IReciboPdfService;
 
@@ -22,19 +26,31 @@ public class EmpleadoController {
 
 	private final ILiquidacionService liquidacionService;
 	private final IReciboPdfService reciboPdfService;
+	private final IEmpleadoService empleadoService;
 
 	public EmpleadoController(ILiquidacionService liquidacionService,
-			IReciboPdfService reciboPdfService) {
+			IReciboPdfService reciboPdfService,
+			IEmpleadoService empleadoService) {
 		this.liquidacionService = liquidacionService;
 		this.reciboPdfService = reciboPdfService;
+		this.empleadoService = empleadoService;
 	}
 
 	// auth.getName() devuelve el email del que inicio sesion:
-	// con eso se busca su empleado y se le liquida el sueldo
+	// con eso se arma toda la pantalla
 	@GetMapping("")
 	public ModelAndView index(Authentication auth) {
 		ModelAndView mAV = new ModelAndView(ViewRouteHelper.EMPLEADO_INDEX);
 		mAV.addObject("username", auth.getName());
+
+		// los festivales y unidades en los que trabajo
+		List<TrabajoEnFestivalDTO> trabajos = empleadoService.trabajosPorEmail(auth.getName());
+		mAV.addObject("trabajos", trabajos);
+		// de esos, el que esta en curso hoy. Se le pasa la lista ya cargada
+		// para no volver a consultar la base.
+		mAV.addObject("trabajoDeHoy", empleadoService.trabajoDeHoy(trabajos));
+
+		// el recibo del festival que esta liquidando
 		try {
 			mAV.addObject("liquidacion", liquidacionService.liquidarPorEmail(auth.getName()));
 		} catch (IllegalArgumentException e) {

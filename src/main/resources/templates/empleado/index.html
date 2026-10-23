@@ -5,9 +5,71 @@
     <nav th:replace="~{layout :: navbar}"></nav>
 
     <main class="container py-5">
-        <h1 class="h3 mb-4">Mi recibo de sueldo</h1>
+        <h1 class="h3 mb-4">Mi información</h1>
 
         <div class="alert alert-warning" th:if="${error}" th:text="${error}">error</div>
+
+        <!-- ===== 1. ¿trabajo hoy? ===== -->
+        <div class="card border-success shadow-sm mb-5" style="max-width:860px" th:if="${trabajoDeHoy}">
+            <div class="card-body p-4">
+                <div class="text-uppercase small fw-semibold text-success mb-2">Hoy estás trabajando</div>
+                <div class="fs-5 fw-semibold" th:text="${trabajoDeHoy.unidad}">Unidad</div>
+                <div class="text-muted" th:text="${trabajoDeHoy.festival} + ' · ' + ${trabajoDeHoy.tipoUnidad}">Festival</div>
+                <div class="text-muted small"
+                     th:text="'Del ' + ${#temporals.format(trabajoDeHoy.fechaInicio,'dd/MM/yyyy')} +
+                              ' al ' + ${#temporals.format(trabajoDeHoy.fechaFin,'dd/MM/yyyy')}">fechas</div>
+            </div>
+        </div>
+
+        <div class="alert alert-secondary" style="max-width:860px"
+             th:if="${trabajoDeHoy == null and !#lists.isEmpty(trabajos)}">
+            Hoy no tenés ningún festival en curso.
+        </div>
+
+        <!-- ===== 2. los festivales en los que trabajó ===== -->
+        <h2 class="h5 mb-3">Mis festivales</h2>
+
+        <div class="card shadow-sm mb-5" style="max-width:860px" th:if="${!#lists.isEmpty(trabajos)}">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Festival</th>
+                            <th>Unidad de venta</th>
+                            <th>Período</th>
+                            <th class="text-end">Días</th>
+                            <th class="text-end">Sueldo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="t : ${trabajos}">
+                            <td>
+                                <span class="fw-semibold" th:text="${t.festival}">Festival</span>
+                                <span class="badge bg-success ms-1" th:if="${t.activo}">En curso</span>
+                                <div class="text-muted small" th:text="${t.temporada}">TEMPORADA</div>
+                            </td>
+                            <td>
+                                <span th:text="${t.unidad}">Unidad</span>
+                                <div class="text-muted small" th:text="${t.tipoUnidad}">Tipo</div>
+                            </td>
+                            <td class="text-muted small"
+                                th:text="${#temporals.format(t.fechaInicio,'dd/MM/yyyy')} + ' al ' +
+                                         ${#temporals.format(t.fechaFin,'dd/MM/yyyy')}">fechas</td>
+                            <td class="text-end" th:text="${t.diasFestival}">0</td>
+                            <td class="text-end fw-semibold"
+                                th:text="'$ ' + ${#numbers.formatDecimal(t.totalACobrar,1,'POINT',2,'COMMA')}">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <p class="text-muted" style="max-width:860px" th:if="${#lists.isEmpty(trabajos)}">
+            Todavía no estás asignado a ninguna unidad de venta.
+        </p>
+
+        <!-- ===== 3. el recibo ===== -->
+        <h2 class="h5 mb-3">Mi recibo de sueldo</h2>
 
         <div class="card shadow-sm" style="max-width:640px" th:if="${liquidacion}">
             <div class="card-body p-4">
@@ -46,13 +108,14 @@
             </div>
         </div>
 
+        <a class="btn btn-dark mt-3" th:if="${liquidacion}" th:href="@{/empleado/recibo}">
+            Descargar recibo en PDF
+        </a>
+
         <p class="text-muted small mt-3" style="max-width:640px">
             Fórmula del enunciado: <code>(int(días / 15) + 1) × 50% × (sueldo base + adicional)</code>.
             Los montos salen de los costos cargados en el festival.
         </p>
-        <a class="btn btn-dark mt-3" th:if="${liquidacion}" th:href="@{/empleado/recibo}">
-            Descargar recibo en PDF
-        </a>
     </main>
 
     <footer th:replace="~{layout :: footer}"></footer>

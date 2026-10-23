@@ -14,6 +14,8 @@ public interface IPersonalRepository extends JpaRepository<Personal, Long> {
 	// el empleado que corresponde al usuario logueado
 	public abstract Optional<Personal> findByUsuarioEmail(String email);
 
+	public abstract List<Personal> findAllByUsuarioEmail(String email);
+
 	public abstract Optional<Personal> findByDni(String dni);
 
 	// solo los activos: la baja logica vive en Usuario.activo

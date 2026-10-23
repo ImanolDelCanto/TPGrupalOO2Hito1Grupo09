@@ -16,9 +16,6 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import com.unla.epicentrogourmet.services.implementation.UsuarioService;
 
-// Misma estructura que la SecurityConfiguration del repo de la catedra.
-// Diferencia: la pagina de inicio y el registro son publicos, porque el
-// enunciado dice que se ven sin iniciar sesion.
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity // habilita @PreAuthorize arriba de los controllers
@@ -33,7 +30,7 @@ public class SecurityConfiguration {
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http
-				// CSRF deshabilitado como en el repo de la catedra
+				// CSRF deshabilitado como en el repo 
 				.csrf(AbstractHttpConfigurer::disable)
 				.cors(AbstractHttpConfigurer::disable)
 				.authorizeHttpRequests(auth -> {

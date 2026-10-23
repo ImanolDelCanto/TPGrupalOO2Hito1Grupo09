@@ -23,7 +23,7 @@ public class UserController {
 	}
 
 	// Spring manda aca despues de un login exitoso.
-	// La catedra manda a todos a /index; nosotros repartimos segun el rol.
+	// repartimos segun el rol.
 	@GetMapping("/loginsuccess")
 	public String loginCheck(Authentication auth) {
 		if (tieneRol(auth, "ROLE_ADMINISTRADOR"))

@@ -1,6 +1,6 @@
 package com.unla.epicentrogourmet.helpers;
 
-// Como en el repo de la catedra: todas las rutas de vistas en un solo lugar.
+// Todas las rutas de vistas en un solo lugar.
 // Si se mueve una plantilla, se cambia aca y no en cada controller.
 public class ViewRouteHelper {
 	/**** Views ****/

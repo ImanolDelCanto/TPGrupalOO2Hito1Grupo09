@@ -62,7 +62,6 @@ INSERT INTO usuario (id_usuario, email, password, activo, primer_ingreso_hecho) 
  (8, 'diego@epicentro.com',  '$2a$10$GmgwYaBI2NDc8UVa3hoMDe1BHPXJc9HFKfoJlKNV3o32G06XbfWgu', 1, 0),
  (9, 'baja@epicentro.com',   '$2a$10$GmgwYaBI2NDc8UVa3hoMDe1BHPXJc9HFKfoJlKNV3o32G06XbfWgu', 0, 1);
 
--- ---------- ROLES (tabla aparte, como el user_role de la catedra) ----------
 INSERT INTO usuario_rol (id_usuario_rol, id_usuario, rol) VALUES
  (1, 1, 'ADMINISTRADOR'),
  (2, 2, 'RESPONSABLE'),

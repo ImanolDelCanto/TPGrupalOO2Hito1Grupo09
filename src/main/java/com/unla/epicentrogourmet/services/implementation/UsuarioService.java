@@ -17,7 +17,6 @@ import com.unla.epicentrogourmet.entities.Usuario;
 import com.unla.epicentrogourmet.entities.UsuarioRol;
 import com.unla.epicentrogourmet.repositories.IUsuarioRepository;
 
-// Mismo esquema que el UserService de la catedra.
 // Es el puente entre NUESTRA tabla usuario y Spring Security: Spring no conoce
 // nuestras clases, le devolvemos un User (el de Spring) y el hace el resto.
 @Service("usuarioService")
@@ -46,7 +45,6 @@ public class UsuarioService implements UserDetailsService {
 	}
 
 	// Cada rol del usuario se convierte en una autoridad de Spring.
-	// La catedra guarda "ROLE_ADMIN" ya armado; nosotros guardamos el enum
 	// y le agregamos el prefijo ROLE_ aca.
 	private List<GrantedAuthority> buildGrantedAuthorities(Set<UsuarioRol> roles) {
 		Set<GrantedAuthority> grantedAuthorities = new HashSet<>();

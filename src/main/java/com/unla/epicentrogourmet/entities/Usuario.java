@@ -13,7 +13,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
-// La cuenta con la que se entra al sistema. Sigue el User del repo de la catedra:
 // los roles van en una tabla aparte (UsuarioRol), no adentro de esta clase.
 @Entity
 @Table(name = "usuario")

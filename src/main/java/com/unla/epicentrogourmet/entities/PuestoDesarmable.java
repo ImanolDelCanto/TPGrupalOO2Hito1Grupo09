@@ -40,9 +40,6 @@ public class PuestoDesarmable extends UnidadDeVenta{
 		this.tiempoMontaje = tiempoMontaje;
 	}
 
-	// Canon = superficie x $/m2 MENOS el tiempo de montaje x su valor.
-	// OJO: el enunciado del Hito 2 RESTA el montaje; el Hito 1 lo sumaba.
-	// Si la catedra dice que suma, cambiar subtract por add.
 	@Override
 	public BigDecimal getCostoOperativo() {
 		BigDecimal porSuperficie = BigDecimal.valueOf(getSuperficie())

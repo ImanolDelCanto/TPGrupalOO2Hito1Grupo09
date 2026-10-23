@@ -11,7 +11,7 @@ import com.unla.epicentrogourmet.services.IFestivalService;
 import com.unla.epicentrogourmet.services.IUnidadDeVentaService;
 
 // @PreAuthorize sobre la clase: TODOS los metodos de este controller exigen
-// el rol. Mismo mecanismo que DegreeController en el repo de la catedra.
+// el rol. Mismo mecanismo que DegreeController en el repo
 @Controller
 @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
 @RequestMapping("/admin")

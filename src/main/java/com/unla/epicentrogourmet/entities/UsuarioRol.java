@@ -13,7 +13,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
-// Mismo patron que el UserRole de la catedra: un usuario puede tener varios roles,
+// Usuario puede tener varios roles,
 // cada uno es una fila. La diferencia: ellos guardan el rol como texto libre
 // ("ROLE_ADMIN") y nosotros como el enum Rol, asi no se puede guardar mal escrito.
 // El unique impide que el mismo usuario tenga dos veces el mismo rol.

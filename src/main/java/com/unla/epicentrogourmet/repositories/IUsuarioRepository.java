@@ -12,7 +12,6 @@ import com.unla.epicentrogourmet.entities.Usuario;
 @Repository("usuarioRepository")
 public interface IUsuarioRepository extends JpaRepository<Usuario, Long> {
 
-	// Igual que findByUsernameAndFetchUserRolesEagerly de la catedra.
 	// JOIN FETCH trae los roles en la misma consulta: Spring Security los
 	// necesita apenas carga el usuario, y la relacion es LAZY.
 	@Query("SELECT u FROM Usuario u JOIN FETCH u.roles WHERE u.email = (:email)")

@@ -35,11 +35,15 @@ public class Plato {
 	}
 
 	public Plato(String nombre, BigDecimal precioVenta, BigDecimal costoProduccion, UnidadDeVenta unidad) {
-	    super();
-	    this.nombre = nombre;
-	    this.precioVenta = precioVenta;
-	    this.costoProduccion = costoProduccion;
-	    this.unidad = unidad;
+		if (precioVenta == null || costoProduccion == null)
+			throw new IllegalArgumentException("El precio y el costo son obligatorios");
+		if (precioVenta.compareTo(costoProduccion) <= 0)
+			throw new IllegalArgumentException("El precio de venta tiene que ser mayor que el costo de producción");
+
+		this.nombre = nombre;
+		this.precioVenta = precioVenta;
+		this.costoProduccion = costoProduccion;
+		this.unidad = unidad;
 	}
 
 

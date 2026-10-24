@@ -132,3 +132,82 @@ INSERT INTO item_pedido (id_item_pedido, cantidad, subtotal, id_pedido, id_plato
  ( 7, 1,  6000.00, 4, 5),
  ( 8, 5,  9000.00, 5, 4),
  ( 9, 2, 18000.00, 6, 6);
+
+
+--  Datos extra para los REPORTES, CAJERO y CIERRE DE CAJA
+--  Ids nuevos: usuario 10-13, usuario_rol 10-13, unidad 4-5, personal 6-7, plato 7-12, pedido 7-17, item 10-23
+--  Claves: resp1234 (responsables) / emp1234 (empleados)
+
+-- ---------- 2 UNIDADES NUEVAS EN EPICENTRO PRIMAVERA (festival 2) ----------
+INSERT INTO usuario (id_usuario, email, password, activo, primer_ingreso_hecho) VALUES
+ (10, 'tomas@epicentro.com',   '$2a$10$RnWxoAFRacMAb6Al2gWJNu49jluRRT/.f0axi3uSCuVcwplcNtX.G', 1, 1),
+ (11, 'julia@epicentro.com',   '$2a$10$RnWxoAFRacMAb6Al2gWJNu49jluRRT/.f0axi3uSCuVcwplcNtX.G', 1, 1),
+ (12, 'martin@epicentro.com',  '$2a$10$GmgwYaBI2NDc8UVa3hoMDe1BHPXJc9HFKfoJlKNV3o32G06XbfWgu', 1, 0),
+ (13, 'valeria@epicentro.com', '$2a$10$GmgwYaBI2NDc8UVa3hoMDe1BHPXJc9HFKfoJlKNV3o32G06XbfWgu', 1, 0);
+
+INSERT INTO usuario_rol (id_usuario_rol, id_usuario, rol) VALUES
+ (10, 10, 'RESPONSABLE'),
+ (11, 11, 'RESPONSABLE'),
+ (12, 12, 'EMPLEADO'),
+ (13, 13, 'EMPLEADO');
+
+INSERT INTO unidad_de_venta (id_unidad, nombre_comercial, superficie, codigo_unico, id_festival, id_responsable) VALUES
+ (4, 'Sushi al Paso',      12.0, 'FT-SUSHI01', 2, 10),
+ (5, 'Pastas de la Nonna', 25.0, 'PD-PASTA01', 2, 11);
+
+INSERT INTO food_truck (id_unidad, patente, requiere_electricidad) VALUES
+ (4, 'CD789EF', 0);
+
+INSERT INTO puesto_desarmable (id_unidad, cantidad_carpas, tiempo_montaje) VALUES
+ (5, 2, 20);
+
+-- ---------- STAFF DE LAS UNIDADES NUEVAS ----------
+-- Un cocinero y un cajero en cada una (liquidacion del staff y rentabilidad).
+INSERT INTO personal (id_personal, nombre, apellido, dni, fecha_nacimiento, fecha_ingreso, id_unidad, id_usuario) VALUES
+ (6, 'Martin',  'Rios', '41111222', '1999-04-18', '2022-03-01', 4, 12),
+ (7, 'Valeria', 'Luna', '37444555', '1994-12-02', '2020-05-10', 5, 13);
+
+INSERT INTO cocinero (id_personal, rol_cocina) VALUES
+ (6, 'COCINERO');
+
+INSERT INTO cajero (id_personal, turno) VALUES
+ (7, 'NOCHE');
+
+-- ---------- PLATOS DE LAS UNIDADES NUEVAS ----------
+INSERT INTO plato (id_plato, nombre, precio_venta, costo_produccion, id_unidad) VALUES
+ ( 7, 'Roll California', 7000.00, 2800.00, 4),
+ ( 8, 'Nigiri salmon',   5500.00, 2500.00, 4),
+ ( 9, 'Agua 500ml',      1000.00,  300.00, 4),
+ (10, 'Sorrentinos',     9500.00, 3500.00, 5),
+ (11, 'Noquis',          7500.00, 2500.00, 5),
+ (12, 'Tiramisu',        4000.00, 1500.00, 5);
+
+-- ---------- PEDIDOS ----------
+INSERT INTO pedido (id_pedido, fecha, total, id_unidad) VALUES
+ ( 7, '2026-10-05', 25501.50, 1),
+ ( 8, '2026-10-02',  9000.00, 1),
+ ( 9, '2026-10-03', 16000.00, 4),
+ (10, '2026-10-12', 16500.00, 4),
+ (11, '2026-10-20', 11000.00, 4),
+ (12, '2026-10-04', 27000.00, 5),
+ (13, '2026-10-10', 30000.00, 5),
+ (14, '2026-10-17', 15000.00, 5),
+ (15, CURDATE(),    13000.50, 1),
+ (16, CURDATE(),     2400.50, 1),
+ (17, CURDATE(),     5400.00, 2);
+
+INSERT INTO item_pedido (id_item_pedido, cantidad, subtotal, id_pedido, id_plato) VALUES
+ (10, 3, 25501.50,  7,  1),
+ (11, 2,  9000.00,  8,  3),
+ (12, 2, 14000.00,  9,  7),
+ (13, 2,  2000.00,  9,  9),
+ (14, 3, 16500.00, 10,  8),
+ (15, 2, 11000.00, 11,  8),
+ (16, 2, 19000.00, 12, 10),
+ (17, 2,  8000.00, 12, 12),
+ (18, 4, 30000.00, 13, 11),
+ (19, 2, 15000.00, 14, 11),
+ (20, 1,  8500.50, 15,  1),
+ (21, 1,  4500.00, 15,  3),
+ (22, 2,  2400.50, 16,  2),
+ (23, 3,  5400.00, 17,  4);

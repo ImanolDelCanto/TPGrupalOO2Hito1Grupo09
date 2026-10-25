@@ -21,6 +21,11 @@ public class ViewRouteHelper {
 	public final static String RESPONSABLE_PEDIDO = "responsable/pedido";  //formulario para cargar un pedido
 	public final static String RESPONSABLE_PEDIDOS = "responsable/pedidos";  //listado de los pedidos cargados
 	public final static String RESPONSABLE_PLATOS = "responsable/platos";   // menu + alta de plato
+	// PERSONAL (ABM del staff, lo usa el responsable)
+	public final static String PERSONAL_LISTA = "personal/lista";
+	public final static String PERSONAL_FORMULARIO = "personal/formulario";
+	public final static String PERSONAL_EDITAR = "personal/editar";
+
 	// EMPLEADO
 	public final static String EMPLEADO_INDEX = "empleado/index";
 
@@ -29,4 +34,5 @@ public class ViewRouteHelper {
 	public final static String ADMIN_ROOT = "/admin";
 	public final static String RESPONSABLE_ROOT = "/responsable";
 	public final static String EMPLEADO_ROOT = "/empleado";
+	public final static String PERSONAL_ROOT = "/empleados";
 }

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body class="bg-light">
+    <nav th:replace="~{layout :: navbar}"></nav>
+
+    <main class="container py-5">
+        <div class="card shadow-sm mx-auto" style="max-width:640px">
+            <div class="card-body p-4">
+                <h1 class="h3 mb-1">Editar empleado</h1>
+                <p class="text-muted small">
+                    El puesto no se puede cambiar: un cocinero no puede pasar a cajero.
+                </p>
+
+                <form method="post" th:object="${empleado}"
+                      th:action="@{'/empleados/' + *{idPersonal} + '/editar'}">
+
+                    <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+                        <p class="mb-0" th:each="e : ${#fields.globalErrors()}" th:text="${e}">error</p>
+                    </div>
+
+                    <!-- viajan escondidos: el id para saber a quien editar, y el tipo
+                         solo para que esta pantalla sepa que combo mostrar. El service
+                         no confia en el tipo: lee la subclase de la base. -->
+                    <input type="hidden" th:field="*{idPersonal}"/>
+                    <input type="hidden" th:field="*{tipo}"/>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="nombre" class="form-label">Nombre</label>
+                            <input type="text" id="nombre" th:field="*{nombre}" class="form-control"/>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('nombre')}"
+                                 th:errors="*{nombre}">error</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="apellido" class="form-label">Apellido</label>
+                            <input type="text" id="apellido" th:field="*{apellido}" class="form-control"/>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('apellido')}"
+                                 th:errors="*{apellido}">error</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="dni" class="form-label">DNI</label>
+                            <input type="text" id="dni" th:field="*{dni}" class="form-control"/>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('dni')}"
+                                 th:errors="*{dni}">error</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email (es su usuario)</label>
+                            <input type="email" id="email" th:field="*{email}" class="form-control"/>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('email')}"
+                                 th:errors="*{email}">error</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="fechaNacimiento" class="form-label">Fecha de nacimiento</label>
+                            <input type="date" id="fechaNacimiento" th:field="*{fechaNacimiento}"
+                                   class="form-control"/>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('fechaNacimiento')}"
+                                 th:errors="*{fechaNacimiento}">error</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="fechaIngreso" class="form-label">Fecha de ingreso</label>
+                            <input type="date" id="fechaIngreso" th:field="*{fechaIngreso}"
+                                   class="form-control"/>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('fechaIngreso')}"
+                                 th:errors="*{fechaIngreso}">error</div>
+                        </div>
+                    </div>
+
+                    <!-- segun lo que sea el empleado, se muestra uno u otro -->
+                    <div class="mt-3" th:if="*{tipo?.name() == 'COCINERO'}">
+                        <label for="rolCocina" class="form-label">Rol de cocina</label>
+                        <select id="rolCocina" th:field="*{rolCocina}" class="form-select">
+                            <option th:each="r : ${rolesCocina}" th:value="${r}" th:text="${r}">rol</option>
+                        </select>
+                    </div>
+
+                    <div class="mt-3" th:if="*{tipo?.name() == 'CAJERO'}">
+                        <label for="turno" class="form-label">Turno</label>
+                        <select id="turno" th:field="*{turno}" class="form-select">
+                            <option th:each="t : ${turnos}" th:value="${t}" th:text="${t}">turno</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-dark w-100 mt-4">Guardar cambios</button>
+                    <a class="btn btn-link w-100 mt-1" th:href="@{/empleados}">Volver al staff</a>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{layout :: footer}"></footer>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

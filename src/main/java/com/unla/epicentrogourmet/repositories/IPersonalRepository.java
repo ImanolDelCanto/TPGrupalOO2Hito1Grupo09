@@ -18,6 +18,13 @@ public interface IPersonalRepository extends JpaRepository<Personal, Long> {
 
 	public abstract Optional<Personal> findByDni(String dni);
 
-	// solo los activos: la baja logica vive en Usuario.activo
-	public abstract List<Personal> findByUnidadIdUnidadAndUsuarioActivoTrue(Long idUnidad);
+	// El staff activo de una unidad, filtrando por apellido. Con apellido
+	// vacio el LIKE '%%' los trae a todos, asi que el listado sin filtros
+	// es el mismo metodo: no hacen falta dos consultas.
+	// El "UsuarioActivoTrue" es la baja logica: los eliminados no vuelven.
+	public abstract List<Personal> findByUnidadIdUnidadAndUsuarioActivoTrueAndApellidoContainingIgnoreCaseOrderByApellidoAsc(
+			Long idUnidad, String apellido);
+
+	// los dados de baja de esa unidad
+	public abstract List<Personal> findByUnidadIdUnidadAndUsuarioActivoFalseOrderByApellidoAsc(Long idUnidad);
 }

@@ -1,7 +1,9 @@
 package com.unla.epicentrogourmet.services;
 
+import java.math.BigDecimal;
 import java.util.List;
 
+import com.unla.epicentrogourmet.dtos.LiquidacionHaberesDTO;
 import com.unla.epicentrogourmet.dtos.RankingUnidadDTO;
 import com.unla.epicentrogourmet.dtos.ReporteMayoresCanonDTO;
 import com.unla.epicentrogourmet.dtos.ReporteVentaDTO;
@@ -29,4 +31,10 @@ public interface IReporteService {
 
 	// la recaudacion del festival de la unidad del responsable logueado
 	ReporteVentaDTO recaudacionDelFestival(String emailResponsable);
+
+	// la liquidacion de cada empleado activo de la unidad del responsable
+	List<LiquidacionHaberesDTO> liquidacionDelStaff(String emailResponsable);
+
+	// suma lo que cobra cada empleado de una liquidacion
+	BigDecimal totalDeSueldos(List<LiquidacionHaberesDTO> liquidaciones);
 }

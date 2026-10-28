@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body class="bg-light">
+    <nav th:replace="~{layout :: navbar}"></nav>
+
+    <main class="container py-5">
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}">error</div>
+
+        <div th:if="${festival}">
+            <h1 class="h3 mb-1" th:text="'Unidades de venta de ' + ${festival.nombre}">Unidades de venta</h1>
+            <p class="text-muted mb-4">
+                <span th:text="${#temporals.format(festival.fechaInicio,'dd/MM/yyyy')}">desde</span>
+                al
+                <span th:text="${#temporals.format(festival.fechaFin,'dd/MM/yyyy')}">hasta</span>
+            </p>
+
+            <div class="card shadow-sm" th:if="${!#lists.isEmpty(unidades)}">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nombre comercial</th>
+                            <th>Código</th>
+                            <th>Tipo</th>
+                            <th>Detalle</th>
+                            <th class="text-end">Superficie</th>
+                            <th>Responsable</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="u : ${unidades}">
+                            <td th:text="${u.nombreComercial}">nombre</td>
+                            <td><code th:text="${u.codigoUnico}">codigo</code></td>
+                            <td th:text="${u.tipoUnidad}">tipo</td>
+                            <td class="small text-muted" th:text="${u.detalleEspecifico}">detalle</td>
+                            <td class="text-end" th:text="${u.superficie} + ' m²'">0</td>
+                            <td th:text="${u.responsable != null ? u.responsable.email : '-'}">responsable</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="text-muted" th:if="${#lists.isEmpty(unidades)}">
+                Este festival todavía no tiene unidades de venta.
+            </p>
+        </div>
+
+        <a th:href="@{/admin}" class="btn btn-outline-secondary mt-4">Volver</a>
+    </main>
+
+    <footer th:replace="~{layout :: footer}"></footer>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

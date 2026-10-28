@@ -9,7 +9,7 @@
         <div class="card shadow-sm mb-5">
             <table class="table table-hover mb-0 align-middle">
                 <thead class="table-light">
-                    <tr><th>Festival</th><th>Temporada</th><th>Desde</th><th>Hasta</th><th class="text-end">Días</th></tr>
+                    <tr><th>Festival</th><th>Temporada</th><th>Desde</th><th>Hasta</th><th class="text-end">Días</th><th></th></tr>
                 </thead>
                 <tbody>
                     <tr th:each="f : ${festivales}">
@@ -18,23 +18,9 @@
                         <td th:text="${#temporals.format(f.fechaInicio,'dd/MM/yyyy')}">desde</td>
                         <td th:text="${#temporals.format(f.fechaFin,'dd/MM/yyyy')}">hasta</td>
                         <td class="text-end" th:text="${f.diasDuracion}">0</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <h2 class="h4 mb-3">Unidades de venta</h2>
-        <div class="card shadow-sm">
-            <table class="table table-hover mb-0 align-middle">
-                <thead class="table-light">
-                    <tr><th>Nombre comercial</th><th>Código</th><th>Festival</th><th class="text-end">Superficie</th></tr>
-                </thead>
-                <tbody>
-                    <tr th:each="u : ${unidades}">
-                        <td th:text="${u.nombreComercial}">nombre</td>
-                        <td><code th:text="${u.codigoUnico}">cod</code></td>
-                        <td th:text="${u.festival.nombre}">festival</td>
-                        <td class="text-end" th:text="${u.superficie} + ' m²'">0</td>
+                        <td class="text-end">
+                            <a th:href="@{/reportes/unidades(idFestival=${f.idFestival})}" class="btn btn-sm btn-outline-dark">Ver unidades</a>
+                        </td>
                     </tr>
                 </tbody>
             </table>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body class="bg-light">
+    <nav th:replace="~{layout :: navbar}"></nav>
+
+    <main class="container py-5">
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}">error</div>
+
+        <div th:if="${festival}">
+            <h1 class="h3 mb-4" th:text="'Ranking de unidades - ' + ${festival.nombre}">Ranking</h1>
+
+            <div class="card shadow-sm" th:if="${filas != null and !#lists.isEmpty(filas)}">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Nombre comercial</th>
+                            <th>Código</th>
+                            <th>Tipo</th>
+                            <th class="text-end">Pedidos</th>
+                            <th class="text-end">Recaudación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r, i : ${filas}">
+                            <td th:text="${i.count}">1</td>
+                            <td th:text="${r.nombreComercial}">nombre</td>
+                            <td><code th:text="${r.codigoUnico}">codigo</code></td>
+                            <td th:text="${r.tipoUnidad}">tipo</td>
+                            <td class="text-end" th:text="${r.cantidadPedidos}">0</td>
+                            <td class="text-end" th:text="'$ ' + ${#numbers.formatDecimal(r.recaudacion, 1, 'POINT', 2, 'COMMA')}">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="text-muted" th:if="${filas != null and #lists.isEmpty(filas)}">
+                Este festival todavía no tiene unidades de venta.
+            </p>
+        </div>
+
+        <a th:href="@{/admin}" class="btn btn-outline-secondary mt-4">Volver</a>
+    </main>
+
+    <footer th:replace="~{layout :: footer}"></footer>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

@@ -34,4 +34,20 @@ public class ReporteController {
 		}
 		return mAV;
 	}
+
+	// GET /reportes/mayor-canon?idFestival=2&cantidad=3
+	@GetMapping("/mayor-canon")
+	@PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
+	public ModelAndView mayorCanon(@RequestParam Long idFestival,
+			@RequestParam(defaultValue = "3") int cantidad) {
+		ModelAndView mAV = new ModelAndView(ViewRouteHelper.REPORTE_MAYOR_CANON);
+		mAV.addObject("cantidad", cantidad);
+		try {
+			mAV.addObject("festival", reporteService.buscarFestival(idFestival));
+			mAV.addObject("filas", reporteService.unidadesConMayorCanon(idFestival, cantidad));
+		} catch (IllegalArgumentException e) {
+			mAV.addObject("error", e.getMessage());
+		}
+		return mAV;
+	}
 }

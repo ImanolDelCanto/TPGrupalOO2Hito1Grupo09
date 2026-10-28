@@ -20,6 +20,7 @@
                         <td class="text-end" th:text="${f.diasDuracion}">0</td>
                         <td class="text-end">
                             <a th:href="@{/reportes/unidades(idFestival=${f.idFestival})}" class="btn btn-sm btn-outline-dark">Ver unidades</a>
+                            <a th:href="@{/reportes/mayor-canon(idFestival=${f.idFestival},cantidad=3)}" class="btn btn-sm btn-outline-dark">Mayor canon</a>
                         </td>
                     </tr>
                 </tbody>

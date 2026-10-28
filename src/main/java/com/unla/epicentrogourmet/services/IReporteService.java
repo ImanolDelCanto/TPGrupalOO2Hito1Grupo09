@@ -2,8 +2,10 @@ package com.unla.epicentrogourmet.services;
 
 import java.util.List;
 
+import com.unla.epicentrogourmet.dtos.ReporteMayoresCanonDTO;
 import com.unla.epicentrogourmet.entities.Festival;
 import com.unla.epicentrogourmet.entities.UnidadDeVenta;
+
 
 public interface IReporteService {
 
@@ -12,4 +14,7 @@ public interface IReporteService {
 
 	// las unidades de venta de un festival (admin)
 	List<UnidadDeVenta> unidadesDeFestival(Long idFestival);
+
+	// las x unidades que mas pagan de canon en un festival (admin)
+	List<ReporteMayoresCanonDTO> unidadesConMayorCanon(Long idFestival, int cantidad);
 }

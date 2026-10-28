@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.unla.epicentrogourmet.dtos.RankingUnidadDTO;
 import com.unla.epicentrogourmet.dtos.ReporteMayoresCanonDTO;
+import com.unla.epicentrogourmet.dtos.ReporteVentaDTO;
 import com.unla.epicentrogourmet.entities.Festival;
 import com.unla.epicentrogourmet.entities.UnidadDeVenta;
 
@@ -25,4 +26,7 @@ public interface IReporteService {
 
 	// el canon de la unidad del responsable que esta logueado
 	ReporteMayoresCanonDTO canonDeUnidad(String emailResponsable);
+
+	// la recaudacion del festival de la unidad del responsable logueado
+	ReporteVentaDTO recaudacionDelFestival(String emailResponsable);
 }

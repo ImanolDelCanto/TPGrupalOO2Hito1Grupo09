@@ -79,4 +79,17 @@ public class ReporteController {
 		}
 		return mAV;
 	}
+
+	// GET /reportes/recaudacion -> recaudacion del festival del responsable logueado
+	@GetMapping("/recaudacion")
+	@PreAuthorize("hasRole('ROLE_RESPONSABLE')")
+	public ModelAndView recaudacionDelFestival(Authentication auth) {
+		ModelAndView mAV = new ModelAndView(ViewRouteHelper.REPORTE_RECAUDACION);
+		try {
+			mAV.addObject("reporte", reporteService.recaudacionDelFestival(auth.getName()));
+		} catch (IllegalArgumentException e) {
+			mAV.addObject("error", e.getMessage());
+		}
+		return mAV;
+	}
 }

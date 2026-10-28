@@ -50,4 +50,18 @@ public class ReporteController {
 		}
 		return mAV;
 	}
+
+	// GET /reportes/ranking?idFestival=2
+	@GetMapping("/ranking")
+	@PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
+	public ModelAndView ranking(@RequestParam Long idFestival) {
+		ModelAndView mAV = new ModelAndView(ViewRouteHelper.REPORTE_RANKING);
+		try {
+			mAV.addObject("festival", reporteService.buscarFestival(idFestival));
+			mAV.addObject("filas", reporteService.rankingDeUnidades(idFestival));
+		} catch (IllegalArgumentException e) {
+			mAV.addObject("error", e.getMessage());
+		}
+		return mAV;
+	}
 }

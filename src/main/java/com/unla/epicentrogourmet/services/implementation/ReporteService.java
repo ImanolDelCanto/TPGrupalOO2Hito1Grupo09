@@ -1,15 +1,19 @@
 package com.unla.epicentrogourmet.services.implementation;
 
 import java.util.List;
+import java.math.BigDecimal;
 import java.util.Comparator;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.unla.epicentrogourmet.dtos.RankingUnidadDTO;
 import com.unla.epicentrogourmet.dtos.ReporteMayoresCanonDTO;
 import com.unla.epicentrogourmet.entities.Festival;
+import com.unla.epicentrogourmet.entities.Pedido;
 import com.unla.epicentrogourmet.entities.UnidadDeVenta;
 import com.unla.epicentrogourmet.repositories.IFestivalRepository;
+import com.unla.epicentrogourmet.repositories.IPedidoRepository;
 import com.unla.epicentrogourmet.repositories.IUnidadDeVentaRepository;
 import com.unla.epicentrogourmet.services.IReporteService;
 
@@ -18,11 +22,14 @@ public class ReporteService implements IReporteService {
 
 	private final IFestivalRepository festivalRepository;
 	private final IUnidadDeVentaRepository unidadDeVentaRepository;
+	private final IPedidoRepository pedidoRepository;
 
 	public ReporteService(IFestivalRepository festivalRepository,
-			IUnidadDeVentaRepository unidadDeVentaRepository) {
+			IUnidadDeVentaRepository unidadDeVentaRepository,
+			IPedidoRepository pedidoRepository) {
 		this.festivalRepository = festivalRepository;
 		this.unidadDeVentaRepository = unidadDeVentaRepository;
+		this.pedidoRepository = pedidoRepository;
 	}
 
 	@Override
@@ -53,5 +60,29 @@ public class ReporteService implements IReporteService {
 				.sorted(Comparator.comparing(ReporteMayoresCanonDTO::getCanon).reversed())
 				.limit(cantidad)
 				.toList();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<RankingUnidadDTO> rankingDeUnidades(Long idFestival) {
+		buscarFestival(idFestival);
+		return unidadDeVentaRepository.findByFestivalIdFestival(idFestival).stream()
+				.map(this::filaDeRanking)
+				.sorted(Comparator.comparing(RankingUnidadDTO::getRecaudacion).reversed())
+				.toList();
+	}
+
+	// arma la fila del ranking de una unidad con sus pedidos
+	private RankingUnidadDTO filaDeRanking(UnidadDeVenta u) {
+		List<Pedido> pedidos = pedidoRepository.findByUnidadIdUnidad(u.getIdUnidad());
+		return new RankingUnidadDTO(u.getNombreComercial(), u.getCodigoUnico(), u.getTipoUnidad(),
+				pedidos.size(), recaudacionDe(pedidos));
+	}
+
+	// suma el total de los pedidos
+	private BigDecimal recaudacionDe(List<Pedido> pedidos) {
+		return pedidos.stream()
+				.map(Pedido::getTotal)
+				.reduce(BigDecimal.ZERO, BigDecimal::add);
 	}
 }

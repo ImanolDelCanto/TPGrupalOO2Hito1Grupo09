@@ -35,6 +35,7 @@ public class ViewRouteHelper {
 	// CAJERO
 	public final static String CAJERO_PEDIDO = "cajero/pedido";      		// formulario para cargar un pedido
 	public final static String CAJERO_PEDIDOS = "cajero/pedidos";    		// listado de los pedidos de su unidad
+	public final static String CAJERO_CIERRE = "cajero/cierre";     		// resumen de los pedidos del dia
 
 	// PERSONAL (ABM del staff, lo usa el responsable)
 	public final static String PERSONAL_LISTA = "personal/lista";

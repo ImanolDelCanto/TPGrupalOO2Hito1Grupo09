@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body class="bg-light">
+    <nav th:replace="~{layout :: navbar}"></nav>
+
+    <main class="container py-5">
+        <h1 class="h3 mb-4">Canon de mi unidad</h1>
+
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}">error</div>
+
+        <div class="card shadow-sm" th:if="${fila}">
+            <div class="card-body p-4">
+                <h2 class="h4 mb-1" th:text="${fila.nombreComercial}">nombre</h2>
+                <p class="text-muted mb-4">
+                    <span th:text="${fila.tipoUnidad}">tipo</span>
+                    &middot; Código <code th:text="${fila.codigoUnico}">cod</code>
+                </p>
+                <div class="text-muted small text-uppercase">Monto a pagar</div>
+                <div class="display-6 fw-semibold" th:text="'$ ' + ${#numbers.formatDecimal(fila.canon, 1, 'POINT', 2, 'COMMA')}">$ 0</div>
+            </div>
+        </div>
+
+        <a th:href="@{/responsable}" class="btn btn-outline-secondary mt-4">Volver</a>
+    </main>
+
+    <footer th:replace="~{layout :: footer}"></footer>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

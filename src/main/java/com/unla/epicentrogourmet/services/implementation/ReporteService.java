@@ -64,6 +64,13 @@ public class ReporteService implements IReporteService {
 
 	@Override
 	@Transactional(readOnly = true)
+	public ReporteMayoresCanonDTO canonDeUnidad(String emailResponsable) {
+		UnidadDeVenta u = unidadDeVentaRepository.findByResponsableEmail(emailResponsable).orElseThrow(() -> new IllegalArgumentException("Tu usuario no tiene una unidad de venta asignada"));
+		return new ReporteMayoresCanonDTO(u.getNombreComercial(), u.getCodigoUnico(), u.getTipoUnidad(), u.getCostoOperativo());
+	}
+
+	@Override
+	@Transactional(readOnly = true)
 	public List<RankingUnidadDTO> rankingDeUnidades(Long idFestival) {
 		buscarFestival(idFestival);
 		return unidadDeVentaRepository.findByFestivalIdFestival(idFestival).stream()

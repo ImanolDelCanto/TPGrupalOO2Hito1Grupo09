@@ -22,4 +22,7 @@ public interface IReporteService {
 
 	// las unidades de un festival ordenadas por recaudacion, de mayor a menor (admin)
 	List<RankingUnidadDTO> rankingDeUnidades(Long idFestival);
+
+	// el canon de la unidad del responsable que esta logueado
+	ReporteMayoresCanonDTO canonDeUnidad(String emailResponsable);
 }

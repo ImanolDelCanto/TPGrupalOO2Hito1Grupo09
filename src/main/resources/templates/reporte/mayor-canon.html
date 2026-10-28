@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body class="bg-light">
+    <nav th:replace="~{layout :: navbar}"></nav>
+
+    <main class="container py-5">
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}">error</div>
+
+        <div th:if="${festival}">
+            <h1 class="h3 mb-4" th:text="'Unidades con mayor canon - ' + ${festival.nombre}">Mayor canon</h1>
+
+            <form th:action="@{/reportes/mayor-canon}" method="get" class="row g-2 align-items-end mb-4">
+                <input type="hidden" name="idFestival" th:value="${festival.idFestival}">
+                <div class="col-auto">
+                    <label for="cantidad" class="form-label">Cantidad de unidades</label>
+                    <input type="number" id="cantidad" name="cantidad" min="1" class="form-control" th:value="${cantidad}">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-dark">Ver</button>
+                </div>
+            </form>
+
+            <div class="card shadow-sm" th:if="${filas != null and !#lists.isEmpty(filas)}">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Nombre comercial</th>
+                            <th>Código</th>
+                            <th>Tipo</th>
+                            <th class="text-end">Canon</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r, i : ${filas}">
+                            <td th:text="${i.count}">1</td>
+                            <td th:text="${r.nombreComercial}">nombre</td>
+                            <td><code th:text="${r.codigoUnico}">codigo</code></td>
+                            <td th:text="${r.tipoUnidad}">tipo</td>
+                            <td class="text-end" th:text="'$ ' + ${#numbers.formatDecimal(r.canon, 1, 'POINT', 2, 'COMMA')}">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="text-muted" th:if="${filas != null and #lists.isEmpty(filas)}">
+                Este festival todavía no tiene unidades de venta.
+            </p>
+        </div>
+
+        <a th:href="@{/admin}" class="btn btn-outline-secondary mt-4">Volver</a>
+    </main>
+
+    <footer th:replace="~{layout :: footer}"></footer>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

@@ -1,7 +1,7 @@
 package com.unla.epicentrogourmet.helpers;
 
-// Todas las rutas de vistas en un solo lugar.
-// Si se mueve una plantilla, se cambia aca y no en cada controller.
+// Todas las rutas de vistas en un solo lugar
+// Si se mueve una plantilla, se cambia aca y no en cada controller
 public class ViewRouteHelper {
 	/**** Views ****/
 	// HOME
@@ -16,11 +16,15 @@ public class ViewRouteHelper {
 	// ADMIN
 	public final static String ADMIN_INDEX = "admin/index";
 
+	// REPORTES
+	public final static String REPORTE_UNIDADES = "reporte/unidades";
+
 	// RESPONSABLE
 	public final static String RESPONSABLE_INDEX = "responsable/index";
 	public final static String RESPONSABLE_PEDIDO = "responsable/pedido";  //formulario para cargar un pedido
 	public final static String RESPONSABLE_PEDIDOS = "responsable/pedidos";  //listado de los pedidos cargados
 	public final static String RESPONSABLE_PLATOS = "responsable/platos";   // menu + alta de plato
+	
 	// PERSONAL (ABM del staff, lo usa el responsable)
 	public final static String PERSONAL_LISTA = "personal/lista";
 	public final static String PERSONAL_FORMULARIO = "personal/formulario";

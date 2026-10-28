@@ -53,6 +53,11 @@ public class PuestoDesarmable extends UnidadDeVenta{
 	public String getDetalleEspecifico() {
 	    return "carpas: " + cantidadCarpas + ", tiempo de montaje: " + tiempoMontaje + " min";
 	}
+
+	  @Override
+  public String getTipoUnidad() {
+      return "Puesto desarmable";
+  }
 	
 	@Override
 	public String toString() {

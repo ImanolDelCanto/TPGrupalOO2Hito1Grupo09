@@ -148,6 +148,8 @@ public abstract class UnidadDeVenta {
 	public abstract BigDecimal getCostoOperativo();
 	
     public abstract String getDetalleEspecifico();
+
+	public abstract String getTipoUnidad();
     
     public boolean validarCodigo() {
     	//Valida si el codigo es distinto de nulo y que tenga 10 caracteres

@@ -57,6 +57,11 @@ public class FoodTruck extends UnidadDeVenta{
 	}
 
 	@Override
+	public String getTipoUnidad() {
+		return "Food Truck";
+	}
+
+	@Override
 	public String toString() {
 		return "FoodTruck [" + super.toString() + ", patente=" + patente + ", requiereElectricidad=" + requiereElectricidad + "]";
 	}

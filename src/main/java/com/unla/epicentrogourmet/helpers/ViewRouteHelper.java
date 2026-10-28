@@ -32,6 +32,10 @@ public class ViewRouteHelper {
 	public final static String RESPONSABLE_PEDIDOS = "responsable/pedidos";  //listado de los pedidos cargados
 	public final static String RESPONSABLE_PLATOS = "responsable/platos";   // menu + alta de plato
 	
+	// CAJERO
+	public final static String CAJERO_PEDIDO = "cajero/pedido";      		// formulario para cargar un pedido
+	public final static String CAJERO_PEDIDOS = "cajero/pedidos";    		// listado de los pedidos de su unidad
+
 	// PERSONAL (ABM del staff, lo usa el responsable)
 	public final static String PERSONAL_LISTA = "personal/lista";
 	public final static String PERSONAL_FORMULARIO = "personal/formulario";

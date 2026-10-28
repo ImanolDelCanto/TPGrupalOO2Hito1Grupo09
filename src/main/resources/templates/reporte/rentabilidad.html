@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body class="bg-light">
+    <nav th:replace="~{layout :: navbar}"></nav>
+
+    <main class="container py-5">
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}">error</div>
+
+        <div th:if="${r}">
+            <h1 class="h3 mb-1">Rentabilidad neta</h1>
+            <p class="text-muted mb-4" th:text="${r.nombreUnidad} + ' · ' + ${r.nombreFestival}">unidad</p>
+
+            <div class="card shadow-sm">
+                <table class="table mb-0 align-middle">
+                    <tbody>
+                        <tr>
+                            <td>Recaudación (total de los pedidos)</td>
+                            <td class="text-end" th:text="'$ ' + ${#numbers.formatDecimal(r.recaudacion, 1, 'POINT', 2, 'COMMA')}">0</td>
+                        </tr>
+                        <tr>
+                            <td>Menos costo de los platos vendidos</td>
+                            <td class="text-end" th:text="'- $ ' + ${#numbers.formatDecimal(r.costoPlatos, 1, 'POINT', 2, 'COMMA')}">0</td>
+                        </tr>
+                        <tr>
+                            <td>Menos sueldos del staff</td>
+                            <td class="text-end" th:text="'- $ ' + ${#numbers.formatDecimal(r.sueldos, 1, 'POINT', 2, 'COMMA')}">0</td>
+                        </tr>
+                        <tr>
+                            <td>Menos canon</td>
+                            <td class="text-end" th:text="'- $ ' + ${#numbers.formatDecimal(r.canon, 1, 'POINT', 2, 'COMMA')}">0</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>Rentabilidad neta</th>
+                            <th class="text-end fs-5"
+                                th:classappend="${r.rentabilidadNeta.signum() < 0} ? 'text-danger' : 'text-success'"
+                                th:text="'$ ' + ${#numbers.formatDecimal(r.rentabilidadNeta, 1, 'POINT', 2, 'COMMA')}">0</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <a th:href="@{/responsable}" class="btn btn-outline-secondary mt-4">Volver</a>
+    </main>
+
+    <footer th:replace="~{layout :: footer}"></footer>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

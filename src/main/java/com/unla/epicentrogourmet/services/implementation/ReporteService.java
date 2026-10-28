@@ -9,9 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.unla.epicentrogourmet.dtos.LiquidacionHaberesDTO;
 import com.unla.epicentrogourmet.dtos.RankingUnidadDTO;
+import com.unla.epicentrogourmet.dtos.RentabilidadDTO;
 import com.unla.epicentrogourmet.dtos.ReporteMayoresCanonDTO;
 import com.unla.epicentrogourmet.dtos.ReporteVentaDTO;
 import com.unla.epicentrogourmet.entities.Festival;
+import com.unla.epicentrogourmet.entities.ItemPedido;
 import com.unla.epicentrogourmet.entities.Pedido;
 import com.unla.epicentrogourmet.entities.UnidadDeVenta;
 import com.unla.epicentrogourmet.repositories.IFestivalRepository;
@@ -134,6 +136,33 @@ public class ReporteService implements IReporteService {
 		BigDecimal total = BigDecimal.ZERO;
 		for (LiquidacionHaberesDTO l : liquidaciones) {
 			total = total.add(l.getTotalACobrar());
+		}
+		return total;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public RentabilidadDTO rentabilidadNeta(String emailResponsable) {
+		UnidadDeVenta unidad = unidadDeVentaRepository.findByResponsableEmail(emailResponsable).orElseThrow(() -> new IllegalArgumentException("Tu usuario no tiene una unidad de venta asignada"));
+		List<Pedido> pedidos = pedidoRepository.findByUnidadIdUnidad(unidad.getIdUnidad());
+
+		BigDecimal recaudacion = recaudacionDe(pedidos);
+		BigDecimal costoPlatos = costoDePlatos(pedidos);
+		BigDecimal sueldos = totalDeSueldos(liquidacionesDe(unidad));
+		BigDecimal canon = unidad.getCostoOperativo();
+		BigDecimal neta = recaudacion.subtract(costoPlatos).subtract(sueldos).subtract(canon);
+
+		return new RentabilidadDTO(unidad.getNombreComercial(), unidad.getFestival().getNombre(), recaudacion, costoPlatos, sueldos, canon, neta);
+	}
+
+	// lo que costo producir lo vendido: cantidad x costo de produccion de cada item
+	private BigDecimal costoDePlatos(List<Pedido> pedidos) {
+		BigDecimal total = BigDecimal.ZERO;
+		for (Pedido pedido : pedidos) {
+			for (ItemPedido item : pedido.getItems()) {
+				BigDecimal costoItem = item.getPlato().getCostoProduccion().multiply(BigDecimal.valueOf(item.getCantidad()));
+				total = total.add(costoItem);
+			}
 		}
 		return total;
 	}

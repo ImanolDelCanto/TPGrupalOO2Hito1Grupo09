@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.unla.epicentrogourmet.dtos.LiquidacionHaberesDTO;
 import com.unla.epicentrogourmet.dtos.RankingUnidadDTO;
+import com.unla.epicentrogourmet.dtos.RentabilidadDTO;
 import com.unla.epicentrogourmet.dtos.ReporteMayoresCanonDTO;
 import com.unla.epicentrogourmet.dtos.ReporteVentaDTO;
 import com.unla.epicentrogourmet.entities.Festival;
@@ -37,4 +38,7 @@ public interface IReporteService {
 
 	// suma lo que cobra cada empleado de una liquidacion
 	BigDecimal totalDeSueldos(List<LiquidacionHaberesDTO> liquidaciones);
+
+	// recaudacion - costo de platos - sueldos - canon de la unidad del responsable
+	RentabilidadDTO rentabilidadNeta(String emailResponsable);
 }

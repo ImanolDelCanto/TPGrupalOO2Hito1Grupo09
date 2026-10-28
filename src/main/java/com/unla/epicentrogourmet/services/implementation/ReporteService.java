@@ -7,6 +7,7 @@ import java.util.Comparator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.unla.epicentrogourmet.dtos.LiquidacionHaberesDTO;
 import com.unla.epicentrogourmet.dtos.RankingUnidadDTO;
 import com.unla.epicentrogourmet.dtos.ReporteMayoresCanonDTO;
 import com.unla.epicentrogourmet.dtos.ReporteVentaDTO;
@@ -15,7 +16,9 @@ import com.unla.epicentrogourmet.entities.Pedido;
 import com.unla.epicentrogourmet.entities.UnidadDeVenta;
 import com.unla.epicentrogourmet.repositories.IFestivalRepository;
 import com.unla.epicentrogourmet.repositories.IPedidoRepository;
+import com.unla.epicentrogourmet.repositories.IPersonalRepository;
 import com.unla.epicentrogourmet.repositories.IUnidadDeVentaRepository;
+import com.unla.epicentrogourmet.services.ILiquidacionService;
 import com.unla.epicentrogourmet.services.IReporteService;
 
 @Service("reporteService")
@@ -24,13 +27,19 @@ public class ReporteService implements IReporteService {
 	private final IFestivalRepository festivalRepository;
 	private final IUnidadDeVentaRepository unidadDeVentaRepository;
 	private final IPedidoRepository pedidoRepository;
+	private final IPersonalRepository personalRepository;
+	private final ILiquidacionService liquidacionService;
 
 	public ReporteService(IFestivalRepository festivalRepository,
 			IUnidadDeVentaRepository unidadDeVentaRepository,
-			IPedidoRepository pedidoRepository) {
+			IPedidoRepository pedidoRepository,
+			IPersonalRepository personalRepository,
+			ILiquidacionService liquidacionService) {
 		this.festivalRepository = festivalRepository;
 		this.unidadDeVentaRepository = unidadDeVentaRepository;
 		this.pedidoRepository = pedidoRepository;
+		this.personalRepository = personalRepository;
+		this.liquidacionService = liquidacionService;
 	}
 
 	@Override
@@ -102,5 +111,30 @@ public class ReporteService implements IReporteService {
 		List<Pedido> pedidosFestival = pedidoRepository.findByUnidadFestivalIdFestival(festival.getIdFestival());
 		List<Pedido> pedidosUnidad = pedidoRepository.findByUnidadIdUnidad(unidad.getIdUnidad());
 		return new ReporteVentaDTO(festival.getNombre(), pedidosFestival.size(), recaudacionDe(pedidosFestival), unidad.getNombreComercial(), recaudacionDe(pedidosUnidad));
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<LiquidacionHaberesDTO> liquidacionDelStaff(String emailResponsable) {
+		UnidadDeVenta unidad = unidadDeVentaRepository.findByResponsableEmail(emailResponsable).orElseThrow(() -> new IllegalArgumentException("Tu usuario no tiene una unidad de venta asignada"));
+		return liquidacionesDe(unidad);
+	}
+
+	// una liquidacion por cada empleado activo
+	private List<LiquidacionHaberesDTO> liquidacionesDe(UnidadDeVenta unidad) {
+		return personalRepository
+				.findByUnidadIdUnidadAndUsuarioActivoTrueAndApellidoContainingIgnoreCaseOrderByApellidoAsc(unidad.getIdUnidad(), "")
+				.stream()
+				.map(p -> liquidacionService.liquidarPorIdPersonal(p.getIdPersonal()))
+				.toList();
+	}
+
+	@Override
+	public BigDecimal totalDeSueldos(List<LiquidacionHaberesDTO> liquidaciones) {
+		BigDecimal total = BigDecimal.ZERO;
+		for (LiquidacionHaberesDTO l : liquidaciones) {
+			total = total.add(l.getTotalACobrar());
+		}
+		return total;
 	}
 }

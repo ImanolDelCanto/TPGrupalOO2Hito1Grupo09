@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body class="bg-light">
+    <nav th:replace="~{layout :: navbar}"></nav>
+
+    <main class="container py-5">
+        <h1 class="h3 mb-1">Liquidación del staff</h1>
+
+        <div class="alert alert-danger mt-3" th:if="${error}" th:text="${error}">error</div>
+
+        <div th:if="${liquidaciones != null and !#lists.isEmpty(liquidaciones)}">
+            <p class="text-muted mb-4"
+               th:text="${liquidaciones[0].festival} + ' · ' + ${liquidaciones[0].diasFestival} + ' días'">festival</p>
+
+            <div class="card shadow-sm">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Empleado</th>
+                            <th>Rol</th>
+                            <th class="text-end">Sueldo base</th>
+                            <th class="text-end">Plus</th>
+                            <th class="text-end">Antigüedad</th>
+                            <th class="text-end">Total a cobrar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="l : ${liquidaciones}">
+                            <td th:text="${l.personal}">empleado</td>
+                            <td th:text="${l.rol}">rol</td>
+                            <td class="text-end" th:text="'$ ' + ${#numbers.formatDecimal(l.sueldoBase, 1, 'POINT', 2, 'COMMA')}">0</td>
+                            <td class="text-end" th:text="'$ ' + ${#numbers.formatDecimal(l.plus, 1, 'POINT', 2, 'COMMA')}">0</td>
+                            <td class="text-end" th:text="'$ ' + ${#numbers.formatDecimal(l.antiguedad, 1, 'POINT', 2, 'COMMA')}">0</td>
+                            <td class="text-end fw-semibold" th:text="'$ ' + ${#numbers.formatDecimal(l.totalACobrar, 1, 'POINT', 2, 'COMMA')}">0</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="5" class="text-end">Total en sueldos</th>
+                            <th class="text-end" th:text="'$ ' + ${#numbers.formatDecimal(total, 1, 'POINT', 2, 'COMMA')}">0</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <p class="small text-muted mt-3 mb-0">
+                Cálculo: (días del festival / 15 + 1) × 50% × (sueldo base + plus o antigüedad).
+                <span th:text="'Este festival dura ' + ${liquidaciones[0].diasFestival} + ' días.'">días</span>
+                El cocinero cobra plus según su rol y el cajero cobra antigüedad por cada año trabajado.
+            </p>
+        </div>
+
+        <p class="text-muted mt-3" th:if="${liquidaciones != null and #lists.isEmpty(liquidaciones)}">
+            Tu unidad todavía no tiene empleados activos.
+        </p>
+
+        <a th:href="@{/responsable}" class="btn btn-outline-secondary mt-4">Volver</a>
+    </main>
+
+    <footer th:replace="~{layout :: footer}"></footer>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

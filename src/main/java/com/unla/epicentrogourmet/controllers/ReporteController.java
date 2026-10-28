@@ -1,4 +1,5 @@
 package com.unla.epicentrogourmet.controllers;
+import java.util.List;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -8,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-
+import com.unla.epicentrogourmet.dtos.LiquidacionHaberesDTO;
 import com.unla.epicentrogourmet.helpers.ViewRouteHelper;
 import com.unla.epicentrogourmet.services.IReporteService;
 
@@ -87,6 +88,21 @@ public class ReporteController {
 		ModelAndView mAV = new ModelAndView(ViewRouteHelper.REPORTE_RECAUDACION);
 		try {
 			mAV.addObject("reporte", reporteService.recaudacionDelFestival(auth.getName()));
+		} catch (IllegalArgumentException e) {
+			mAV.addObject("error", e.getMessage());
+		}
+		return mAV;
+	}
+
+	// GET /reportes/liquidacion -> sueldos del staff activo de la unidad del responsable
+	@GetMapping("/liquidacion")
+	@PreAuthorize("hasRole('ROLE_RESPONSABLE')")
+	public ModelAndView liquidacionDelStaff(Authentication auth) {
+		ModelAndView mAV = new ModelAndView(ViewRouteHelper.REPORTE_LIQUIDACION);
+		try {
+			List<LiquidacionHaberesDTO> liquidaciones = reporteService.liquidacionDelStaff(auth.getName());
+			mAV.addObject("liquidaciones", liquidaciones);
+			mAV.addObject("total", reporteService.totalDeSueldos(liquidaciones));
 		} catch (IllegalArgumentException e) {
 			mAV.addObject("error", e.getMessage());
 		}

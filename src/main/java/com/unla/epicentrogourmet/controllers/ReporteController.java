@@ -121,4 +121,17 @@ public class ReporteController {
 		}
 		return mAV;
 	}
+
+	// GET /reportes/plato-estrella -> el plato que aparece en mas pedidos de la unidad
+	@GetMapping("/plato-estrella")
+	@PreAuthorize("hasRole('ROLE_RESPONSABLE')")
+	public ModelAndView platoEstrella(Authentication auth) {
+		ModelAndView mAV = new ModelAndView(ViewRouteHelper.REPORTE_PLATO_ESTRELLA);
+		try {
+			mAV.addObject("plato", reporteService.platoEstrella(auth.getName()));
+		} catch (IllegalArgumentException e) {
+			mAV.addObject("error", e.getMessage());
+		}
+		return mAV;
+	}
 }

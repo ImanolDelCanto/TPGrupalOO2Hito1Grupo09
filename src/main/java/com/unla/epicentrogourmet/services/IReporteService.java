@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.unla.epicentrogourmet.dtos.LiquidacionHaberesDTO;
+import com.unla.epicentrogourmet.dtos.PlatoDTO;
 import com.unla.epicentrogourmet.dtos.RankingUnidadDTO;
 import com.unla.epicentrogourmet.dtos.RentabilidadDTO;
 import com.unla.epicentrogourmet.dtos.ReporteMayoresCanonDTO;
@@ -41,4 +42,7 @@ public interface IReporteService {
 
 	// recaudacion - costo de platos - sueldos - canon de la unidad del responsable
 	RentabilidadDTO rentabilidadNeta(String emailResponsable);
+
+	// el plato que aparece en mas pedidos de la unidad del responsable
+	PlatoDTO platoEstrella(String emailResponsable);
 }

@@ -108,4 +108,17 @@ public class ReporteController {
 		}
 		return mAV;
 	}
+
+	// GET /reportes/rentabilidad -> rentabilidad neta de la unidad del responsable
+	@GetMapping("/rentabilidad")
+	@PreAuthorize("hasRole('ROLE_RESPONSABLE')")
+	public ModelAndView rentabilidadNeta(Authentication auth) {
+		ModelAndView mAV = new ModelAndView(ViewRouteHelper.REPORTE_RENTABILIDAD);
+		try {
+			mAV.addObject("r", reporteService.rentabilidadNeta(auth.getName()));
+		} catch (IllegalArgumentException e) {
+			mAV.addObject("error", e.getMessage());
+		}
+		return mAV;
+	}
 }

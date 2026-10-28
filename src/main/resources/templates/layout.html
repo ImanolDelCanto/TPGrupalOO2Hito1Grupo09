@@ -25,6 +25,8 @@
                     </li>
                     <li class="nav-item" sec:authorize="hasRole('ROLE_RESPONSABLE')">
                         <a class="nav-link" th:href="@{/responsable}">Mi unidad</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ROLE_RESPONSABLE')">
                         <a class="nav-link" th:href="@{/empleados}">Mi staff</a>
                     </li>
                     <li class="nav-item" sec:authorize="hasRole('ROLE_EMPLEADO')">

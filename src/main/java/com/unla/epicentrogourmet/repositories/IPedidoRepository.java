@@ -17,4 +17,7 @@ public interface IPedidoRepository extends JpaRepository<Pedido, Long> {
 
 	// los pedidos de una unidad, del mas nuevo al mas viejo (para el listado)
 	public abstract List<Pedido> findByUnidadIdUnidadOrderByFechaDescIdPedidoDesc(Long idUnidad);
+
+	// todos los pedidos de las unidades de un festival
+	public abstract List<Pedido> findByUnidadFestivalIdFestival(Long idFestival);
 }

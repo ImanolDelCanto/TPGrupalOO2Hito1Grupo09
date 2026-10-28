@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body class="bg-light">
+    <nav th:replace="~{layout :: navbar}"></nav>
+
+    <main class="container py-5">
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}">error</div>
+
+        <div th:if="${reporte}">
+            <h1 class="h3 mb-4" th:text="'Recaudación de ' + ${reporte.nombreFestival}">Recaudación</h1>
+
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <div class="text-muted small text-uppercase">Total del festival</div>
+                    <div class="display-6 fw-semibold" th:text="'$ ' + ${#numbers.formatDecimal(reporte.recaudacionTotal, 1, 'POINT', 2, 'COMMA')}">$ 0</div>
+                    <p class="text-muted mb-4" th:text="${reporte.cantidadPedidos} + ' pedidos'">0 pedidos</p>
+
+                    <div class="text-muted small text-uppercase" th:text="'Mi unidad (' + ${reporte.nombreUnidad} + ')'">Mi unidad</div>
+                    <div class="h4 mb-0" th:text="'$ ' + ${#numbers.formatDecimal(reporte.recaudacionUnidad, 1, 'POINT', 2, 'COMMA')}">$ 0</div>
+                </div>
+            </div>
+        </div>
+
+        <a th:href="@{/responsable}" class="btn btn-outline-secondary mt-4">Volver</a>
+    </main>
+
+    <footer th:replace="~{layout :: footer}"></footer>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

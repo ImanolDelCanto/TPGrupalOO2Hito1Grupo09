@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.unla.epicentrogourmet.dtos.RankingUnidadDTO;
 import com.unla.epicentrogourmet.dtos.ReporteMayoresCanonDTO;
+import com.unla.epicentrogourmet.dtos.ReporteVentaDTO;
 import com.unla.epicentrogourmet.entities.Festival;
 import com.unla.epicentrogourmet.entities.Pedido;
 import com.unla.epicentrogourmet.entities.UnidadDeVenta;
@@ -91,5 +92,15 @@ public class ReporteService implements IReporteService {
 		return pedidos.stream()
 				.map(Pedido::getTotal)
 				.reduce(BigDecimal.ZERO, BigDecimal::add);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public ReporteVentaDTO recaudacionDelFestival(String emailResponsable) {
+		UnidadDeVenta unidad = unidadDeVentaRepository.findByResponsableEmail(emailResponsable).orElseThrow(() -> new IllegalArgumentException("Tu usuario no tiene una unidad de venta asignada"));
+		Festival festival = unidad.getFestival();
+		List<Pedido> pedidosFestival = pedidoRepository.findByUnidadFestivalIdFestival(festival.getIdFestival());
+		List<Pedido> pedidosUnidad = pedidoRepository.findByUnidadIdUnidad(unidad.getIdUnidad());
+		return new ReporteVentaDTO(festival.getNombre(), pedidosFestival.size(), recaudacionDe(pedidosFestival), unidad.getNombreComercial(), recaudacionDe(pedidosUnidad));
 	}
 }

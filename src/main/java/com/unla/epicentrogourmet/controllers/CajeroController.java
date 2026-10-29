@@ -74,4 +74,16 @@ public class CajeroController {
 		mAV.addObject("error", error);
 		return mAV;
 	}
+
+    // GET /cajero/cierre -> resumen de los pedidos de hoy de su unidad
+	@GetMapping("/cierre")
+	public ModelAndView cierreDeCaja(Authentication auth) {
+		ModelAndView mAV = new ModelAndView(ViewRouteHelper.CAJERO_CIERRE);
+		try {
+			mAV.addObject("cierre", pedidoService.cierreDeCaja(auth.getName()));
+		} catch (IllegalArgumentException e) {
+			mAV.addObject("error", e.getMessage());
+		}
+		return mAV;
+	}
 }

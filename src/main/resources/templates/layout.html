@@ -35,6 +35,9 @@
                     <li class="nav-item" sec:authorize="hasRole('ROLE_EMPLEADO')" th:if="${esCajero}">
                         <a class="nav-link" th:href="@{/cajero/pedidos}">Pedidos</a>
                     </li>
+                    <li class="nav-item" sec:authorize="hasRole('ROLE_EMPLEADO')" th:if="${esCajero}">
+                        <a class="nav-link" th:href="@{/cajero/cierre}">Cierre de caja</a>
+                    </li>
                 </ul>
                 <div class="d-flex align-items-center gap-2">
                     <div sec:authorize="isAnonymous()" class="d-flex gap-2">

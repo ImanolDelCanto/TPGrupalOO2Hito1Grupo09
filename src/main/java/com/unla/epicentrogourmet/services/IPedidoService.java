@@ -2,6 +2,7 @@ package com.unla.epicentrogourmet.services;
 
 import java.util.List;
 
+import com.unla.epicentrogourmet.dtos.CierreCajaDTO;
 import com.unla.epicentrogourmet.entities.Pedido;
 import com.unla.epicentrogourmet.entities.Plato;
 
@@ -28,4 +29,7 @@ public interface IPedidoService {
 
 	// si el usuario logueado es un cajero (para mostrar sus links en la barra)
 	boolean esCajero(String email);
+
+	// resumen de los pedidos de hoy de la unidad del cajero
+	CierreCajaDTO cierreDeCaja(String emailCajero);
 }

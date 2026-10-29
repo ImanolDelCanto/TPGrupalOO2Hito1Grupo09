@@ -1,11 +1,14 @@
 package com.unla.epicentrogourmet.services.implementation;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.unla.epicentrogourmet.dtos.CierreCajaDTO;
 import com.unla.epicentrogourmet.entities.Cajero;
 import com.unla.epicentrogourmet.entities.Pedido;
 import com.unla.epicentrogourmet.entities.Personal;
@@ -76,6 +79,19 @@ public class PedidoService implements IPedidoService {
 	public Pedido altaPedidoPorCajero(String emailCajero, List<Long> idsPlatos, List<Integer> cantidades) {
 		UnidadDeVenta unidad = unidadDeCajero(emailCajero);
 		return crearPedido(unidad, idsPlatos, cantidades);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public CierreCajaDTO cierreDeCaja(String emailCajero) {
+		UnidadDeVenta unidad = unidadDeCajero(emailCajero);
+		LocalDate hoy = LocalDate.now();
+		List<Pedido> pedidosDeHoy = pedidoRepository.findByUnidadIdUnidadAndFechaBetween(unidad.getIdUnidad(), hoy, hoy);
+		BigDecimal total = BigDecimal.ZERO;
+		for (Pedido pedido : pedidosDeHoy) {
+			total = total.add(pedido.getTotal());
+		}
+		return new CierreCajaDTO(unidad.getNombreComercial(), hoy, pedidosDeHoy, total);
 	}
 
 	//Como se arma un pedido valido para una unidad

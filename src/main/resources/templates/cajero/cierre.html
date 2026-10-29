@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body class="bg-light">
+    <nav th:replace="~{layout :: navbar}"></nav>
+
+    <main class="container py-5">
+        <h1 class="h3 mb-1">Cierre de caja</h1>
+
+        <div class="alert alert-danger mt-3" th:if="${error}" th:text="${error}">error</div>
+
+        <div th:if="${cierre}">
+            <p class="text-muted mb-4"
+               th:text="${cierre.nombreUnidad} + ' · ' + ${#temporals.format(cierre.fecha,'dd/MM/yyyy')}">unidad</p>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-4 d-flex gap-5">
+                    <div>
+                        <div class="text-muted small text-uppercase">Pedidos del día</div>
+                        <div class="h4 mb-0" th:text="${cierre.cantidadPedidos}">0</div>
+                    </div>
+                    <div>
+                        <div class="text-muted small text-uppercase">Total recaudado</div>
+                        <div class="h4 mb-0" th:text="'$ ' + ${#numbers.formatDecimal(cierre.total, 1, 'POINT', 2, 'COMMA')}">$ 0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm" th:if="${!#lists.isEmpty(cierre.pedidos)}">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr><th>#</th><th>Detalle</th><th class="text-end">Total</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${cierre.pedidos}">
+                            <td th:text="${p.idPedido}">1</td>
+                            <td>
+                                <div th:each="i : ${p.items}" th:text="${i.cantidad} + ' × ' + ${i.plato.nombre}">2 × plato</div>
+                            </td>
+                            <td class="text-end" th:text="'$ ' + ${#numbers.formatDecimal(p.total, 1, 'POINT', 2, 'COMMA')}">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="text-muted" th:if="${#lists.isEmpty(cierre.pedidos)}">Hoy todavía no hay pedidos.</p>
+        </div>
+
+        <a th:href="@{/empleado}" class="btn btn-outline-secondary mt-4">Volver</a>
+    </main>
+
+    <footer th:replace="~{layout :: footer}"></footer>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

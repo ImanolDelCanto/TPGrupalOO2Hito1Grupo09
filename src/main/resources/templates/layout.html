@@ -32,6 +32,9 @@
                     <li class="nav-item" sec:authorize="hasRole('ROLE_EMPLEADO')">
                         <a class="nav-link" th:href="@{/empleado}">Mi recibo</a>
                     </li>
+                    <li class="nav-item" sec:authorize="hasRole('ROLE_EMPLEADO')" th:if="${esCajero}">
+                        <a class="nav-link" th:href="@{/cajero/pedidos}">Pedidos</a>
+                    </li>
                 </ul>
                 <div class="d-flex align-items-center gap-2">
                     <div sec:authorize="isAnonymous()" class="d-flex gap-2">
@@ -39,6 +42,10 @@
                         <a class="btn btn-light btn-sm" th:href="@{/login}">Iniciar sesión</a>
                     </div>
                     <div sec:authorize="isAuthenticated()" class="d-flex align-items-center gap-2">
+                        <span class="badge text-bg-light" sec:authorize="hasRole('ROLE_ADMINISTRADOR')">Administrador</span>
+                        <span class="badge text-bg-light" sec:authorize="hasRole('ROLE_RESPONSABLE')">Responsable</span>
+                        <span class="badge text-bg-light" sec:authorize="hasRole('ROLE_EMPLEADO')"
+                              th:text="${esCajero} ? 'Cajero' : 'Cocinero'">Empleado</span>
                         <span class="text-white-50 small" sec:authentication="name">usuario</span>
                         <form th:action="@{/logout}" method="post" class="m-0">
                             <button type="submit" class="btn btn-outline-light btn-sm">Cerrar sesión</button>

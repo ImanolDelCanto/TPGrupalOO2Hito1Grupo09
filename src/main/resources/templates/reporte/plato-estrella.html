@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body class="bg-light">
+    <nav th:replace="~{layout :: navbar}"></nav>
+
+    <main class="container py-5">
+        <h1 class="h3 mb-4">Plato estrella</h1>
+
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}">error</div>
+
+        <div class="card shadow-sm" th:if="${plato}">
+            <div class="card-body p-4">
+                <div class="text-muted small text-uppercase">El plato que aparece en más pedidos</div>
+                <h2 class="display-6 fw-semibold mb-1" th:text="${plato.nombre}">plato</h2>
+                <p class="text-muted mb-4"
+                   th:text="'Precio de venta: $ ' + ${#numbers.formatDecimal(plato.precioVenta, 1, 'POINT', 2, 'COMMA')}">precio</p>
+
+                <div class="d-flex gap-5">
+                    <div>
+                        <div class="text-muted small text-uppercase">Pedidos</div>
+                        <div class="h4 mb-0" th:text="${plato.cantidadPedidos}">0</div>
+                    </div>
+                    <div>
+                        <div class="text-muted small text-uppercase">Unidades vendidas</div>
+                        <div class="h4 mb-0" th:text="${plato.unidadesVendidas}">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="small text-muted mt-3" th:if="${plato}">
+            Gana el plato que aparece en más pedidos. Si hay empate, el que vendió más unidades, y si sigue el empate, el primero por nombre.
+        </p>
+
+        <a th:href="@{/responsable}" class="btn btn-outline-secondary mt-4">Volver</a>
+    </main>
+
+    <footer th:replace="~{layout :: footer}"></footer>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>

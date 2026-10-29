@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.unla.epicentrogourmet.dtos.LiquidacionHaberesDTO;
+import com.unla.epicentrogourmet.dtos.PlatoDTO;
 import com.unla.epicentrogourmet.dtos.RankingUnidadDTO;
 import com.unla.epicentrogourmet.dtos.RentabilidadDTO;
 import com.unla.epicentrogourmet.dtos.ReporteMayoresCanonDTO;
@@ -15,10 +16,12 @@ import com.unla.epicentrogourmet.dtos.ReporteVentaDTO;
 import com.unla.epicentrogourmet.entities.Festival;
 import com.unla.epicentrogourmet.entities.ItemPedido;
 import com.unla.epicentrogourmet.entities.Pedido;
+import com.unla.epicentrogourmet.entities.Plato;
 import com.unla.epicentrogourmet.entities.UnidadDeVenta;
 import com.unla.epicentrogourmet.repositories.IFestivalRepository;
 import com.unla.epicentrogourmet.repositories.IPedidoRepository;
 import com.unla.epicentrogourmet.repositories.IPersonalRepository;
+import com.unla.epicentrogourmet.repositories.IPlatoRepository;
 import com.unla.epicentrogourmet.repositories.IUnidadDeVentaRepository;
 import com.unla.epicentrogourmet.services.ILiquidacionService;
 import com.unla.epicentrogourmet.services.IReporteService;
@@ -31,17 +34,19 @@ public class ReporteService implements IReporteService {
 	private final IPedidoRepository pedidoRepository;
 	private final IPersonalRepository personalRepository;
 	private final ILiquidacionService liquidacionService;
+	private final IPlatoRepository platoRepository;
 
 	public ReporteService(IFestivalRepository festivalRepository,
 			IUnidadDeVentaRepository unidadDeVentaRepository,
 			IPedidoRepository pedidoRepository,
 			IPersonalRepository personalRepository,
-			ILiquidacionService liquidacionService) {
+			ILiquidacionService liquidacionService, IPlatoRepository platoRepository) {
 		this.festivalRepository = festivalRepository;
 		this.unidadDeVentaRepository = unidadDeVentaRepository;
 		this.pedidoRepository = pedidoRepository;
 		this.personalRepository = personalRepository;
 		this.liquidacionService = liquidacionService;
+		this.platoRepository = platoRepository;
 	}
 
 	@Override
@@ -165,5 +170,49 @@ public class ReporteService implements IReporteService {
 			}
 		}
 		return total;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public PlatoDTO platoEstrella(String emailResponsable) {
+		UnidadDeVenta unidad = unidadDeVentaRepository.findByResponsableEmail(emailResponsable).orElseThrow(() -> new IllegalArgumentException("Tu usuario no tiene una unidad de venta asignada"));
+		List<Pedido> pedidos = pedidoRepository.findByUnidadIdUnidad(unidad.getIdUnidad());
+
+		PlatoDTO estrella = null;
+		for (Plato plato : platoRepository.findByUnidadIdUnidadOrderByNombreAsc(unidad.getIdUnidad())) {
+			PlatoDTO actual = contarVentas(plato, pedidos);
+			if (estrella == null || esMejor(actual, estrella)) {
+				estrella = actual;
+			}
+		}
+		if (estrella == null || estrella.getCantidadPedidos() == 0)
+			throw new IllegalArgumentException("Tu unidad todavía no tiene pedidos");
+		return estrella;
+	}
+
+	// en cuantos pedidos aparece el plato y cuantas unidades se vendieron
+	private PlatoDTO contarVentas(Plato plato, List<Pedido> pedidos) {
+		int cantidadPedidos = 0;
+		int unidadesVendidas = 0;
+		for (Pedido pedido : pedidos) {
+			boolean aparece = false;
+			for (ItemPedido item : pedido.getItems()) {
+				if (item.getPlato().getIdPlato() == plato.getIdPlato()) {
+					unidadesVendidas += item.getCantidad();
+					aparece = true;
+				}
+			}
+			if (aparece) {
+				cantidadPedidos++;
+			}
+		}
+		return new PlatoDTO(plato.getNombre(), plato.getPrecioVenta(), cantidadPedidos, unidadesVendidas);
+	}
+
+	// gana el que esta en mas pedidos; si empatan, el que vendio mas unidades
+	private boolean esMejor(PlatoDTO a, PlatoDTO b) {
+		if (a.getCantidadPedidos() != b.getCantidadPedidos())
+			return a.getCantidadPedidos() > b.getCantidadPedidos();
+		return a.getUnidadesVendidas() > b.getUnidadesVendidas();
 	}
 }

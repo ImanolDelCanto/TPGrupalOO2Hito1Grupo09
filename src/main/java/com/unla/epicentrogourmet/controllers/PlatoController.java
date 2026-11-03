@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -30,10 +31,12 @@ public class PlatoController {
 		this.platoService = platoService;
 	}
 
-	// GET /responsable/platos -> el menu de su unidad + el formulario vacio
+	// GET /responsable/platos -> el menu de su unidad + el formulario vacio.
+	// "buscar" es opcional, filtra el menu por nombre.
 	@GetMapping("")
-	public ModelAndView menu(Authentication auth) {
-		return vistaMenu(auth.getName(), new AltaPlatoDTO());
+	public ModelAndView menu(Authentication auth,
+			@RequestParam(required = false) String buscar) {
+		return vistaMenu(auth.getName(), new AltaPlatoDTO(), buscar);
 	}
 
 	// POST /responsable/platos -> agrega un plato al menu
@@ -53,16 +56,18 @@ public class PlatoController {
 			}
 		}
 		// hubo errores: la misma pagina, con lo que habia escrito y los mensajes
-		return vistaMenu(auth.getName(), null);
+		return vistaMenu(auth.getName(), null, null);
 	}
 
 	// arma la pagina; si dtoNuevo es null, se reusa el que ya trajo el formulario
-	private ModelAndView vistaMenu(String email, AltaPlatoDTO dtoNuevo) {
+	private ModelAndView vistaMenu(String email, AltaPlatoDTO dtoNuevo, String buscar) {
 		ModelAndView mAV = new ModelAndView(ViewRouteHelper.RESPONSABLE_PLATOS);
 		if (dtoNuevo != null)
 			mAV.addObject("plato", dtoNuevo);
+		// para que el buscador quede con lo que el usuario escribio
+		mAV.addObject("buscar", buscar);
 		try {
-			mAV.addObject("menu", platoService.menuDeResponsable(email));
+			mAV.addObject("menu", platoService.menuDeResponsable(email, buscar));
 		} catch (IllegalArgumentException e) {
 			mAV.addObject("error", e.getMessage());
 		}

@@ -14,6 +14,24 @@
         <div class="alert alert-success" th:if="${exito}" th:text="${exito}">exito</div>
         <div class="alert alert-danger" th:if="${error}" th:text="${error}">error</div>
 
+
+        <!-- ===== buscador por fecha ===== -->
+        <form method="get" th:action="@{/responsable/pedidos}" class="card shadow-sm mb-4">
+            <div class="card-body d-flex flex-wrap align-items-end gap-3">
+                <div>
+                    <label for="desde" class="form-label mb-1 small text-muted">Desde</label>
+                    <input type="date" id="desde" name="desde" class="form-control" th:value="${desde}"/>
+                </div>
+                <div>
+                    <label for="hasta" class="form-label mb-1 small text-muted">Hasta</label>
+                    <input type="date" id="hasta" name="hasta" class="form-control" th:value="${hasta}"/>
+                </div>
+                <button type="submit" class="btn btn-dark">Filtrar</button>
+                <a th:href="@{/responsable/pedidos}" class="btn btn-outline-secondary"
+                   th:if="${desde != null or hasta != null}">Limpiar</a>
+            </div>
+        </form>
+
         <div class="card shadow-sm" th:if="${pedidos != null and !#lists.isEmpty(pedidos)}">
             <table class="table table-hover mb-0 align-middle">
                 <thead class="table-light">
@@ -34,7 +52,8 @@
         </div>
 
         <p class="text-muted" th:if="${pedidos != null and #lists.isEmpty(pedidos)}">
-            Todavía no hay pedidos cargados.
+            <span th:if="${desde == null and hasta == null}">Todavía no hay pedidos cargados.</span>
+            <span th:unless="${desde == null and hasta == null}">No hay pedidos en ese rango de fechas.</span>
         </p>
         <a th:href="@{/responsable}" class="btn btn-outline-secondary mt-4">Volver</a>
     </main>

@@ -1,7 +1,10 @@
 package com.unla.epicentrogourmet.controllers;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -62,12 +65,18 @@ public class ResponsableController {
 		}
 	}
 
-	// GET /responsable/pedidos -> los pedidos de su unidad
+	// GET /responsable/pedidos -> los pedidos de su unidad, con filtro por fecha.
+	// Las dos fechas son opcionales: sin ninguna es el listado completo.
 	@GetMapping("/pedidos")
-	public ModelAndView listadoPedidos(Authentication auth) {
+	public ModelAndView listadoPedidos(Authentication auth,
+			@RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate desde,
+			@RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate hasta) {
 		ModelAndView mAV = new ModelAndView(ViewRouteHelper.RESPONSABLE_PEDIDOS);
+		// para que el formulario quede con lo que el usuario eligio
+		mAV.addObject("desde", desde);
+		mAV.addObject("hasta", hasta);
 		try {
-			mAV.addObject("pedidos", pedidoService.pedidosDeResponsable(auth.getName()));
+			mAV.addObject("pedidos", pedidoService.pedidosDeResponsable(auth.getName(), desde, hasta));
 		} catch (IllegalArgumentException e) {
 			mAV.addObject("error", e.getMessage());
 		}

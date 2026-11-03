@@ -25,9 +25,12 @@ public class PlatoService implements IPlatoService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Plato> menuDeResponsable(String emailResponsable) {
+	public List<Plato> menuDeResponsable(String emailResponsable, String nombre) {
 		UnidadDeVenta unidad = unidadDeResponsable(emailResponsable);
-		return platoRepository.findByUnidadIdUnidadOrderByNombreAsc(unidad.getIdUnidad());
+		// el buscador: con el texto vacio  trae el menu completo
+		String buscado = nombre == null ? "" : nombre.trim();
+		return platoRepository.findByUnidadIdUnidadAndNombreContainingIgnoreCaseOrderByNombreAsc(
+				unidad.getIdUnidad(), buscado);
 	}
 
 	@Override

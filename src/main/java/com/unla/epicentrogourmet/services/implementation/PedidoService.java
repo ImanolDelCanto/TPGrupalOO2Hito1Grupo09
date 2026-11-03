@@ -23,6 +23,10 @@ import com.unla.epicentrogourmet.services.IPedidoService;
 @Service("pedidoService")
 public class PedidoService implements IPedidoService {
 
+	// limites para cuando el usuario deja una fecha vacia
+	private static final LocalDate SIN_LIMITE_ATRAS = LocalDate.of(2000, 1, 1);
+	private static final LocalDate SIN_LIMITE_ADELANTE = LocalDate.of(2999, 12, 31);
+
 	private final IPedidoRepository pedidoRepository;
 	private final IPlatoRepository platoRepository;
 	private final IUnidadDeVentaRepository unidadDeVentaRepository;
@@ -47,9 +51,9 @@ public class PedidoService implements IPedidoService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Pedido> pedidosDeResponsable(String emailResponsable) {
+	public List<Pedido> pedidosDeResponsable(String emailResponsable, LocalDate desde, LocalDate hasta) {
 		UnidadDeVenta unidad = unidadDeResponsable(emailResponsable);
-		return pedidoRepository.findByUnidadIdUnidadOrderByFechaDescIdPedidoDesc(unidad.getIdUnidad());
+		return pedidosEntreFechas(unidad, desde, hasta);
 	}
 
 	//Quien carga el pedido
@@ -69,9 +73,9 @@ public class PedidoService implements IPedidoService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Pedido> pedidosDeCajero(String emailCajero) {
+	public List<Pedido> pedidosDeCajero(String emailCajero, LocalDate desde, LocalDate hasta) {
 		UnidadDeVenta unidad = unidadDeCajero(emailCajero);
-		return pedidoRepository.findByUnidadIdUnidadOrderByFechaDescIdPedidoDesc(unidad.getIdUnidad());
+		return pedidosEntreFechas(unidad, desde, hasta);
 	}
 
 	@Override
@@ -119,6 +123,16 @@ public class PedidoService implements IPedidoService {
 			throw new IllegalArgumentException("Elegí al menos un plato con cantidad mayor a 0");
 
 		return pedidoRepository.save(pedido);   // cascade ALL: guarda tambien los items
+	}
+
+	// El buscador de los dos listados. 
+	private List<Pedido> pedidosEntreFechas(UnidadDeVenta unidad, LocalDate desde, LocalDate hasta) {
+		LocalDate inicio = desde != null ? desde : SIN_LIMITE_ATRAS;
+		LocalDate fin = hasta != null ? hasta : SIN_LIMITE_ADELANTE;
+		if (inicio.isAfter(fin))
+			throw new IllegalArgumentException("La fecha \"desde\" no puede ser posterior a la fecha \"hasta\"");
+		return pedidoRepository.findByUnidadIdUnidadAndFechaBetweenOrderByFechaDescIdPedidoDesc(
+				unidad.getIdUnidad(), inicio, fin);
 	}
 
 	private UnidadDeVenta unidadDeResponsable(String emailResponsable) {

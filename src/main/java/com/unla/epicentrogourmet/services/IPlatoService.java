@@ -7,8 +7,9 @@ import com.unla.epicentrogourmet.entities.Plato;
 
 public interface IPlatoService {
 
-	//el menu de la unidad del responsable logueado
-	List<Plato> menuDeResponsable(String emailResponsable);
+	// el menu de la unidad del responsable logueado, filtrado por nombre.
+	// Con el nombre vacio o en null trae el menu completo.
+	List<Plato> menuDeResponsable(String emailResponsable, String nombre);
 
 	//alta de un plato en el menu de su unidad
 	Plato altaPlato(String emailResponsable, AltaPlatoDTO dto);

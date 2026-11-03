@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -73,26 +75,29 @@ public class PersonalService implements IPersonalService {
 	// viaja vacio y el tipo en null, y trae todo el staff activo.
 	@Override
 	@Transactional(readOnly = true)
-	public List<EmpleadoDeStaffDTO> buscarEnStaff(String emailResponsable, String apellido, TipoPersonal tipo) {
+	public Page<EmpleadoDeStaffDTO> buscarEnStaff(String emailResponsable, String apellido,
+			TipoPersonal tipo, Pageable pageable) {
 		UnidadDeVenta unidad = unidadDeResponsable(emailResponsable);
 		Long idUnidad = unidad.getIdUnidad();
 		String texto = apellido == null ? "" : apellido.trim();
 
 		// El filtro por puesto lo resuelve la base: un repositorio de Cocinero
 		// trae solo cocineros porque la herencia esta mapeada.
+		// La paginacion tambien: la consulta pide solo las filas de esa pagina,
+		// no trae todo y recorta despues.
 		if (tipo == TipoPersonal.COCINERO)
 			return armarFilas(cocineroRepository
 					.findByUnidadIdUnidadAndUsuarioActivoTrueAndApellidoContainingIgnoreCaseOrderByApellidoAsc(
-							idUnidad, texto));
+							idUnidad, texto, pageable));
 
 		if (tipo == TipoPersonal.CAJERO)
 			return armarFilas(cajeroRepository
 					.findByUnidadIdUnidadAndUsuarioActivoTrueAndApellidoContainingIgnoreCaseOrderByApellidoAsc(
-							idUnidad, texto));
+							idUnidad, texto, pageable));
 
 		return armarFilas(personalRepository
 				.findByUnidadIdUnidadAndUsuarioActivoTrueAndApellidoContainingIgnoreCaseOrderByApellidoAsc(
-						idUnidad, texto));
+						idUnidad, texto, pageable));
 	}
 
 	@Override
@@ -270,6 +275,33 @@ public class PersonalService implements IPersonalService {
 		usuarioRepository.save(usuario);
 	}
 
+	// ---------- reenviar credenciales ----------
+
+	// La clave que se genero en el alta no se puede recuperar: en la base
+	// esta hasheada con BCrypt y eso no se revierte. Asi que "reenviar" es
+	// en realidad generar una nueva y mandarla.
+	@Override
+	@Transactional
+	public void reenviarCredenciales(String emailResponsable, long idPersonal) {
+		UnidadDeVenta unidad = unidadDeResponsable(emailResponsable);
+		Personal empleado = buscarEnLaUnidad(unidad, idPersonal);
+		Usuario usuario = empleado.getUsuario();
+
+		if (!Boolean.TRUE.equals(usuario.getActivo()))
+			throw new IllegalArgumentException(
+					"Ese empleado esta dado de baja: reactivalo antes de mandarle el acceso");
+
+		String claveEnClaro = generarClave();
+		usuario.setPassword(passwordEncoder.encode(claveEnClaro));
+		// vuelve a quedar con una clave generada que todavia no uso
+		usuario.setPrimerIngresoHecho(false);
+		usuarioRepository.save(usuario);
+
+		// Si el mail no sale, la excepcion revierte la transaccion y la clave
+		// NO se cambia: el empleado sigue pudiendo entrar con la que tenia.
+		enviarClave(usuario, cuerpoDelMail(empleado, unidad, claveEnClaro, "Te reenviamos el acceso a"));
+	}
+
 	// ---------- ayudantes ----------
 
 	// Busca el empleado y ademas chequea que sea de la unidad del responsable.
@@ -296,6 +328,12 @@ public class PersonalService implements IPersonalService {
 
 		usuario.setEmail(email);
 		return true;
+	}
+
+	// Page.map conserva el numero de pagina y el total de filas: solo
+	// cambia el contenido de entidad a DTO.
+	private Page<EmpleadoDeStaffDTO> armarFilas(Page<? extends Personal> empleados) {
+		return empleados.map(this::armarFila);
 	}
 
 	private List<EmpleadoDeStaffDTO> armarFilas(List<? extends Personal> empleados) {

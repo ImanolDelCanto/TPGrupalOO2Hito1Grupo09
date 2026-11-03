@@ -64,6 +64,11 @@
                                 <a class="btn btn-sm btn-outline-dark"
                                    th:href="@{'/empleados/' + ${e.idPersonal} + '/editar'}">Editar</a>
                                 <form method="post" class="d-inline"
+                                      th:action="@{'/empleados/' + ${e.idPersonal} + '/credenciales'}"
+                                      onsubmit="return confirm('¿Mandarle una contraseña nueva por mail? La que tiene ahora deja de servir.');">
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary">Reenviar acceso</button>
+                                </form>
+                                <form method="post" class="d-inline"
                                       th:action="@{'/empleados/' + ${e.idPersonal} + '/baja'}"
                                       onsubmit="return confirm('¿Dar de baja a este empleado? No va a poder iniciar sesión.');">
                                     <button type="submit" class="btn btn-sm btn-outline-danger">Dar de baja</button>
@@ -72,6 +77,22 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- paginacion: solo aparece si hay mas de una pagina -->
+        <div class="d-flex justify-content-between align-items-center mt-3"
+             th:if="${pag != null and pag.totalPages > 1}">
+            <span class="text-muted small"
+                  th:text="'Página ' + (${pag.number} + 1) + ' de ' + ${pag.totalPages} +
+                           ' · ' + ${pag.totalElements} + ' empleados'">Página 1 de 1</span>
+            <div class="btn-group">
+                <a class="btn btn-sm btn-outline-dark"
+                   th:classappend="${!pag.hasPrevious()} ? 'disabled'"
+                   th:href="@{/empleados(apellido=${apellido}, tipo=${tipo}, pagina=${pag.number - 1})}">Anterior</a>
+                <a class="btn btn-sm btn-outline-dark"
+                   th:classappend="${!pag.hasNext()} ? 'disabled'"
+                   th:href="@{/empleados(apellido=${apellido}, tipo=${tipo}, pagina=${pag.number + 1})}">Siguiente</a>
             </div>
         </div>
 

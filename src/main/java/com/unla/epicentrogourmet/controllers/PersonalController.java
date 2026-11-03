@@ -1,5 +1,7 @@
 package com.unla.epicentrogourmet.controllers;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -14,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.unla.epicentrogourmet.dtos.AltaEmpleadoDTO;
+import com.unla.epicentrogourmet.dtos.EmpleadoDeStaffDTO;
 import com.unla.epicentrogourmet.dtos.ModificarEmpleadoDTO;
 import com.unla.epicentrogourmet.dtos.TipoPersonal;
 import com.unla.epicentrogourmet.entities.RolCocina;
@@ -37,16 +40,23 @@ public class PersonalController {
 		this.personalService = personalService;
 	}
 
+	// cuantos empleados entran en cada pagina del listado
+	private static final int POR_PAGINA = 1;
+
 	// GET /empleados -> el staff de su unidad.
-	// Los dos filtros son opcionales: sin ellos es el listado completo.
 	@GetMapping("")
 	public ModelAndView lista(Authentication auth,
 			@RequestParam(required = false) String apellido,
-			@RequestParam(required = false) TipoPersonal tipo) {
+			@RequestParam(required = false) TipoPersonal tipo,
+			@RequestParam(defaultValue = "0") int pagina) {
 
 		ModelAndView mAV = new ModelAndView(ViewRouteHelper.PERSONAL_LISTA);
 		try {
-			mAV.addObject("empleados", personalService.buscarEnStaff(auth.getName(), apellido, tipo));
+			Page<EmpleadoDeStaffDTO> pagEmpleados = personalService.buscarEnStaff(
+					auth.getName(), apellido, tipo, PageRequest.of(Math.max(pagina, 0), POR_PAGINA));
+
+			mAV.addObject("empleados", pagEmpleados.getContent());
+			mAV.addObject("pag", pagEmpleados);
 			mAV.addObject("bajas", personalService.bajasDeResponsable(auth.getName()));
 		} catch (IllegalArgumentException e) {
 			mAV.addObject("error", e.getMessage());
@@ -140,6 +150,21 @@ public class PersonalController {
 			personalService.bajaEmpleado(auth.getName(), idPersonal);
 			redirect.addFlashAttribute("exito",
 					"Empleado dado de baja. Queda en el listado de bajas y ya no puede iniciar sesion.");
+		} catch (IllegalArgumentException e) {
+			redirect.addFlashAttribute("error", e.getMessage());
+		}
+		return new ModelAndView("redirect:" + ViewRouteHelper.PERSONAL_ROOT);
+	}
+
+	// POST /empleados/{id}/credenciales -> le genera una clave nueva y se la manda
+	@PostMapping("/{idPersonal}/credenciales")
+	public ModelAndView reenviarCredenciales(Authentication auth,
+			@PathVariable long idPersonal,
+			RedirectAttributes redirect) {
+		try {
+			personalService.reenviarCredenciales(auth.getName(), idPersonal);
+			redirect.addFlashAttribute("exito",
+					"Listo, le mandamos una contrasena nueva por mail. La anterior ya no sirve.");
 		} catch (IllegalArgumentException e) {
 			redirect.addFlashAttribute("error", e.getMessage());
 		}

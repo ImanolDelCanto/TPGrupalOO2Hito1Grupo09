@@ -13,6 +13,17 @@
         <div class="row g-4">
             <!-- MENU -->
             <div class="col-lg-7">
+                <!-- ===== buscador por nombre ===== -->
+                <form method="get" th:action="@{/responsable/platos}" class="mb-3">
+                    <div class="input-group">
+                        <input type="text" name="buscar" class="form-control"
+                               placeholder="Buscar un plato por nombre" th:value="${buscar}"/>
+                        <button type="submit" class="btn btn-dark">Buscar</button>
+                        <a th:href="@{/responsable/platos}" class="btn btn-outline-secondary"
+                           th:if="${buscar != null and !#strings.isEmpty(buscar)}">Limpiar</a>
+                    </div>
+                </form>
+
                 <div class="card shadow-sm" th:if="${menu != null and !#lists.isEmpty(menu)}">
                     <table class="table mb-0 align-middle">
                         <thead class="table-light">
@@ -35,7 +46,11 @@
                     </table>
                 </div>
                 <p class="text-muted" th:if="${menu != null and #lists.isEmpty(menu)}">
-                    Todavía no cargaste platos. Agregá el primero con el formulario.
+                    <span th:if="${buscar == null or #strings.isEmpty(buscar)}">
+                        Todavía no cargaste platos. Agregá el primero con el formulario.
+                    </span>
+                    <span th:unless="${buscar == null or #strings.isEmpty(buscar)}"
+                          th:text="'Ningún plato de tu menú coincide con &quot;' + ${buscar} + '&quot;.'">sin resultados</span>
                 </p>
             </div>
 

@@ -1,5 +1,6 @@
 package com.unla.epicentrogourmet.services;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import com.unla.epicentrogourmet.dtos.CierreCajaDTO;
@@ -13,7 +14,7 @@ public interface IPedidoService {
 	List<Plato> platosDeResponsable(String emailResponsable);
 
 	// los pedidos ya cargados de su unidad, para el listado
-	List<Pedido> pedidosDeResponsable(String emailResponsable);
+	List<Pedido> pedidosDeResponsable(String emailResponsable, LocalDate desde, LocalDate hasta);
 
 	// el alta: los platos elegidos y la cantidad de cada uno
 	Pedido altaPedidoPorResponsable(String emailResponsable, List<Long> idsPlatos, List<Integer> cantidades);
@@ -22,7 +23,7 @@ public interface IPedidoService {
 	List<Plato> platosDeCajero(String emailCajero);
 
     //los pedidos ya cargados de su unidad, para el listado
-	List<Pedido> pedidosDeCajero(String emailCajero);
+	List<Pedido> pedidosDeCajero(String emailCajero, LocalDate desde, LocalDate hasta);
 
 	// el alta: los platos elegidos y la cantidad de cada uno
 	Pedido altaPedidoPorCajero(String emailCajero, List<Long> idsPlatos, List<Integer> cantidades);

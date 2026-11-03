@@ -15,6 +15,10 @@ public interface IPlatoRepository extends JpaRepository<Plato, Long> {
 	//el menu de una unidad, ordenado alfabeticamente (para el formulario)
 	public abstract List<Plato> findByUnidadIdUnidadOrderByNombreAsc(Long idUnidad);
 
+	// el menu filtrado por nombre.
+	public abstract List<Plato> findByUnidadIdUnidadAndNombreContainingIgnoreCaseOrderByNombreAsc(
+			Long idUnidad, String nombre);
+
 	//¿ya existe un plato con ese nombre en el menu de esta unidad?
 	public abstract boolean existsByUnidadIdUnidadAndNombreIgnoreCase(Long idUnidad, String nombre);
 }

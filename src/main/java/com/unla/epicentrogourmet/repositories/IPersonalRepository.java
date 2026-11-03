@@ -3,6 +3,8 @@ package com.unla.epicentrogourmet.repositories;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -24,6 +26,10 @@ public interface IPersonalRepository extends JpaRepository<Personal, Long> {
 	// El "UsuarioActivoTrue" es la baja logica: los eliminados no vuelven.
 	public abstract List<Personal> findByUnidadIdUnidadAndUsuarioActivoTrueAndApellidoContainingIgnoreCaseOrderByApellidoAsc(
 			Long idUnidad, String apellido);
+
+	// La misma busqueda pero de a una pagina. Es un metodo NUEVO, no un cambio.
+	public abstract Page<Personal> findByUnidadIdUnidadAndUsuarioActivoTrueAndApellidoContainingIgnoreCaseOrderByApellidoAsc(
+			Long idUnidad, String apellido, Pageable pageable);
 
 	// los dados de baja de esa unidad
 	public abstract List<Personal> findByUnidadIdUnidadAndUsuarioActivoFalseOrderByApellidoAsc(Long idUnidad);

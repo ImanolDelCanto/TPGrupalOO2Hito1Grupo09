@@ -76,8 +76,6 @@
         </div>
 
         <p class="text-muted" th:if="${pedidos != null and #lists.isEmpty(pedidos)}">
-
-        <p class="text-muted" th:if="${pedidos != null and #lists.isEmpty(pedidos)}">
             <span th:if="${desde == null and hasta == null}">Todavía no hay pedidos cargados.</span>
             <span th:unless="${desde == null and hasta == null}">No hay pedidos en ese rango de fechas.</span>
         </p>

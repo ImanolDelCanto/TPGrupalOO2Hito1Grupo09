@@ -86,7 +86,7 @@ public class ReporteService implements IReporteService {
 	@Override
 	@Transactional(readOnly = true)
 	public ReporteMayoresCanonDTO canonDeUnidad(String emailResponsable) {
-		UnidadDeVenta u = unidadDeVentaRepository.findByResponsableEmail(emailResponsable).orElseThrow(() -> new IllegalArgumentException("Tu usuario no tiene una unidad de venta asignada"));
+		UnidadDeVenta u = unidadDeResponsable(emailResponsable);
 		return new ReporteMayoresCanonDTO(u.getNombreComercial(), u.getCodigoUnico(), u.getTipoUnidad(), u.getCostoOperativo());
 	}
 
@@ -117,7 +117,7 @@ public class ReporteService implements IReporteService {
 	@Override
 	@Transactional(readOnly = true)
 	public ReporteVentaDTO recaudacionDelFestival(String emailResponsable) {
-		UnidadDeVenta unidad = unidadDeVentaRepository.findByResponsableEmail(emailResponsable).orElseThrow(() -> new IllegalArgumentException("Tu usuario no tiene una unidad de venta asignada"));
+		UnidadDeVenta unidad = unidadDeResponsable(emailResponsable);
 		Festival festival = unidad.getFestival();
 		List<Pedido> pedidosFestival = pedidoRepository.findByUnidadFestivalIdFestival(festival.getIdFestival());
 		List<Pedido> pedidosUnidad = pedidoRepository.findByUnidadIdUnidad(unidad.getIdUnidad());
@@ -127,7 +127,7 @@ public class ReporteService implements IReporteService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<LiquidacionHaberesDTO> liquidacionDelStaff(String emailResponsable) {
-		UnidadDeVenta unidad = unidadDeVentaRepository.findByResponsableEmail(emailResponsable).orElseThrow(() -> new IllegalArgumentException("Tu usuario no tiene una unidad de venta asignada"));
+		UnidadDeVenta unidad = unidadDeResponsable(emailResponsable);
 		return liquidacionesDe(unidad);
 	}
 
@@ -152,8 +152,7 @@ public class ReporteService implements IReporteService {
 	@Override
 	@Transactional(readOnly = true)
 	public RentabilidadDTO rentabilidadNeta(String emailResponsable) {
-		UnidadDeVenta unidad = unidadDeVentaRepository.findByResponsableEmail(emailResponsable)
-				.orElseThrow(() -> new IllegalArgumentException("Tu usuario no tiene una unidad de venta asignada"));
+		UnidadDeVenta unidad = unidadDeResponsable(emailResponsable);
 		List<Pedido> pedidos = pedidoRepository.findByUnidadIdUnidad(unidad.getIdUnidad());
 		int dias = unidad.getFestival().getDiasDuracion();
 		return calcularRentabilidad(unidad, pedidos, null, null, dias);   // festival completo
@@ -162,8 +161,7 @@ public class ReporteService implements IReporteService {
 	@Override
 	@Transactional(readOnly = true)
 	public RentabilidadDTO rentabilidadEntreFechas(String emailResponsable, LocalDate desde, LocalDate hasta) {
-		UnidadDeVenta unidad = unidadDeVentaRepository.findByResponsableEmail(emailResponsable)
-				.orElseThrow(() -> new IllegalArgumentException("Tu usuario no tiene una unidad de venta asignada"));
+		UnidadDeVenta unidad = unidadDeResponsable(emailResponsable);
 		Festival festival = unidad.getFestival();
 
 		if (desde == null || hasta == null)
@@ -221,7 +219,7 @@ public class ReporteService implements IReporteService {
 	@Override
 	@Transactional(readOnly = true)
 	public PlatoDTO platoEstrella(String emailResponsable) {
-		UnidadDeVenta unidad = unidadDeVentaRepository.findByResponsableEmail(emailResponsable).orElseThrow(() -> new IllegalArgumentException("Tu usuario no tiene una unidad de venta asignada"));
+		UnidadDeVenta unidad = unidadDeResponsable(emailResponsable);
 		List<Pedido> pedidos = pedidoRepository.findByUnidadIdUnidad(unidad.getIdUnidad());
 
 		PlatoDTO estrella = null;
@@ -262,4 +260,9 @@ public class ReporteService implements IReporteService {
 		return a.getCantidadPedidos() > b.getCantidadPedidos();
 	}
 
+	// la unidad del responsable logueado (la usan todos los reportes)
+	private UnidadDeVenta unidadDeResponsable(String emailResponsable) {
+		return unidadDeVentaRepository.findByResponsableEmail(emailResponsable)
+				.orElseThrow(() -> new IllegalArgumentException("Tu usuario no tiene una unidad de venta asignada"));
+	}
 }

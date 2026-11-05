@@ -92,6 +92,7 @@ Abrí <http://localhost:8080>. En cada arranque, `data.sql` borra y vuelve a car
 |---|---|---|
 | Administrador | `admin@epicentro.com` | `admin1234` |
 | Responsable | `laura@epicentro.com` | `resp1234` |
+| Responsable de un festival que todavía no empezó | `pablo@epicentro.com` | `resp1234` |
 | Empleado cajero | `luis@epicentro.com` | `emp1234` |
 | Empleada cocinera | `sofia@epicentro.com` | `emp1234` |
 | Empleado dado de baja | `baja@epicentro.com` | `emp1234` — no puede entrar |
@@ -103,7 +104,7 @@ Abrí <http://localhost:8080>. En cada arranque, `data.sql` borra y vuelve a car
 | Rol | Qué puede hacer |
 |---|---|
 | Sin sesión | Ver los festivales y registrar su unidad de venta |
-| Administrador | Ver festivales y unidades, y los reportes generales |
+| Administrador | Ver festivales y unidades, los reportes generales y modificar los datos de las unidades |
 | Responsable | Cargar el menú y los pedidos de su unidad, administrar su staff y ver los reportes de su unidad |
 | Empleado | Ver su liquidación, descargar su recibo en PDF y ver los festivales donde trabajó |
 | Empleado cajero | Además, cargar pedidos, cerrar la caja del día y descargar su comprobante en PDF |
@@ -148,6 +149,7 @@ Los permisos se controlan en tres lugares: `SecurityConfiguration` exige sesión
 | [#28] | Mejoras de validaciones y arreglo del login | Erika |
 | [#29] | Paginación de pedidos | Erika |
 | [#30] | Comprobante de cierre de caja en PDF *(caso de uso propio)* | Erika |
+| [#31] | Modificación de unidades de venta por el administrador *(caso de uso propio)* | Erika |
 
 ### Casos de uso propios
 
@@ -161,7 +163,7 @@ El enunciado pide, por integrante, dos casos de uso además de los del enunciado
 **Erika Baez**
 
 - **Comprobante de cierre de caja en PDF** ([#30]). Con la caja ya cerrada, el cajero descarga un PDF con la unidad, la fecha, el cajero, los pedidos del día y el total.
-- **Gestión de unidades de venta por el administrador.** *(en curso)*
+- **Modificación de unidades de venta por el administrador** ([#31]). Desde la pantalla de cada festival, el administrador corrige los datos de una unidad registrada. La superficie, la electricidad y el montaje cambian el canon, así que solo se pueden modificar si el festival todavía no empezó. El código se valida con el formato de su tipo y no puede repetirse.
 
 ### Hito 1
 
@@ -226,3 +228,4 @@ src/main/resources/
 [#28]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/28
 [#29]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/29
 [#30]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/30
+[#31]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/31

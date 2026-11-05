@@ -47,7 +47,9 @@ public class SecurityConfiguration {
 					login.loginProcessingUrl("/loginprocess");
 					login.usernameParameter("username");
 					login.passwordParameter("password");
-					login.defaultSuccessUrl("/loginsuccess");
+					// true: despues del login siempre va a /loginsuccess (que reparte por rol),
+					// y no a la ultima direccion que Spring haya guardado
+					login.defaultSuccessUrl("/loginsuccess", true);
 					login.permitAll();
 				})
 				.logout(logout -> {

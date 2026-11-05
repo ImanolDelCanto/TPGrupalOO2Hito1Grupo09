@@ -170,6 +170,8 @@ public abstract class UnidadDeVenta {
 	}
 
 	public void cerrarCaja() {
+		if (!getFestival().estaActivo())
+			throw new IllegalArgumentException("El festival no está en curso: no hay caja para cerrar");
 		if (cajaCerradaHoy())
 			throw new IllegalArgumentException("La caja de hoy ya está cerrada");
 		fechaUltimoCierre = LocalDate.now();

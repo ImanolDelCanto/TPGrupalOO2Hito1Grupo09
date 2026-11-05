@@ -55,9 +55,14 @@ public class PuestoDesarmable extends UnidadDeVenta{
 	}
 
 	  @Override
-  public String getTipoUnidad() {
+  	public String getTipoUnidad() {
       return "Puesto desarmable";
-  }
+  	}
+
+	@Override
+	public String getPrefijoCodigo() {
+		return "PD-";
+	}
 	
 	@Override
 	public String toString() {

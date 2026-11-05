@@ -26,7 +26,7 @@ public class UnidadDeVentaFactory {
             throw new IllegalArgumentException("Un Food Truck necesita patente");
 
         return new FoodTruck(dto.getNombreComercial(), dto.getSuperficie(),
-                dto.getCodigoUnico(), festival,
+                dto.getCodigoUnico().trim().toUpperCase(), festival,
                 dto.getPatente().trim().toUpperCase(), dto.isRequiereElectricidad());
     }
 
@@ -37,7 +37,7 @@ public class UnidadDeVentaFactory {
             throw new IllegalArgumentException("Indicá el tiempo de montaje en minutos");
 
         return new PuestoDesarmable(dto.getNombreComercial(), dto.getSuperficie(),
-                dto.getCodigoUnico(), festival,
+                dto.getCodigoUnico().trim().toUpperCase(), festival,
                 dto.getCantidadCarpas(), dto.getTiempoMontaje());
     }
 }

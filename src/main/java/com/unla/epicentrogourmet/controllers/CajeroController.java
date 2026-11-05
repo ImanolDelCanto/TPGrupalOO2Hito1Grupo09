@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -32,16 +34,22 @@ public class CajeroController {
 		this.pedidoService = pedidoService;
 	}
 
+	// cuantos pedidos entran en cada pagina del listado
+	private static final int POR_PAGINA = 5;
+
 	// GET /cajero/pedidos -> los pedidos de su unidad
 	@GetMapping("/pedidos")
 	public ModelAndView listadoPedidos(Authentication auth,
 			@RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate desde,
-			@RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate hasta) {
+			@RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate hasta,
+			@RequestParam(defaultValue = "0") int pagina) {
 		ModelAndView mAV = new ModelAndView(ViewRouteHelper.CAJERO_PEDIDOS);
 		mAV.addObject("desde", desde);
 		mAV.addObject("hasta", hasta);
 		try {
-			mAV.addObject("pedidos", pedidoService.pedidosDeCajero(auth.getName(), desde, hasta));
+			Page<Pedido> pagPedidos = pedidoService.pedidosDeCajero(auth.getName(), desde, hasta, PageRequest.of(Math.max(pagina, 0), POR_PAGINA));
+			mAV.addObject("pedidos", pagPedidos.getContent());
+			mAV.addObject("pag", pagPedidos);
 			mAV.addObject("unidad", pedidoService.unidadDeCajero(auth.getName()));
 		} catch (IllegalArgumentException e) {
 			mAV.addObject("error", e.getMessage());

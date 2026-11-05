@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.unla.epicentrogourmet.dtos.CierreCajaDTO;
@@ -51,9 +53,9 @@ public class PedidoService implements IPedidoService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Pedido> pedidosDeResponsable(String emailResponsable, LocalDate desde, LocalDate hasta) {
+	public Page<Pedido> pedidosDeResponsable(String emailResponsable, LocalDate desde, LocalDate hasta, Pageable pageable) {
 		UnidadDeVenta unidad = unidadDeResponsable(emailResponsable);
-		return pedidosEntreFechas(unidad, desde, hasta);
+		return pedidosEntreFechas(unidad, desde, hasta, pageable);
 	}
 
 	//Quien carga el pedido
@@ -73,9 +75,9 @@ public class PedidoService implements IPedidoService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Pedido> pedidosDeCajero(String emailCajero, LocalDate desde, LocalDate hasta) {
+	public Page<Pedido> pedidosDeCajero(String emailCajero, LocalDate desde, LocalDate hasta, Pageable pageable) {
 		UnidadDeVenta unidad = unidadDeCajero(emailCajero);
-		return pedidosEntreFechas(unidad, desde, hasta);
+		return pedidosEntreFechas(unidad, desde, hasta, pageable);
 	}
 
 	@Override
@@ -138,13 +140,13 @@ public class PedidoService implements IPedidoService {
 	}
 
 	// El buscador de los dos listados. 
-	private List<Pedido> pedidosEntreFechas(UnidadDeVenta unidad, LocalDate desde, LocalDate hasta) {
+	private Page<Pedido> pedidosEntreFechas(UnidadDeVenta unidad, LocalDate desde, LocalDate hasta, Pageable pageable) {
 		LocalDate inicio = desde != null ? desde : SIN_LIMITE_ATRAS;
 		LocalDate fin = hasta != null ? hasta : SIN_LIMITE_ADELANTE;
 		if (inicio.isAfter(fin))
 			throw new IllegalArgumentException("La fecha \"desde\" no puede ser posterior a la fecha \"hasta\"");
 		return pedidoRepository.findByUnidadIdUnidadAndFechaBetweenOrderByFechaDescIdPedidoDesc(
-				unidad.getIdUnidad(), inicio, fin);
+				unidad.getIdUnidad(), inicio, fin, pageable);
 	}
 
 	private UnidadDeVenta unidadDeResponsable(String emailResponsable) {

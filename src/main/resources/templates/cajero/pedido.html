@@ -12,13 +12,16 @@
         </p>
 
         <div class="alert alert-danger" th:if="${error}" th:text="${error}">error</div>
+        <div class="alert alert-warning" th:if="${unidad != null and unidad.cajaCerradaHoy()}">
+            La caja de hoy está cerrada: no se pueden cargar más pedidos hasta mañana.
+        </div>
 
         <div class="alert alert-warning" th:if="${platos != null and #lists.isEmpty(platos)}">
             Tu unidad todavía no tiene platos cargados.
         </div>
 
         <form th:action="@{/cajero/pedido}" method="post"
-              th:if="${platos != null and !#lists.isEmpty(platos)}" class="card shadow-sm">
+              th:if="${platos != null and !#lists.isEmpty(platos) and (unidad == null or !unidad.cajaCerradaHoy())}">
             <table class="table mb-0 align-middle">
                 <thead class="table-light">
                     <tr><th>Plato</th><th class="text-end">Precio</th><th style="width:130px">Cantidad</th></tr>

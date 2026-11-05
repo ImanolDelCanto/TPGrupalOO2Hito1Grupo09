@@ -95,14 +95,26 @@ public class PedidoService implements IPedidoService {
 		for (Pedido pedido : pedidosDeHoy) {
 			total = total.add(pedido.getTotal());
 		}
-		return new CierreCajaDTO(unidad.getNombreComercial(), hoy, pedidosDeHoy, total);
+		return new CierreCajaDTO(unidad.getNombreComercial(), hoy, pedidosDeHoy, total, unidad.cajaCerradaHoy());
 	}
+
+	@Override
+	@Transactional
+	public void cerrarCaja(String emailCajero) {
+		UnidadDeVenta unidad = unidadDeCajero(emailCajero);   // valida que sea cajero
+		unidad.cerrarCaja();                                  // la unidad valida que no este cerrada
+		unidadDeVentaRepository.save(unidad);
+	}
+
 
 	//Como se arma un pedido valido para una unidad
 	private Pedido crearPedido(UnidadDeVenta unidad, List<Long> idsPlatos, List<Integer> cantidades) {
 		if (!unidad.getFestival().estaActivo())
 			throw new IllegalArgumentException(
 					"El festival de tu unidad no está en curso: solo se cargan pedidos durante el festival");
+		if (unidad.cajaCerradaHoy())
+			throw new IllegalArgumentException(
+					"La caja de hoy ya está cerrada: no se pueden cargar más pedidos hasta mañana");
 		if (idsPlatos == null || cantidades == null || idsPlatos.size() != cantidades.size())
 			throw new IllegalArgumentException("Elegí al menos un plato");
 
@@ -141,7 +153,9 @@ public class PedidoService implements IPedidoService {
 	}
 
 	// la unidad del cajero logueado; un cocinero no puede cargar pedidos
-	private UnidadDeVenta unidadDeCajero(String emailCajero) {
+	@Override
+	@Transactional(readOnly = true)
+	public UnidadDeVenta unidadDeCajero(String emailCajero) {
 		Personal empleado = personalRepository.findByUsuarioEmail(emailCajero)
 				.orElseThrow(() -> new IllegalArgumentException("No hay un empleado asociado a tu usuario"));
 		if (!(empleado instanceof Cajero))

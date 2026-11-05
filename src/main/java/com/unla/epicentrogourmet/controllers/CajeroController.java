@@ -42,6 +42,7 @@ public class CajeroController {
 		mAV.addObject("hasta", hasta);
 		try {
 			mAV.addObject("pedidos", pedidoService.pedidosDeCajero(auth.getName(), desde, hasta));
+			mAV.addObject("unidad", pedidoService.unidadDeCajero(auth.getName()));
 		} catch (IllegalArgumentException e) {
 			mAV.addObject("error", e.getMessage());
 		}
@@ -75,6 +76,7 @@ public class CajeroController {
 		ModelAndView mAV = new ModelAndView(ViewRouteHelper.CAJERO_PEDIDO);
 		try {
 			mAV.addObject("platos", pedidoService.platosDeCajero(email));
+			mAV.addObject("unidad", pedidoService.unidadDeCajero(email));
 		} catch (IllegalArgumentException e) {
 			error = e.getMessage();
 		}
@@ -92,5 +94,17 @@ public class CajeroController {
 			mAV.addObject("error", e.getMessage());
 		}
 		return mAV;
+	}
+
+	// POST /cajero/cierre -> cierra la caja de hoy
+	@PostMapping("/cierre")
+	public ModelAndView cerrarCaja(Authentication auth, RedirectAttributes redirect) {
+		try {
+			pedidoService.cerrarCaja(auth.getName());
+			redirect.addFlashAttribute("exito", "Caja cerrada. Hoy ya no se pueden cargar más pedidos.");
+		} catch (IllegalArgumentException e) {
+			redirect.addFlashAttribute("error", e.getMessage());
+		}
+		return new ModelAndView("redirect:/cajero/cierre");
 	}
 }

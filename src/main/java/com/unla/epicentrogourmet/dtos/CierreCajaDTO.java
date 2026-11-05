@@ -13,12 +13,14 @@ public class CierreCajaDTO {
 	private LocalDate fecha;
 	private List<Pedido> pedidos;
 	private BigDecimal total;
+	private boolean cerrada;
 
-	public CierreCajaDTO(String nombreUnidad, LocalDate fecha, List<Pedido> pedidos, BigDecimal total) {
+	public CierreCajaDTO(String nombreUnidad, LocalDate fecha, List<Pedido> pedidos, BigDecimal total, boolean cerrada) {
 		this.nombreUnidad = nombreUnidad;
 		this.fecha = fecha;
 		this.pedidos = pedidos;
 		this.total = total;
+		this.cerrada = cerrada;
 	}
 
 	public String getNombreUnidad() {
@@ -39,5 +41,9 @@ public class CierreCajaDTO {
 
 	public BigDecimal getTotal() {
 		return total;
+	}
+
+	public boolean isCerrada() {
+		return cerrada;
 	}
 }

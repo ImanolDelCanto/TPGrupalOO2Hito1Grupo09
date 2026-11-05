@@ -8,7 +8,8 @@
         <h1 class="h3 mb-1">Cierre de caja</h1>
 
         <div class="alert alert-danger mt-3" th:if="${error}" th:text="${error}">error</div>
-
+        <div class="alert alert-success mt-3" th:if="${exito}" th:text="${exito}">exito</div>
+        
         <div th:if="${cierre}">
             <p class="text-muted mb-4"
                th:text="${cierre.nombreUnidad} + ' · ' + ${#temporals.format(cierre.fecha,'dd/MM/yyyy')}">unidad</p>
@@ -44,6 +45,16 @@
             </div>
 
             <p class="text-muted" th:if="${#lists.isEmpty(cierre.pedidos)}">Hoy todavía no hay pedidos.</p>
+            <div class="alert alert-secondary mt-4 mb-0" th:if="${cierre.cerrada}">
+                La caja de hoy está cerrada. Mañana se abre sola.
+            </div>
+
+            <form th:action="@{/cajero/cierre}" method="post" class="mt-4" th:unless="${cierre.cerrada}">
+                <p class="text-muted small mb-2">
+                    Al cerrar la caja no se van a poder cargar más pedidos hoy, ni desde caja ni desde el responsable.
+                </p>
+                <button type="submit" class="btn btn-dark">Cerrar caja</button>
+            </form>
         </div>
 
         <a th:href="@{/empleado}" class="btn btn-outline-secondary mt-4">Volver</a>

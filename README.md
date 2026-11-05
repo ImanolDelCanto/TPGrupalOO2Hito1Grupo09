@@ -1,288 +1,228 @@
------------ DIAGRAMA DE CLASES -----------
-<-- https://drive.google.com/file/d/1EwO5vxwPRNBBZXelgn_nRokPmesBcIGD/view?usp=sharing -->
-
-
-# Epicentro Gourmet — Hito 1
+# Epicentro Gourmet
 
 Trabajo práctico de **Orientación a Objetos II** — Licenciatura en Sistemas, UNLa.
 
-Sistema de gestión para los festivales gastronómicos de Epicentro Gourmet: unidades de
-venta, personal, platos y pedidos, con persistencia en MySQL a través de Hibernate.
+Aplicación web para administrar los festivales gastronómicos de Epicentro Gourmet: unidades de venta, personal, platos, pedidos y reportes, con inicio de sesión por roles.
 
 | | |
 |---|---|
 | **Grupo** | 09 |
-| **Integrantes** | Enzo Diaz · Imanol Del Canto · Erika Baez |
 | **Comisión** | Turno noche |
-| **Entrega** | 3 de septiembre de 2026 |
 
-| Apellido y Nombre | Usuario GitHub |
+| Integrante | Usuario de GitHub |
 |---|---|
-| Diaz, Enzo | 
-| Del Canto, Imanol | ImanolDelCanto |
-| Baez, Erika | 
+| Del Canto, Imanol | [ImanolDelCanto](https://github.com/ImanolDelCanto) |
+| Baez, Erika | [BzErika](https://github.com/BzErika) |
+| Diaz, Enzo | [enzodiaz013](https://github.com/enzodiaz013) — participó en el Hito 1 |
 
-## Casos de uso
+**Diagrama de clases:** [ver en Google Drive](https://drive.google.com/file/d/1EwO5vxwPRNBBZXelgn_nRokPmesBcIGD/view?usp=sharing)
 
-| Caso de uso | Clase | Responsable |
+**Tecnologías:** Java 21 · Spring Boot 3.5 · Spring Data JPA (Hibernate) · MySQL 8 · Spring Security 6 con BCrypt · Thymeleaf y Bootstrap 5 · JavaMailSender (Gmail) · OpenPDF
+
+---
+
+## Cómo correrlo
+
+### 1. Requisitos
+
+- **Java 21**
+- **MySQL 8**, el Server y Workbench
+- **Git**. En Windows usamos la terminal Git Bash.
+
+Maven no hace falta: el proyecto trae su propio `mvnw`.
+
+### 2. Clonar
+
+```bash
+git clone https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09.git
+cd TPGrupalOO2Hito1Grupo09
+```
+
+### 3. Crear la base vacía
+
+En MySQL Workbench:
+
+```sql
+CREATE DATABASE bd_epicentro_hito2;
+```
+
+Las tablas no se crean a mano: Hibernate las genera al arrancar, a partir de las entidades.
+
+### 4. Variables de entorno
+
+Ninguna contraseña está en el repositorio. `application.yml` las lee de estas variables:
+
+| Variable | Qué es |
+|---|---|
+| `DB_URL` | URL de conexión a MySQL |
+| `DB_USER` | Usuario de MySQL |
+| `DB_PASS` | Contraseña de MySQL |
+| `MAIL_USER` | Cuenta de Gmail que manda los mails |
+| `MAIL_PASS` | **Contraseña de aplicación** de esa cuenta (16 caracteres), no la contraseña normal |
+
+En Git Bash, agregalas al final de `~/.bashrc` (por ejemplo con `nano ~/.bashrc`):
+
+```bash
+export DB_URL='jdbc:mysql://127.0.0.1:3306/bd_epicentro_hito2?serverTimezone=America/Argentina/Buenos_Aires'
+export DB_USER='root'
+export DB_PASS='TU_PASSWORD'
+export MAIL_USER='tu_cuenta@gmail.com'
+export MAIL_PASS='TU_CONTRASEÑA_DE_APLICACION'
+```
+
+Después recargalas con `source ~/.bashrc`.
+
+> **Usá `127.0.0.1`, no `localhost`.** Para MySQL son dos cuentas distintas, y con `localhost` puede rechazar una contraseña correcta.
+
+> Sin las variables de mail la app arranca igual, pero el alta de empleados y el reenvío de acceso no se completan: mandar la clave por mail es parte de la operación.
+
+Si corrés desde el botón Run de un IDE, ese botón no lee `~/.bashrc`. En ese caso cargalas en Windows con `setx` desde PowerShell y reiniciá el IDE.
+
+### 5. Arrancar
+
+```bash
+./mvnw spring-boot:run
+```
+
+Abrí <http://localhost:8080>. En cada arranque, `data.sql` borra y vuelve a cargar los datos de prueba.
+
+### Usuarios de prueba
+
+| Rol | Email | Contraseña |
 |---|---|---|
-| Costo salarial mensual por unidad de venta | Del Canto, Imanol |
-| Cajeros de turno noche con antigüedad, en Food Trucks | Diaz, Enzo |
-| Rendimiento económico por unidad de venta | Baez, Erika |
-| Costo operativo por unidad de venta | Del Canto, Imanol |
+| Administrador | `admin@epicentro.com` | `admin1234` |
+| Responsable | `laura@epicentro.com` | `resp1234` |
+| Empleado cajero | `luis@epicentro.com` | `emp1234` |
+| Empleada cocinera | `sofia@epicentro.com` | `emp1234` |
+| Empleado dado de baja | `baja@epicentro.com` | `emp1234` — no puede entrar |
 
 ---
 
-## Requisitos
+## Roles
 
-| Herramienta | Versión | Para qué |
+| Rol | Qué puede hacer |
+|---|---|
+| Sin sesión | Ver los festivales y registrar su unidad de venta |
+| Administrador | Ver festivales y unidades, y los reportes generales |
+| Responsable | Cargar el menú y los pedidos de su unidad, administrar su staff y ver los reportes de su unidad |
+| Empleado | Ver su liquidación, descargar su recibo en PDF y ver los festivales donde trabajó |
+| Empleado cajero | Además, cargar pedidos, cerrar la caja del día y descargar su comprobante en PDF |
+
+Los permisos se controlan en tres lugares: `SecurityConfiguration` exige sesión iniciada, `@PreAuthorize` en cada controller exige el rol, y cada service verifica que el dato pertenezca al usuario logueado.
+
+---
+
+## Casos de uso y pull requests
+
+### Hito 2
+
+| PR | Caso de uso | Integrante |
 |---|---|---|
-| JDK | 21 (probado también en 11 y 17) | compilar y ejecutar |
-| MySQL Server | 8.0.46 | la base de datos |
-| MySQL Workbench | 8.0 CE | ver y consultar la base |
-| Eclipse IDE for Java Developers | 2025-06 | el entorno |
-| Librerías Hibernate | 5.4.11.Final (19 JAR) | ORM y driver, provistas por la cátedra |
+| [#1] | Migración del Hito 1 a Spring Boot: entidades JPA y repositorios | Imanol |
+| [#2] | Seguridad con usuarios y roles, login, liquidación de haberes del empleado, página de inicio y datos de prueba | Imanol |
+| [#3] | Registro de unidad de venta con su responsable | Erika |
+| [#4] | Mail de bienvenida | Erika |
+| [#5] | Alta de pedido | Erika |
+| [#6] | Alta de platos | Erika |
+| [#7] | Arreglo: Lombok con Java 23 o superior | Erika |
+| [#8] | Recibo de sueldo en PDF | Imanol |
+| [#9] | Pantalla del empleado: sus festivales y si trabaja hoy | Imanol |
+| [#10] | Datos de prueba para reportes y cierre de caja | Erika |
+| [#11] | ABM de empleados: alta con mail, baja lógica, reactivación y filtros | Imanol |
+| [#12] | Reporte de unidades de venta por festival | Erika |
+| [#13] | Reporte de unidades con mayor canon | Erika |
+| [#14] | Ranking de unidades por recaudación | Erika |
+| [#15] | Canon de la unidad del responsable | Erika |
+| [#16] | Recaudación del festival | Erika |
+| [#17] | Liquidación de haberes del staff | Erika |
+| [#18] | Rentabilidad neta de la unidad | Erika |
+| [#19] | Plato estrella de la unidad | Erika |
+| [#20] | El cajero carga y ve pedidos | Erika |
+| [#21] | Cierre de caja del cajero | Erika |
+| [#22] | Paginación del staff y reenvío de credenciales *(casos de uso propios)* | Imanol |
+| [#23] | Buscador de pedidos por fecha y de platos por nombre | Imanol |
+| [#24] | Corrección: plato estrella por unidades vendidas | Erika |
+| [#25] | Corrección: el cierre de caja bloquea la carga de pedidos | Erika |
+| [#26] | Bloqueo de pedidos y platos cuando el festival no está activo | Erika |
+| [#27] | Rentabilidad neta entre dos fechas | Erika |
+| [#28] | Mejoras de validaciones y arreglo del login | Erika |
+| [#29] | Paginación de pedidos | Erika |
+| [#30] | Comprobante de cierre de caja en PDF *(caso de uso propio)* | Erika |
 
-Los 19 JAR **no están en el repositorio**: son los que provee la cátedra junto con los
-apuntes de Hibernate. Hay que descargarlos del campus y dejarlos en una carpeta local.
+### Casos de uso propios
 
-> **Autenticación de MySQL.** Al instalar el servidor hay que elegir
-> *Use Legacy Authentication Method* (`mysql_native_password`). El Connector/J 8.0.19
-> que provee la cátedra es de 2020 y con `caching_sha2_password` exige parámetros
-> extra en la URL; sin ellos falla con `Public Key Retrieval is not allowed`.
+El enunciado pide, por integrante, dos casos de uso además de los del enunciado.
 
----
+**Imanol Del Canto**
 
-## Puesta en marcha
+- **Paginación del staff.** El listado de empleados se pide de a una página: la consulta a la base trae solo esas filas. Se combina con los filtros por apellido y por puesto.
+- **Reenvío de credenciales.** La clave del alta se manda una sola vez por mail y en la base queda hasheada, así que no se puede recuperar. Si el empleado la pierde, el responsable le genera una nueva y se la manda. Si el mail falla, la clave no cambia.
 
-### 1. Crear la base de datos
+**Erika Baez**
 
-En MySQL Workbench, abrir una pestaña de consulta y ejecutar:
+- **Comprobante de cierre de caja en PDF** ([#30]). Con la caja ya cerrada, el cajero descarga un PDF con la unidad, la fecha, el cajero, los pedidos del día y el total.
+- **Gestión de unidades de venta por el administrador.** *(en curso)*
 
-```sql
-CREATE DATABASE bd_epicentro_gourmet;
-```
+### Hito 1
 
-Las **tablas no se crean a mano**: las genera Hibernate al levantar la SessionFactory,
-leyendo los archivos de mapeo. Así el esquema no puede quedar desincronizado del modelo.
+El proyecto del Hito 1 (Eclipse con Hibernate) quedó en `referencia-hito1/`, solo para consulta.
 
-### 2. Configurar el proyecto en Eclipse
-
-> **Importante para quien clone el repo:** el archivo `.classpath` guarda rutas
-> absolutas de la máquina donde se creó el proyecto. Al importar van a aparecer errores
-> de compilación: hay que rehacer el paso 3 apuntando a la ruta local de los JAR.
-
-
-### 3. Ajustar la contraseña
-
-En `src/hibernate.cfg.xml`, poner la contraseña del usuario `root` de MySQL:
-
-```xml
-<property name="connection.password">root</property>
-```
-
----
-
-## Orden de ejecución
-
-Los tests **se corren en este orden**. Cada uno asume que los anteriores ya pasaron.
-
-| # | Clase | Qué hace | Se corre |
-|---|---|---|---|
-| 1 | `test/TestConexion` | Verifica la conexión y genera el esquema desde los mapeos. | las veces que quieras |
-| 2 | `test/CargarUnidadesYStaff` | Carga 1 festival, 4 unidades de venta y 8 empleados asignados a ellas. | **una sola vez** |
-| 3 | `test/CargarPedidos` | Carga 8 platos y 5 pedidos con sus ítems. Necesita el paso 2. | **una sola vez** |
-| 4 | `test/CasoDeUso_CostoSalarialPorUnidad` | Caso de uso. | las veces que quieras |
-| 5 | `test/CasoDeUso_CostoOperativoPorUnidad` | Caso de uso. | las veces que quieras |
-| 6 | `test/CasoDeUso_CajerosAntiguosFoodTruck` | Caso de uso. | las veces que quieras |
-| 7 | `test/CasoDeUso_MontajePorFestival` | Caso de uso. | las veces que quieras |
-| 8 | `test/CasoDeUso_RendimientoEconomicoPorUnidadHQL` | Caso de uso. | las veces que quieras |
-
-
-### Qué esperar en cada paso
-
-**1 · TestConexion** — al final de las líneas `INFO`:
-
-```
-=========================================
-            CONEXION OK
-=========================================
-  UnidadDeVenta : 4
-  Personal      : 8
-  Cocinero      : 4
-  Cajero        : 4
-  Festival      : 1
-  Plato         : 8
-  Pedido        : 5
-  ItemPedido    : 9
-=========================================
-```
-
-La primera vez dan todos 0: las tablas se acaban de crear y están vacías. Se generan
-diez: `festival`, `unidadDeVenta`, `foodTruck`, `puestoDesarmable`, `personal`, `cocinero`,
-`cajero`, `plato`, `pedido` e `itemPedido`.
-
-**2 · CargarUnidadesYStaff**
-
-```
-Datos cargados: 1 festival, 4 unidades y 8 empleados
-```
-
-El orden importa y está forzado por dos restricciones: una unidad no puede existir sin
-festival (`not-null`), y el responsable de una unidad es parte de su propio staff, así que
-todavía no existe cuando la unidad se guarda. Por eso va festival → unidades sin
-responsable → personal → `update` de la unidad con su responsable.
-
-**Correrlo dos veces falla** con `Duplicate entry`. No es un error del programa: las
-restricciones `unique` sobre el DNI, el código único y la patente están declaradas en los
-mapeos y MySQL las hace cumplir. Para volver a cargar, lo más simple es rehacer la base:
-
-```sql
-DROP DATABASE bd_epicentro_gourmet;
-CREATE DATABASE bd_epicentro_gourmet;
-```
-
-Y volver a correr `TestConexion`, que regenera el esquema. Si preferís conservar la base,
-hay que vaciar las tablas en orden.
-
-```sql
-USE bd_epicentro_gourmet;
-SET SQL_SAFE_UPDATES = 0;
-UPDATE unidadDeVenta SET idResponsable = NULL;
-DELETE FROM itemPedido;  DELETE FROM pedido;  DELETE FROM plato;
-DELETE FROM cocinero;    DELETE FROM cajero;  DELETE FROM personal;
-DELETE FROM foodTruck;   DELETE FROM puestoDesarmable;
-DELETE FROM unidadDeVenta;
-DELETE FROM festival;
-SET SQL_SAFE_UPDATES = 1;
-```
-
-**3 · CargarPedidos**
-
-```
-Datos cargados: 8 platos y 5 pedidos
-```
-
-**4 · CasoDeUso_CostoSalarialPorUnidad**
-
-```
-=== COSTO SALARIAL MENSUAL POR UNIDAD DE VENTA ===
-
-FoodTruck [UnidadDeVenta [idUnidad=1, nombreComercial=La Parrilla Rodante, ...], patente=AB123CD, requiereElectricidad=true]
-  responsable: Cocinero Perez, Juan - DNI 30111222 - ingreso 2019-03-01 (7 anios) - Parrilla
-  staff: 3 empleados
-    Cajero [Lopez, Ana - ... , turno=noche, recaudacion=2000.0] cobra 700000,00
-    Cocinero Diaz, Marcos - ... - Parrilla cobra 840000,00
-    Cocinero Perez, Juan - ... - Parrilla cobra 950000,00
-  COSTO SALARIAL: 2490000,00
-...
-
-=== RESUMEN ===
-Costo salarial total del predio: 6420000,00
-Unidad mas costosa: La Parrilla Rodante (2490000,00)
-```
-
-**5 · CasoDeUso_CostoOperativoPorUnidad**
-
-```
-=== COSTO OPERATIVO POR UNIDAD DE VENTA ===
-
-Sabores de Verano
-  superficie: 1500,00 por m2   montaje: 800,00 por minuto   electricidad: 12000,00
-    Cerveza Artesanal             20,00 m2       54000,00
-    La Parrilla Rodante           25,50 m2       50250,00
-    Sushi al Paso                 18,00 m2       39000,00
-    Empanadas del Norte           40,00 m2      132000,00
-  COSTO OPERATIVO DEL FESTIVAL: 275250,00
-  La mas cara de operar: Empanadas del Norte (132000,00)
-```
-
-**6 · CasoDeUso_CajerosAntiguosFoodTruck**
-
-```
-=== CAJEROS DE TURNO NOCHE, CON 2 ANIOS O MAS, EN FOOD TRUCKS DEL FESTIVAL Verano ===
-
-Cajero [Lopez, Ana - DNI 32444555 - ingreso 2022-06-15 (4 anios), turno=noche, recaudacion=2000.0]
-   unidad: FoodTruck [UnidadDeVenta [idUnidad=1, nombreComercial=La Parrilla Rodante, ...], patente=AB123CD, ...]
-   festival: Sabores de Verano
-
-Total: 1 cajeros
-```
-
-**7 · CasoDeUso_MontajePorFestival**
-
-```
-=== PUESTOS DE 'Sabores de Verano' QUE SE MONTAN EN 60 MINUTOS O MENOS ===
-
-PuestoDesarmable [UnidadDeVenta [idUnidad=4, nombreComercial=Cerveza Artesanal, ...], cantidadCarpas=1, tiempoMontaje=30]
-      Cajero [Molina, Rocio - DNI 35888234 - ingreso 2024-11-01 (1 anios), turno=noche, recaudacion=2500.0]
-
-Puestos que entran: 1   -   Tiempo total de montaje: 30 min
-```
-
-**8 · CasoDeUso_RendimientoEconomicoPorUnidadHQL**
-
-```
-====== RENDIMIENTO ECONOMICO POR UNIDAD DE VENTA ======
-
-========== FESTIVAL: Sabores de Verano ==========
-
-Cerveza Artesanal
-  Tipo: PuestoDesarmable
-  Cantidad de pedidos: 1
-  FACTURACION: 104000,00
-  MARGEN DE GANANCIA: 65000,00
-
----------------------------------
-...
-
-========= SINTESIS DEL FESTIVAL Sabores de Verano =========
-Facturacion total: 289200,00
-Margen total de ganancia: 170600,00
-Unidad mas rentable: Cerveza Artesanal (PuestoDesarmable) con margen de 65000,00
-```
+| Caso de uso | Integrante |
+|---|---|
+| Costo salarial mensual por unidad de venta | Imanol |
+| Costo operativo por unidad de venta | Imanol |
+| Cajeros de turno noche con antigüedad, en Food Trucks | Enzo |
+| Rendimiento económico por unidad de venta | Erika |
 
 ---
 
-## Estructura del proyecto
-
-
-## Estructura del proyecto
+## Estructura
 
 ```
-EpicentroGourmet/
-└── src/
-    ├── hibernate.cfg.xml     conexión a la BD + lista de mapeos
-    ├── datos/                las 10 clases del modelo 
-    ├── mapeos/               un .hbm.xml por jerarquía
-    ├── dao/                  acceso a datos + HibernateUtil
-    ├── negocio/              clases ABM: reglas de negocio
-    └── test/                 un main por caso de uso
+src/main/java/com/unla/epicentrogourmet/
+├── configuration/      seguridad: qué es público, login y logout
+├── controllers/        reciben la URL, llaman al service y eligen la vista
+├── services/           interfaces con la lógica de negocio
+│   └── implementation/ sus implementaciones
+├── repositories/       consultas a la base con Spring Data JPA
+├── entities/           el modelo del diagrama de clases
+├── dtos/               datos para formularios y reportes, sin tabla
+├── components/         factories de unidades de venta y de personal
+└── helpers/            ViewRouteHelper: el nombre de cada vista
+
+src/main/resources/
+├── templates/          vistas Thymeleaf
+├── application.yml     configuración; lee las variables de entorno
+└── data.sql            datos de prueba
 ```
 
-## Decisiones de modelado
-
-**Herencia con `<joined-subclass>`** — una tabla por clase, en las dos jerarquías
-(`Personal` y `UnidadDeVenta`). Las hijas guardan solo sus atributos propios más una
-columna que es a la vez clave primaria y foránea hacia el padre. No repite columnas ni
-deja `NULL` innecesarios; el costo es un `JOIN` por consulta.
-
-**El costo salarial se calcula en Java, no con `SUM` en la consulta** — `getSueldoTotal()`
-es abstracto en `Personal`: el cocinero suma su plus por categoría y el cajero no. El
-método `getCostoSalarial()` recorre el staff sin preguntar de qué tipo es cada empleado.
-Agregar un rol nuevo no obliga a tocar ese método.
-
-**`Costos` no es una clase** — sus cuatro atributos están directamente en `Festival`.
-Mantiene el modelo dentro de las 10 clases que pide el enunciado.
-
-**`idResponsable` es nullable** — hay una dependencia circular entre `UnidadDeVenta` y
-`Personal`: la unidad necesita un responsable que es parte de su staff, y el staff
-necesita que la unidad exista. Se resuelve cargando en tres pasos: primero la unidad sin
-responsable, después el personal, y por último un `update` de la unidad.
-
-**El dueño de cada relación está declarado con `inverse="true"`** — la FK `idUnidad` vive
-en `personal` y en `plato`, la `idFestival` en `unidadDeVenta`. El lado marcado `inverse`
-no escribe la columna, solo la lee. Si los dos lados quedaran sin `inverse`, ambos
-intentarían escribirla y sobrarían `UPDATE`s.
-
----
+[#1]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/1
+[#2]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/2
+[#3]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/3
+[#4]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/4
+[#5]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/5
+[#6]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/6
+[#7]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/7
+[#8]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/8
+[#9]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/9
+[#10]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/10
+[#11]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/11
+[#12]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/12
+[#13]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/13
+[#14]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/14
+[#15]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/15
+[#16]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/16
+[#17]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/17
+[#18]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/18
+[#19]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/19
+[#20]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/20
+[#21]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/21
+[#22]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/22
+[#23]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/23
+[#24]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/24
+[#25]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/25
+[#26]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/26
+[#27]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/27
+[#28]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/28
+[#29]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/29
+[#30]: https://github.com/ImanolDelCanto/TPGrupalOO2Hito1Grupo09/pull/30

@@ -159,17 +159,22 @@ public abstract class UnidadDeVenta {
 
 	public abstract String getTipoUnidad();
     
-    public boolean validarCodigo() {
-    	//Valida si el codigo es distinto de nulo y que tenga 10 caracteres
-    	return this.codigoUnico != null && this.codigoUnico.length() == 10;
-    }
+	// el prefijo del codigo segun el tipo de unidad: lo dice cada subclase
+	public abstract String getPrefijoCodigo();
 
+	// codigo unico: el prefijo de su tipo y 7 letras o numeros (10 caracteres en total)
+	public boolean validarCodigo() {
+		return codigoUnico != null && codigoUnico.matches(getPrefijoCodigo() + "[A-Z0-9]{7}");
+	}
+	
 	// la caja esta cerrada si el ultimo cierre fue hoy; al dia siguiente se abre sola
 	public boolean cajaCerradaHoy() {
 		return fechaUltimoCierre != null && fechaUltimoCierre.equals(LocalDate.now());
 	}
 
 	public void cerrarCaja() {
+		if (!getFestival().estaActivo())
+			throw new IllegalArgumentException("El festival no está en curso: no hay caja para cerrar");
 		if (cajaCerradaHoy())
 			throw new IllegalArgumentException("La caja de hoy ya está cerrada");
 		fechaUltimoCierre = LocalDate.now();

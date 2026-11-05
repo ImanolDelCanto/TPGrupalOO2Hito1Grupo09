@@ -90,6 +90,7 @@ public class CajeroController {
 		ModelAndView mAV = new ModelAndView(ViewRouteHelper.CAJERO_CIERRE);
 		try {
 			mAV.addObject("cierre", pedidoService.cierreDeCaja(auth.getName()));
+			mAV.addObject("unidad", pedidoService.unidadDeCajero(auth.getName()));
 		} catch (IllegalArgumentException e) {
 			mAV.addObject("error", e.getMessage());
 		}

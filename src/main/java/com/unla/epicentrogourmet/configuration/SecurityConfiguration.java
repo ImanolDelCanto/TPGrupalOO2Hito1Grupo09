@@ -34,9 +34,10 @@ public class SecurityConfiguration {
 				.csrf(AbstractHttpConfigurer::disable)
 				.cors(AbstractHttpConfigurer::disable)
 				.authorizeHttpRequests(auth -> {
-					// publico: inicio, registro de unidad, recursos estaticos y paginas de error
-					auth.requestMatchers("/", "/index", "/registro/**", "/error/**", "/error",
-							"/css/**", "/imgs/**", "/js/**", "/vendor/**").permitAll();
+					// publico: inicio, login (con cualquier parametro, ej. /login?registrado),
+					// registro de unidad, recursos estaticos y paginas de error
+					auth.requestMatchers("/", "/index", "/login", "/registro/**", "/error/**", "/error",
+							"/css/**", "/imgs/**", "/js/**", "/vendor/**").permitAll();	
 					// todo lo demas pide estar logueado. QUE rol hace falta para cada
 					// zona lo dice el @PreAuthorize de cada controller.
 					auth.anyRequest().authenticated();
@@ -46,7 +47,9 @@ public class SecurityConfiguration {
 					login.loginProcessingUrl("/loginprocess");
 					login.usernameParameter("username");
 					login.passwordParameter("password");
-					login.defaultSuccessUrl("/loginsuccess");
+					// true: despues del login siempre va a /loginsuccess (que reparte por rol),
+					// y no a la ultima direccion que Spring haya guardado
+					login.defaultSuccessUrl("/loginsuccess", true);
 					login.permitAll();
 				})
 				.logout(logout -> {

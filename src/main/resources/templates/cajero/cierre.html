@@ -49,9 +49,13 @@
                 La caja de hoy está cerrada. Mañana se abre sola.
             </div>
 
-            <form th:action="@{/cajero/cierre}" method="post" class="mt-4" th:unless="${cierre.cerrada}">
+            <div class="alert alert-warning mt-4 mb-0" th:if="${unidad != null and !unidad.festival.estaActivo()}">
+                El festival de tu unidad no está en curso: no hay caja para cerrar.
+            </div>
+             <form th:action="@{/cajero/cierre}" method="post" class="mt-4"
+                  th:if="${!cierre.cerrada and unidad != null and unidad.festival.estaActivo()}">
                 <p class="text-muted small mb-2">
-                    Al cerrar la caja no se van a poder cargar más pedidos hoy, ni desde caja ni desde el responsable.
+                    Al cerrar la caja no se van a poder cargar más pedidos hoy, ni desde cajero ni desde el responsable.
                 </p>
                 <button type="submit" class="btn btn-dark">Cerrar caja</button>
             </form>

@@ -82,7 +82,9 @@ public class UnidadDeVentaService implements IUnidadDeVentaService {
 		// 2. la unidad: la Factory decide que subclase crear
 		UnidadDeVenta unidad = unidadFactory.crear(dto, festival);
 		if (!unidad.validarCodigo())
-			throw new IllegalArgumentException("El código no tiene un formato válido");
+			throw new IllegalArgumentException("El código de un " + unidad.getTipoUnidad() + " tiene que ser "
+					+ unidad.getPrefijoCodigo() + " seguido de 7 letras o números (por ejemplo "
+					+ unidad.getPrefijoCodigo() + "ABC1234)");
 
 		// 3. el usuario del responsable, con la clave encriptada y su rol
 		Usuario responsable = new Usuario(dto.getEmail(), passwordEncoder.encode(dto.getPassword()));

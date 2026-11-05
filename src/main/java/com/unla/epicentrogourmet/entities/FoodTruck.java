@@ -62,6 +62,11 @@ public class FoodTruck extends UnidadDeVenta{
 	}
 
 	@Override
+	public String getPrefijoCodigo() {
+		return "FT-";
+	}
+
+	@Override
 	public String toString() {
 		return "FoodTruck [" + super.toString() + ", patente=" + patente + ", requiereElectricidad=" + requiereElectricidad + "]";
 	}

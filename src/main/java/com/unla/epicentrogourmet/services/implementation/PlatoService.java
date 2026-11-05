@@ -50,7 +50,9 @@ public class PlatoService implements IPlatoService {
 		return platoRepository.save(plato);
 	}
 
-	private UnidadDeVenta unidadDeResponsable(String emailResponsable) {
+	@Override
+	@Transactional(readOnly = true)
+	public UnidadDeVenta unidadDeResponsable(String emailResponsable) {
 		return unidadDeVentaRepository.findByResponsableEmail(emailResponsable)
 				.orElseThrow(() -> new IllegalArgumentException("No tenés una unidad de venta asignada"));
 	}

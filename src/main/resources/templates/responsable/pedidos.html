@@ -7,8 +7,10 @@
     <main class="container py-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3 mb-0">Pedidos de mi unidad</h1>
-            <a th:href="@{/responsable/pedido}" class="btn btn-dark" th:unless="${unidad != null and unidad.cajaCerradaHoy()}">Nuevo pedido</a>
-            <button type="button" class="btn btn-dark" disabled th:if="${unidad != null and unidad.cajaCerradaHoy()}">Nuevo pedido</button>
+            <a th:href="@{/responsable/pedido}" class="btn btn-dark"
+               th:unless="${unidad != null and (unidad.cajaCerradaHoy() or !unidad.festival.estaActivo())}">Nuevo pedido</a>
+            <button type="button" class="btn btn-dark" disabled
+                th:if="${unidad != null and (unidad.cajaCerradaHoy() or !unidad.festival.estaActivo())}">Nuevo pedido</button>
         </div>
 
         <!-- mensaje que llega por flash despues de cargar un pedido -->
@@ -16,6 +18,9 @@
         <div class="alert alert-danger" th:if="${error}" th:text="${error}">error</div>
         <div class="alert alert-warning" th:if="${unidad != null and unidad.cajaCerradaHoy()}">
             La caja de hoy está cerrada: no se pueden cargar más pedidos hasta mañana.
+        </div>
+        <div class="alert alert-warning" th:if="${unidad != null and !unidad.festival.estaActivo()}">
+            El festival de tu unidad no está en curso: solo se cargan pedidos durante el festival.
         </div>
 
 

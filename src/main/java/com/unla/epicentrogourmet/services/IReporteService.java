@@ -1,6 +1,7 @@
 package com.unla.epicentrogourmet.services;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import com.unla.epicentrogourmet.dtos.LiquidacionHaberesDTO;
@@ -42,6 +43,9 @@ public interface IReporteService {
 
 	// recaudacion - costo de platos - sueldos - canon de la unidad del responsable
 	RentabilidadDTO rentabilidadNeta(String emailResponsable);
+
+	// recaudacion - costo de platos - sueldos - canon de la unidad del responsable, para un periodo del festival: sueldos y canon proporcionales a los dias
+	RentabilidadDTO rentabilidadEntreFechas(String emailResponsable, LocalDate desde, LocalDate hasta);
 
 	// el plato mas vendido (en unidades) de la unidad del responsable
 	PlatoDTO platoEstrella(String emailResponsable);

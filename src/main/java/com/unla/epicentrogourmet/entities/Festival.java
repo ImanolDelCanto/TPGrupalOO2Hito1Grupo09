@@ -124,7 +124,12 @@ public class Festival {
 
 	// ya termino: su fecha de fin quedo en el pasado
 	public boolean estaFinalizado() {
-    return fechaFin.isBefore(LocalDate.now());
+		return fechaFin.isBefore(LocalDate.now());
+	}
+
+	// todavia no empezo: su fecha de inicio es futura
+	public boolean estaPorEmpezar() {
+		return LocalDate.now().isBefore(fechaInicio);
 	}
 
 	@Override

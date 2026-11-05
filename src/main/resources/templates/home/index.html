@@ -32,7 +32,8 @@
                             &middot; <span th:text="${f.diasDuracion} + ' días'">días</span>
                         </p>
                         <span class="badge bg-success mb-2" th:if="${f.estaActivo()}">En curso</span>
-                        <span class="badge bg-light text-dark border mb-2" th:unless="${f.estaActivo()}">Finalizado</span>
+                        <span class="badge bg-primary mb-2" th:if="${f.estaPorEmpezar()}">Próximo</span>
+                        <span class="badge bg-light text-dark border mb-2" th:if="${f.estaFinalizado()}">Finalizado</span>
                         <p class="card-text" th:text="${f.descripcion}">Descripción</p>
                     </div>
                 </div>

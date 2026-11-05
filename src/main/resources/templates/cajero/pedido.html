@@ -21,7 +21,7 @@
         </div>
 
         <form th:action="@{/cajero/pedido}" method="post"
-              th:if="${platos != null and !#lists.isEmpty(platos) and (unidad == null or !unidad.cajaCerradaHoy())}">
+              th:if="${platos != null and !#lists.isEmpty(platos) and (unidad == null or !unidad.cajaCerradaHoy())}" class="card shadow-sm">
             <table class="table mb-0 align-middle">
                 <thead class="table-light">
                     <tr><th>Plato</th><th class="text-end">Precio</th><th style="width:130px">Cantidad</th></tr>

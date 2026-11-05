@@ -45,8 +45,10 @@
             </div>
 
             <p class="text-muted" th:if="${#lists.isEmpty(cierre.pedidos)}">Hoy todavía no hay pedidos.</p>
-            <div class="alert alert-secondary mt-4 mb-0" th:if="${cierre.cerrada}">
-                La caja de hoy está cerrada. Mañana se abre sola.
+            <div class="alert alert-secondary mt-4 mb-0 d-flex justify-content-between align-items-center"
+                 th:if="${cierre.cerrada}">
+                <span>La caja de hoy está cerrada. Mañana se abre sola.</span>
+                <a th:href="@{/cajero/cierre/pdf}" class="btn btn-sm btn-dark">Descargar PDF</a>
             </div>
 
             <div class="alert alert-warning mt-4 mb-0" th:if="${unidad != null and !unidad.festival.estaActivo()}">

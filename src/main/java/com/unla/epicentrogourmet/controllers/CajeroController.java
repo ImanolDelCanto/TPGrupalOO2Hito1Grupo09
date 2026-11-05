@@ -7,6 +7,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -18,6 +22,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.unla.epicentrogourmet.entities.Pedido;
+import com.unla.epicentrogourmet.dtos.CierreCajaDTO;
+import com.unla.epicentrogourmet.services.ICierreCajaPdfService;
 import com.unla.epicentrogourmet.helpers.ViewRouteHelper;
 import com.unla.epicentrogourmet.services.IPedidoService;
 
@@ -29,9 +35,11 @@ import com.unla.epicentrogourmet.services.IPedidoService;
 public class CajeroController {
 
 	private final IPedidoService pedidoService;
+	private final ICierreCajaPdfService cierreCajaPdfService;
 
-	public CajeroController(IPedidoService pedidoService) {
+	public CajeroController(IPedidoService pedidoService, ICierreCajaPdfService cierreCajaPdfService) {
 		this.pedidoService = pedidoService;
+		this.cierreCajaPdfService = cierreCajaPdfService;
 	}
 
 	// cuantos pedidos entran en cada pagina del listado
@@ -115,5 +123,27 @@ public class CajeroController {
 			redirect.addFlashAttribute("error", e.getMessage());
 		}
 		return new ModelAndView("redirect:/cajero/cierre");
+	}
+
+	// GET /cajero/cierre/pdf -> descarga el comprobante del cierre de hoy.
+	// Solo con la caja cerrada: asi el PDF tiene los numeros finales del dia.
+	@GetMapping("/cierre/pdf")
+	public ResponseEntity<byte[]> descargarCierre(Authentication auth) {
+		// el mismo resumen que muestra la pantalla
+		CierreCajaDTO cierre = pedidoService.cierreDeCaja(auth.getName());
+
+		// si escribe la direccion a mano sin haber cerrado, vuelve a la pantalla del cierre
+		if (!cierre.isCerrada())
+			return ResponseEntity.status(HttpStatus.FOUND)
+					.header(HttpHeaders.LOCATION, "/cajero/cierre")
+					.build();
+
+		byte[] pdf = cierreCajaPdfService.generar(cierre, auth.getName());
+		return ResponseEntity.ok()
+				.contentType(MediaType.APPLICATION_PDF)
+				// "attachment" hace que el navegador lo descargue en vez de abrirlo
+				.header(HttpHeaders.CONTENT_DISPOSITION,
+						"attachment; filename=\"cierre-de-caja-" + cierre.getFecha() + ".pdf\"")
+				.body(pdf);
 	}
 }

@@ -1,6 +1,9 @@
 package com.unla.epicentrogourmet.controllers;
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -109,13 +112,22 @@ public class ReporteController {
 		return mAV;
 	}
 
-	// GET /reportes/rentabilidad -> rentabilidad neta de la unidad del responsable
+	// GET /reportes/rentabilidad -> rentabilidad neta de la unidad del responsable.
+	// Sin fechas, el festival completo; con fechas, ese periodo.
 	@GetMapping("/rentabilidad")
 	@PreAuthorize("hasRole('ROLE_RESPONSABLE')")
-	public ModelAndView rentabilidadNeta(Authentication auth) {
+	public ModelAndView rentabilidadNeta(Authentication auth,
+			@RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate desde,
+			@RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate hasta) {
 		ModelAndView mAV = new ModelAndView(ViewRouteHelper.REPORTE_RENTABILIDAD);
+		// para que el formulario quede con lo que el usuario eligio
+		mAV.addObject("desde", desde);
+		mAV.addObject("hasta", hasta);
 		try {
-			mAV.addObject("r", reporteService.rentabilidadNeta(auth.getName()));
+			if (desde == null && hasta == null)
+				mAV.addObject("r", reporteService.rentabilidadNeta(auth.getName()));
+			else
+				mAV.addObject("r", reporteService.rentabilidadEntreFechas(auth.getName(), desde, hasta));
 		} catch (IllegalArgumentException e) {
 			mAV.addObject("error", e.getMessage());
 		}

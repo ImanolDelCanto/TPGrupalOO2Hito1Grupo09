@@ -2,6 +2,10 @@ package com.unla.epicentrogourmet.services.implementation;
 
 import java.util.List;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 
 import org.springframework.stereotype.Service;
@@ -148,16 +152,58 @@ public class ReporteService implements IReporteService {
 	@Override
 	@Transactional(readOnly = true)
 	public RentabilidadDTO rentabilidadNeta(String emailResponsable) {
-		UnidadDeVenta unidad = unidadDeVentaRepository.findByResponsableEmail(emailResponsable).orElseThrow(() -> new IllegalArgumentException("Tu usuario no tiene una unidad de venta asignada"));
+		UnidadDeVenta unidad = unidadDeVentaRepository.findByResponsableEmail(emailResponsable)
+				.orElseThrow(() -> new IllegalArgumentException("Tu usuario no tiene una unidad de venta asignada"));
 		List<Pedido> pedidos = pedidoRepository.findByUnidadIdUnidad(unidad.getIdUnidad());
+		int dias = unidad.getFestival().getDiasDuracion();
+		return calcularRentabilidad(unidad, pedidos, null, null, dias);   // festival completo
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public RentabilidadDTO rentabilidadEntreFechas(String emailResponsable, LocalDate desde, LocalDate hasta) {
+		UnidadDeVenta unidad = unidadDeVentaRepository.findByResponsableEmail(emailResponsable)
+				.orElseThrow(() -> new IllegalArgumentException("Tu usuario no tiene una unidad de venta asignada"));
+		Festival festival = unidad.getFestival();
+
+		if (desde == null || hasta == null)
+			throw new IllegalArgumentException("Completá las dos fechas");
+		if (desde.isAfter(hasta))
+			throw new IllegalArgumentException("La fecha \"desde\" no puede ser posterior a la fecha \"hasta\"");
+		if (desde.isBefore(festival.getFechaInicio()) || hasta.isAfter(festival.getFechaFin())) {
+			DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			throw new IllegalArgumentException("Elegí fechas dentro del festival: del "
+					+ festival.getFechaInicio().format(formato) + " al " + festival.getFechaFin().format(formato));
+		}
+		if (hasta.isAfter(LocalDate.now()))
+			throw new IllegalArgumentException("La fecha \"hasta\" no puede ser futura: todavía no hay pedidos de esos días");
+
+		List<Pedido> pedidos = pedidoRepository.findByUnidadIdUnidadAndFechaBetween(unidad.getIdUnidad(), desde, hasta);
+		int dias = (int) ChronoUnit.DAYS.between(desde, hasta) + 1;   // contando el primero y el ultimo
+		return calcularRentabilidad(unidad, pedidos, desde, hasta, dias);
+	}
+
+	// recaudacion - costo de platos - sueldos - canon.
+	// "dias" son los dias del festival que abarca el calculo (todos, o los del periodo)
+	private RentabilidadDTO calcularRentabilidad(UnidadDeVenta unidad, List<Pedido> pedidos,
+			LocalDate desde, LocalDate hasta, int dias) {
+		Festival festival = unidad.getFestival();
+		int diasFestival = festival.getDiasDuracion();
 
 		BigDecimal recaudacion = recaudacionDe(pedidos);
 		BigDecimal costoPlatos = costoDePlatos(pedidos);
-		BigDecimal sueldos = totalDeSueldos(liquidacionesDe(unidad));
-		BigDecimal canon = unidad.getCostoOperativo();
+		BigDecimal sueldos = proporcional(totalDeSueldos(liquidacionesDe(unidad)), dias, diasFestival);
+		BigDecimal canon = proporcional(unidad.getCostoOperativo(), dias, diasFestival);
 		BigDecimal neta = recaudacion.subtract(costoPlatos).subtract(sueldos).subtract(canon);
 
-		return new RentabilidadDTO(unidad.getNombreComercial(), unidad.getFestival().getNombre(), recaudacion, costoPlatos, sueldos, canon, neta);
+		return new RentabilidadDTO(unidad.getNombreComercial(), festival.getNombre(),
+				recaudacion, costoPlatos, sueldos, canon, neta, desde, hasta, dias, diasFestival,
+				festival.getFechaInicio(), festival.getFechaFin());
+	}
+
+	// la parte de un monto que corresponde a esos dias: monto x dias / dias del festival
+	private BigDecimal proporcional(BigDecimal monto, int dias, int diasFestival) {
+		return monto.multiply(BigDecimal.valueOf(dias)).divide(BigDecimal.valueOf(diasFestival), 2, RoundingMode.HALF_UP);
 	}
 
 	// lo que costo producir lo vendido: cantidad x costo de produccion de cada item

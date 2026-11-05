@@ -6,6 +6,7 @@ import java.util.List;
 import com.unla.epicentrogourmet.dtos.CierreCajaDTO;
 import com.unla.epicentrogourmet.entities.Pedido;
 import com.unla.epicentrogourmet.entities.Plato;
+import com.unla.epicentrogourmet.entities.UnidadDeVenta;
 
 //Cajero y Responsable pueden hacer pedidos
 public interface IPedidoService {
@@ -33,4 +34,10 @@ public interface IPedidoService {
 
 	// resumen de los pedidos de hoy de la unidad del cajero
 	CierreCajaDTO cierreDeCaja(String emailCajero);
+
+	// el cajero cierra la caja de hoy de su unidad
+	void cerrarCaja(String emailCajero);
+
+	// la unidad del cajero logueado (la vista le pregunta si su caja esta cerrada)
+	UnidadDeVenta unidadDeCajero(String emailCajero);
 }

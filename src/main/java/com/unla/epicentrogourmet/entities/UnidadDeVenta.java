@@ -1,6 +1,7 @@
 package com.unla.epicentrogourmet.entities;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,6 +33,9 @@ public abstract class UnidadDeVenta {
 	protected double superficie;
 	@Column(nullable = false, unique = true)
 	protected String codigoUnico;
+	// fecha del ultimo cierre de caja; null si nunca se cerro
+	@Column
+	protected LocalDate fechaUltimoCierre;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "idFestival", nullable = false)
 	protected Festival festival;
@@ -102,6 +106,10 @@ public abstract class UnidadDeVenta {
 		this.codigoUnico = codigoUnico;
 	}
 
+	public LocalDate getFechaUltimoCierre() {
+		return fechaUltimoCierre;
+	}
+
 	public Festival getFestival() {
 		return festival;
 	}
@@ -155,6 +163,17 @@ public abstract class UnidadDeVenta {
     	//Valida si el codigo es distinto de nulo y que tenga 10 caracteres
     	return this.codigoUnico != null && this.codigoUnico.length() == 10;
     }
+
+	// la caja esta cerrada si el ultimo cierre fue hoy; al dia siguiente se abre sola
+	public boolean cajaCerradaHoy() {
+		return fechaUltimoCierre != null && fechaUltimoCierre.equals(LocalDate.now());
+	}
+
+	public void cerrarCaja() {
+		if (cajaCerradaHoy())
+			throw new IllegalArgumentException("La caja de hoy ya está cerrada");
+		fechaUltimoCierre = LocalDate.now();
+	}
 	
 	// agrega el empleado al staff y deja los dos lados apuntandose:
 	// sin el setUnidad, la FK idUnidad de ese empleado queda nula

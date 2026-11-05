@@ -77,6 +77,8 @@ public class ResponsableController {
 		mAV.addObject("hasta", hasta);
 		try {
 			mAV.addObject("pedidos", pedidoService.pedidosDeResponsable(auth.getName(), desde, hasta));
+			unidadDeVentaService.findByResponsable(auth.getName())
+					.ifPresent(unidad -> mAV.addObject("unidad", unidad));
 		} catch (IllegalArgumentException e) {
 			mAV.addObject("error", e.getMessage());
 		}
@@ -88,6 +90,8 @@ public class ResponsableController {
 		ModelAndView mAV = new ModelAndView(ViewRouteHelper.RESPONSABLE_PEDIDO);
 		try {
 			mAV.addObject("platos", pedidoService.platosDeResponsable(email));
+			unidadDeVentaService.findByResponsable(email)
+					.ifPresent(unidad -> mAV.addObject("unidad", unidad));
 		} catch (IllegalArgumentException e) {
 			error = e.getMessage();
 		}

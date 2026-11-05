@@ -40,7 +40,9 @@
             </p>
         </div>
 
-        <a th:href="@{/admin}" class="btn btn-outline-secondary mt-4">Volver</a>
+        <!-- vuelve a la pantalla del festival; si hubo error y no hay festival, a la lista -->
+        <a th:href="${festival != null} ? @{/reportes/unidades(idFestival=${festival.idFestival})} : @{/admin}"
+           class="btn btn-outline-secondary mt-4">Volver al festival</a>
     </main>
 
     <footer th:replace="~{layout :: footer}"></footer>

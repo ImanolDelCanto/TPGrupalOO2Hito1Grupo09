@@ -14,8 +14,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.unla.epicentrogourmet.components.UnidadDeVentaFactory;
+import com.unla.epicentrogourmet.dtos.ModificarUnidadDTO;
 import com.unla.epicentrogourmet.dtos.RegistroUnidadDTO;
 import com.unla.epicentrogourmet.entities.Festival;
+import com.unla.epicentrogourmet.entities.FoodTruck;
+import com.unla.epicentrogourmet.entities.PuestoDesarmable;
 import com.unla.epicentrogourmet.entities.Rol;
 import com.unla.epicentrogourmet.entities.UnidadDeVenta;
 import com.unla.epicentrogourmet.entities.Usuario;
@@ -103,5 +106,91 @@ public class UnidadDeVentaService implements IUnidadDeVentaService {
 			log.warn("No se pudo enviar el mail de bienvenida a {}: {}", responsable.getEmail(), e.getMessage());
 		}
 		return guardada;
+	}
+
+		@Override
+	@Transactional(readOnly = true)
+	public UnidadDeVenta buscarPorId(long idUnidad) {
+		return unidadDeVentaRepository.findById(idUnidad)
+				.orElseThrow(() -> new IllegalArgumentException("La unidad de venta no existe"));
+	}
+
+	// la entidad pasada al DTO, para que el formulario aparezca completo.
+	// Igual que en PersonalService.datosDe: instanceof para los datos de cada tipo
+	@Override
+	@Transactional(readOnly = true)
+	public ModificarUnidadDTO datosDe(long idUnidad) {
+		UnidadDeVenta unidad = buscarPorId(idUnidad);
+		ModificarUnidadDTO dto = new ModificarUnidadDTO();
+		dto.setIdUnidad(unidad.getIdUnidad());
+		dto.setNombreComercial(unidad.getNombreComercial());
+		dto.setCodigoUnico(unidad.getCodigoUnico());
+		dto.setSuperficie(unidad.getSuperficie());
+		if (unidad instanceof FoodTruck foodTruck) {
+			dto.setPatente(foodTruck.getPatente());
+			dto.setRequiereElectricidad(foodTruck.isRequiereElectricidad());
+		} else if (unidad instanceof PuestoDesarmable puesto) {
+			dto.setCantidadCarpas(puesto.getCantidadCarpas());
+			dto.setTiempoMontaje(puesto.getTiempoMontaje());
+		}
+		return dto;
+	}
+
+	@Override
+	@Transactional
+	public UnidadDeVenta modificarUnidad(ModificarUnidadDTO dto) {
+		UnidadDeVenta unidad = buscarPorId(dto.getIdUnidad());
+
+		// los datos que cambian el canon: solo si el festival no empezo.
+		// Se pregunta antes de tocar, comparando con lo que tiene guardado.
+		if (!unidad.puedeCambiarDatosDelCanon() && cambiaElCanon(unidad, dto))
+			throw new IllegalArgumentException("El festival ya empezó: la superficie, la electricidad y el montaje "
+					+ "no se pueden cambiar porque modificarían el canon ya calculado");
+
+		// el codigo: en mayusculas, sin repetir y con el formato de su tipo.
+		// Primero se busca si esta repetido y DESPUES se cambia en la unidad: si se
+		// cambia antes, Hibernate lo guarda al hacer la consulta y la base lo rechaza.
+		String codigo = dto.getCodigoUnico().trim().toUpperCase();
+		unidadDeVentaRepository.findByCodigoUnico(codigo)
+				.filter(otra -> otra.getIdUnidad() != unidad.getIdUnidad())
+				.ifPresent(otra -> {
+					throw new IllegalArgumentException("Ese código ya está en uso por " + otra.getNombreComercial());
+				});
+		unidad.setCodigoUnico(codigo);
+		if (!unidad.validarCodigo())
+			throw new IllegalArgumentException("El código de un " + unidad.getTipoUnidad() + " tiene que ser "
+					+ unidad.getPrefijoCodigo() + " seguido de 7 letras o números (por ejemplo "
+					+ unidad.getPrefijoCodigo() + "ABC1234)");
+
+		// los datos propios de cada tipo (mismas reglas que la Factory del registro)
+		if (unidad instanceof FoodTruck foodTruck) {
+			if (dto.getPatente() == null || dto.getPatente().isBlank())
+				throw new IllegalArgumentException("Un Food Truck necesita patente");
+			foodTruck.setPatente(dto.getPatente().trim().toUpperCase());
+			foodTruck.setRequiereElectricidad(dto.isRequiereElectricidad());
+		} else if (unidad instanceof PuestoDesarmable puesto) {
+			if (dto.getCantidadCarpas() == null || dto.getCantidadCarpas() < 1)
+				throw new IllegalArgumentException("Un puesto necesita al menos una carpa");
+			if (dto.getTiempoMontaje() == null || dto.getTiempoMontaje() < 0)
+				throw new IllegalArgumentException("Indicá el tiempo de montaje en minutos");
+			puesto.setCantidadCarpas(dto.getCantidadCarpas());
+			puesto.setTiempoMontaje(dto.getTiempoMontaje());
+		}
+
+		// los datos comunes
+		unidad.setNombreComercial(dto.getNombreComercial().trim());
+		unidad.setSuperficie(dto.getSuperficie());
+		return unidadDeVentaRepository.save(unidad);
+	}
+
+	// consulta si el formulario trae otra superficie, otra electricidad u otro montaje
+	private boolean cambiaElCanon(UnidadDeVenta unidad, ModificarUnidadDTO dto) {
+		if (Double.compare(unidad.getSuperficie(), dto.getSuperficie()) != 0)
+			return true;
+		if (unidad instanceof FoodTruck foodTruck)
+			return foodTruck.isRequiereElectricidad() != dto.isRequiereElectricidad();
+		if (unidad instanceof PuestoDesarmable puesto)
+			return dto.getTiempoMontaje() == null || puesto.getTiempoMontaje() != dto.getTiempoMontaje();
+		return false;
 	}
 }

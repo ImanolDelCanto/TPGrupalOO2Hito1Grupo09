@@ -166,6 +166,12 @@ public abstract class UnidadDeVenta {
 	public boolean validarCodigo() {
 		return codigoUnico != null && codigoUnico.matches(getPrefijoCodigo() + "[A-Z0-9]{7}");
 	}
+
+	// la superficie, la electricidad y el montaje cambian el canon:
+	// solo se pueden modificar si el festival todavia no empezo
+	public boolean puedeCambiarDatosDelCanon() {
+		return festival.estaPorEmpezar();
+	}
 	
 	// la caja esta cerrada si el ultimo cierre fue hoy; al dia siguiente se abre sola
 	public boolean cajaCerradaHoy() {

@@ -68,6 +68,7 @@ public class PlatoController {
 		mAV.addObject("buscar", buscar);
 		try {
 			mAV.addObject("menu", platoService.menuDeResponsable(email, buscar));
+			mAV.addObject("unidad", platoService.unidadDeResponsable(email));
 		} catch (IllegalArgumentException e) {
 			mAV.addObject("error", e.getMessage());
 		}

@@ -56,31 +56,37 @@
 
             <!-- FORMULARIO -->
             <div class="col-lg-5">
-                <form th:action="@{/responsable/platos}" th:object="${plato}" method="post" class="card shadow-sm">
+               <form th:action="@{/responsable/platos}" th:object="${plato}" method="post" class="card shadow-sm">
                     <div class="card-body p-4">
                         <h2 class="h5 mb-3">Agregar plato</h2>
+
+                        <div class="alert alert-warning" th:if="${unidad != null and unidad.festival.estaFinalizado()}">
+                            El festival de tu unidad ya terminó: no se pueden agregar platos.
+                        </div>
 
                         <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
                             <p class="mb-0" th:each="e : ${#fields.globalErrors()}" th:text="${e}">error</p>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="nombre" class="form-label">Nombre</label>
-                            <input type="text" th:field="*{nombre}" maxlength="100" class="form-control" th:errorclass="is-invalid"/>
-                            <div class="invalid-feedback" th:errors="*{nombre}"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="precioVenta" class="form-label">Precio de venta ($)</label>
-                            <input type="number" step="0.01" min="0.01" th:field="*{precioVenta}" class="form-control" th:errorclass="is-invalid"/>
-                            <div class="invalid-feedback" th:errors="*{precioVenta}"></div>
-                        </div>
-                        <div class="mb-4">
-                            <label for="costoProduccion" class="form-label">Costo de producción ($)</label>
-                            <input type="number" step="0.01" min="0.01" th:field="*{costoProduccion}" class="form-control" th:errorclass="is-invalid"/>
-                            <div class="invalid-feedback" th:errors="*{costoProduccion}"></div>
-                        </div>
+                        <fieldset th:disabled="${unidad != null and unidad.festival.estaFinalizado()}">
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">Nombre</label>
+                                <input type="text" th:field="*{nombre}" maxlength="100" class="form-control" th:errorclass="is-invalid"/>
+                                <div class="invalid-feedback" th:errors="*{nombre}"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="precioVenta" class="form-label">Precio de venta ($)</label>
+                                <input type="number" step="0.01" min="0.01" th:field="*{precioVenta}" class="form-control" th:errorclass="is-invalid"/>
+                                <div class="invalid-feedback" th:errors="*{precioVenta}"></div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="costoProduccion" class="form-label">Costo de producción ($)</label>
+                                <input type="number" step="0.01" min="0.01" th:field="*{costoProduccion}" class="form-control" th:errorclass="is-invalid"/>
+                                <div class="invalid-feedback" th:errors="*{costoProduccion}"></div>
+                            </div>
 
-                        <button type="submit" class="btn btn-dark w-100">Agregar al menú</button>
+                            <button type="submit" class="btn btn-dark w-100">Agregar al menú</button>
+                        </fieldset>
                     </div>
                 </form>
             </div>

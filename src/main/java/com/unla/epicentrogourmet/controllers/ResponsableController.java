@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -33,6 +35,9 @@ public class ResponsableController {
 		this.unidadDeVentaService = unidadDeVentaService;
 		this.pedidoService = pedidoService;
 	}
+
+	// cuantos pedidos entran en cada pagina del listado
+	private static final int POR_PAGINA = 5;
 
 	@GetMapping("")
 	public ModelAndView index(Authentication auth) {
@@ -70,13 +75,16 @@ public class ResponsableController {
 	@GetMapping("/pedidos")
 	public ModelAndView listadoPedidos(Authentication auth,
 			@RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate desde,
-			@RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate hasta) {
+			@RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate hasta,
+			@RequestParam(defaultValue = "0") int pagina) {
 		ModelAndView mAV = new ModelAndView(ViewRouteHelper.RESPONSABLE_PEDIDOS);
 		// para que el formulario quede con lo que el usuario eligio
 		mAV.addObject("desde", desde);
 		mAV.addObject("hasta", hasta);
 		try {
-			mAV.addObject("pedidos", pedidoService.pedidosDeResponsable(auth.getName(), desde, hasta));
+			Page<Pedido> pagPedidos = pedidoService.pedidosDeResponsable(auth.getName(), desde, hasta, PageRequest.of(Math.max(pagina, 0), POR_PAGINA));
+			mAV.addObject("pedidos", pagPedidos.getContent());
+			mAV.addObject("pag", pagPedidos);
 			unidadDeVentaService.findByResponsable(auth.getName())
 					.ifPresent(unidad -> mAV.addObject("unidad", unidad));
 		} catch (IllegalArgumentException e) {

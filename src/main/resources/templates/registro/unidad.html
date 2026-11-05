@@ -42,6 +42,7 @@
                     <div class="col-md-6">
                         <label for="codigoUnico" class="form-label">Código único (10 caracteres)</label>
                         <input type="text" th:field="*{codigoUnico}" maxlength="10" class="form-control" th:errorclass="is-invalid"/>
+                        <div class="invalid-feedback" th:errors="*{codigoUnico}"></div>
                         <div class="form-text">Food Truck: FT- y 7 letras o números (FT-PARRI01). Puesto: PD- y 7 letras o números (PD-CARPA01).</div>
                     </div>
                     <div class="col-md-6">

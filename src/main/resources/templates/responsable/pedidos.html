@@ -59,6 +59,21 @@
                 </tbody>
             </table>
         </div>
+                <!-- paginacion: solo aparece si hay mas de una pagina; mantiene el filtro de fechas -->
+        <div class="d-flex justify-content-between align-items-center mt-3"
+             th:if="${pag != null and pag.totalPages > 1}">
+            <span class="text-muted small"
+                  th:text="'Página ' + (${pag.number} + 1) + ' de ' + ${pag.totalPages} +
+                           ' · ' + ${pag.totalElements} + ' pedidos'">Página 1 de 1</span>
+            <div class="btn-group">
+                <a class="btn btn-sm btn-outline-dark"
+                   th:classappend="${!pag.hasPrevious()} ? 'disabled'"
+                   th:href="@{/responsable/pedidos(desde=${desde}, hasta=${hasta}, pagina=${pag.number - 1})}">Anterior</a>
+                <a class="btn btn-sm btn-outline-dark"
+                   th:classappend="${!pag.hasNext()} ? 'disabled'"
+                   th:href="@{/responsable/pedidos(desde=${desde}, hasta=${hasta}, pagina=${pag.number + 1})}">Siguiente</a>
+            </div>
+        </div>
 
         <p class="text-muted" th:if="${pedidos != null and #lists.isEmpty(pedidos)}">
             <span th:if="${desde == null and hasta == null}">Todavía no hay pedidos cargados.</span>

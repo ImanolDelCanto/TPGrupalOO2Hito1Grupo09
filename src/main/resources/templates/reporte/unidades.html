@@ -6,14 +6,32 @@
 
     <main class="container py-5">
         <div class="alert alert-danger" th:if="${error}" th:text="${error}">error</div>
+        <div class="alert alert-success" th:if="${exito}" th:text="${exito}">exito</div>
 
         <div th:if="${festival}">
-            <h1 class="h3 mb-1" th:text="'Unidades de venta de ' + ${festival.nombre}">Unidades de venta</h1>
-            <p class="text-muted mb-4">
-                <span th:text="${#temporals.format(festival.fechaInicio,'dd/MM/yyyy')}">desde</span>
-                al
-                <span th:text="${#temporals.format(festival.fechaFin,'dd/MM/yyyy')}">hasta</span>
-            </p>
+                <!-- encabezado del festival: estado, fechas y accesos a sus reportes -->
+            <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+                <div>
+                    <h1 class="h3 mb-1">
+                        <span th:text="${festival.nombre}">Festival</span>
+                        <span class="badge bg-success fs-6 align-middle" th:if="${festival.estaActivo()}">En curso</span>
+                        <span class="badge bg-primary fs-6 align-middle" th:if="${festival.estaPorEmpezar()}">Próximo</span>
+                        <span class="badge bg-light text-dark border fs-6 align-middle" th:if="${festival.estaFinalizado()}">Finalizado</span>
+                    </h1>
+                    <p class="text-muted mb-0">
+                        <span th:text="${#temporals.format(festival.fechaInicio,'dd/MM/yyyy')}">desde</span>
+                        al
+                        <span th:text="${#temporals.format(festival.fechaFin,'dd/MM/yyyy')}">hasta</span>
+                        &middot; <span th:text="${festival.diasDuracion} + ' días'">días</span>
+                    </p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a th:href="@{/reportes/ranking(idFestival=${festival.idFestival})}" class="btn btn-outline-dark">Ranking</a>
+                    <a th:href="@{/reportes/mayor-canon(idFestival=${festival.idFestival},cantidad=3)}" class="btn btn-outline-dark">Mayor canon</a>
+                </div>
+            </div>
+
+            <h2 class="h5 mb-3">Unidades de venta</h2>
 
             <div class="card shadow-sm" th:if="${!#lists.isEmpty(unidades)}">
                 <table class="table table-hover mb-0 align-middle">
@@ -24,7 +42,9 @@
                             <th>Tipo</th>
                             <th>Detalle</th>
                             <th class="text-end">Superficie</th>
+                            <th class="text-end">Canon</th>
                             <th>Responsable</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -34,7 +54,11 @@
                             <td th:text="${u.tipoUnidad}">tipo</td>
                             <td class="small text-muted" th:text="${u.detalleEspecifico}">detalle</td>
                             <td class="text-end" th:text="${u.superficie} + ' m²'">0</td>
+                            <td class="text-end" th:text="'$ ' + ${#numbers.formatDecimal(u.costoOperativo, 1, 'POINT', 2, 'COMMA')}">$ 0</td>
                             <td th:text="${u.responsable != null ? u.responsable.email : '-'}">responsable</td>
+                            <td class="text-end">
+                                <a th:href="@{/admin/unidades/{id}/editar(id=${u.idUnidad})}" class="btn btn-sm btn-outline-dark">Editar</a>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -45,7 +69,7 @@
             </p>
         </div>
 
-        <a th:href="@{/admin}" class="btn btn-outline-secondary mt-4">Volver</a>
+         <a th:href="@{/admin}" class="btn btn-outline-secondary mt-4">Volver a festivales</a>
     </main>
 
     <footer th:replace="~{layout :: footer}"></footer>

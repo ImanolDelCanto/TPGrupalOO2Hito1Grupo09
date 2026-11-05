@@ -15,6 +15,7 @@ public class ViewRouteHelper {
 
 	// ADMIN
 	public final static String ADMIN_INDEX = "admin/index";
+	public final static String ADMIN_UNIDAD_EDITAR = "admin/unidad-editar";
 
 	// REPORTES
 	public final static String REPORTE_UNIDADES = "reporte/unidades";

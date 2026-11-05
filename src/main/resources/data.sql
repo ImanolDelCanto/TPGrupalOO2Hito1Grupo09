@@ -211,3 +211,33 @@ INSERT INTO item_pedido (id_item_pedido, cantidad, subtotal, id_pedido, id_plato
  (21, 1,  4500.00, 15,  3),
  (22, 2,  2400.50, 16,  2),
  (23, 3,  5400.00, 17,  4);
+
+-- FESTIVAL FUTURO (para probar la gestion de unidades del admin)
+-- Ids nuevos: festival 3, costo 17-24, usuario 14, usuario_rol 14, unidad 6
+-- Todavia no empezo: sus datos que cambian el canon se pueden modificar.
+-- Clave del responsable: resp1234
+
+INSERT INTO festival (id_festival, nombre, descripcion, imagen_url, temporada, fecha_inicio, fecha_fin) VALUES
+ (3, 'Noches de Invierno', 'Guisos, chocolate caliente y cocina de olla en el predio techado.', 'https://images.unsplash.com/photo-1603185730021-ddc0c8097059?w=800', 'INVIERNO', '2027-07-01', '2027-07-25');
+
+INSERT INTO costo (id_costo, tipo, valor, id_festival) VALUES
+ (17, 'POR_SUPERFICIE',          500.00, 3),
+ (18, 'POR_MONTAJE',              10.00, 3),
+ (19, 'PLUS_ELECTRICIDAD',      2000.00, 3),
+ (20, 'SUELDO_BASE',          100000.00, 3),
+ (21, 'ANIO_ANTIGUEDAD',        5000.00, 3),
+ (22, 'PLUS_COCINERO',        150000.00, 3),
+ (23, 'PLUS_COCINERO_AYUDANTE',100000.00, 3),
+ (24, 'PLUS_LAVAPLATOS',       50000.00, 3);
+
+INSERT INTO usuario (id_usuario, email, password, activo, primer_ingreso_hecho) VALUES
+ (14, 'pablo@epicentro.com', '$2a$10$RnWxoAFRacMAb6Al2gWJNu49jluRRT/.f0axi3uSCuVcwplcNtX.G', 1, 1);
+
+INSERT INTO usuario_rol (id_usuario_rol, id_usuario, rol) VALUES
+ (14, 14, 'RESPONSABLE');
+
+INSERT INTO unidad_de_venta (id_unidad, nombre_comercial, superficie, codigo_unico, id_festival, id_responsable) VALUES
+ (6, 'Helados Rodantes', 18.0, 'FT-HELAD01', 3, 14);
+
+INSERT INTO food_truck (id_unidad, patente, requiere_electricidad) VALUES
+ (6, 'GH012IJ', 1);

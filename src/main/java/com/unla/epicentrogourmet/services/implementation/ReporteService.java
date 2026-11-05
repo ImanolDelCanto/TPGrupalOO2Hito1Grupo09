@@ -209,10 +209,11 @@ public class ReporteService implements IReporteService {
 		return new PlatoDTO(plato.getNombre(), plato.getPrecioVenta(), cantidadPedidos, unidadesVendidas);
 	}
 
-	// gana el que esta en mas pedidos; si empatan, el que vendio mas unidades
+	// gana el que vendio mas unidades; si empatan, el que esta en mas pedidos
 	private boolean esMejor(PlatoDTO a, PlatoDTO b) {
-		if (a.getCantidadPedidos() != b.getCantidadPedidos())
-			return a.getCantidadPedidos() > b.getCantidadPedidos();
-		return a.getUnidadesVendidas() > b.getUnidadesVendidas();
+		if (a.getUnidadesVendidas() != b.getUnidadesVendidas())
+			return a.getUnidadesVendidas() > b.getUnidadesVendidas();
+		return a.getCantidadPedidos() > b.getCantidadPedidos();
 	}
+
 }

@@ -43,6 +43,6 @@ public interface IReporteService {
 	// recaudacion - costo de platos - sueldos - canon de la unidad del responsable
 	RentabilidadDTO rentabilidadNeta(String emailResponsable);
 
-	// el plato que aparece en mas pedidos de la unidad del responsable
+	// el plato mas vendido (en unidades) de la unidad del responsable
 	PlatoDTO platoEstrella(String emailResponsable);
 }

@@ -37,7 +37,10 @@ public class SecurityConfiguration {
 					// publico: inicio, login (con cualquier parametro, ej. /login?registrado),
 					// registro de unidad, recursos estaticos y paginas de error
 					auth.requestMatchers("/", "/index", "/login", "/registro/**", "/error/**", "/error",
-							"/css/**", "/imgs/**", "/js/**", "/vendor/**").permitAll();	
+							"/css/**", "/imgs/**", "/js/**", "/vendor/**").permitAll();
+					// publico tambien: la API REST y Swagger, como en el repo de la catedra
+					auth.requestMatchers("/api/v1/**", "/swagger-ui/**", "/swagger-ui.html",
+							"/v3/api-docs/**").permitAll();
 					// todo lo demas pide estar logueado. QUE rol hace falta para cada
 					// zona lo dice el @PreAuthorize de cada controller.
 					auth.anyRequest().authenticated();

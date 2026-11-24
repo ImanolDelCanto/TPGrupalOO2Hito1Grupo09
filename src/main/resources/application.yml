@@ -33,3 +33,6 @@ spring:
           auth: true
           starttls:
             enable: true
+# Swagger: documenta solo la API REST, no las pantallas de Thymeleaf
+springdoc:
+  packages-to-scan: com.unla.epicentrogourmet.controllers.api
